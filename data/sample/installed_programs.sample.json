@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Python 3.11",
+    "publisher": "Python Software Foundation",
+    "install_location": "C:\\Python311",
+    "estimated_size_mb": 150,
+    "category_hint": "development"
+  },
+  {
+    "name": "Docker Desktop",
+    "publisher": "Docker Inc.",
+    "install_location": "C:\\Program Files\\Docker",
+    "estimated_size_mb": 2048,
+    "category_hint": "containers"
+  }
+]

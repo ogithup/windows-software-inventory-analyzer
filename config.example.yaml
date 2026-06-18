@@ -1,0 +1,26 @@
+scan:
+  disks:
+    - "C:\\"
+  project_roots:
+    - "C:\\Users\\oguz\\source"
+    - "C:\\Users\\oguz\\projects"
+  exclude_paths:
+    - "C:\\Windows"
+    - "C:\\Program Files\\WindowsApps"
+    - "C:\\$Recycle.Bin"
+    - "C:\\System Volume Information"
+
+report:
+  output_dir: "./data/output"
+  formats:
+    - "json"
+
+logging:
+  level: "INFO"
+  log_to_file: false
+  log_dir: "./data/output/logs"
+
+behavior:
+  read_only: true
+  allow_delete: false
+  allow_uninstall: false
