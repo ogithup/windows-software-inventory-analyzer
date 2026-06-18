@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 import logging
 from pathlib import Path
 
@@ -8,6 +9,10 @@ from src.analyzers.mapper import (
     load_technology_rules,
     map_software_to_projects,
     write_mapping_report,
+)
+from src.analyzers.dotnet_sdk_advisor import (
+    analyze_dotnet_sdk_dependencies,
+    write_dotnet_sdk_decision_report,
 )
 from src.analyzers.project_scanner import scan_projects, write_project_reports
 from src.analyzers.recommender import (
@@ -141,24 +146,37 @@ def run_recommend(config: AppConfig, dry_run: bool = False) -> dict[str, object]
     return {"recommendation_entries": recommendation_entries, "recommendations_path": recommendations_path}
 
 
+def run_analyze_dotnet_sdk(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
+    entries = analyze_dotnet_sdk_dependencies(
+        project_roots=config.scan.project_roots,
+        exclude_paths=config.scan.exclude_paths,
+    )
+    if dry_run:
+        LOGGER.info("Dry-run: dotnet sdk decision report yazilmadi. entries=%s", len(entries))
+        return {"dotnet_sdk_entries": entries, "dotnet_sdk_report_path": None}
+    report_path = write_dotnet_sdk_decision_report(entries, config.report.output_dir)
+    return {"dotnet_sdk_entries": entries, "dotnet_sdk_report_path": report_path}
+
+
 def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
     collect_result = run_collect_programs(config, dry_run=dry_run)
     disk_result = run_scan_disk(config, dry_run=dry_run)
     project_result = run_scan_projects(config, dry_run=dry_run)
+    dotnet_result = run_analyze_dotnet_sdk(config, dry_run=dry_run)
 
     if dry_run:
         mapping_entries = map_software_to_projects(
-            installed_programs=[application.__dict__ for application in collect_result["applications"]],
-            project_entries=[entry.__dict__ for entry in project_result["project_entries"]],
-            file_index_entries=[entry.__dict__ for entry in project_result["file_index_entries"]],
+            installed_programs=[asdict(application) for application in collect_result["applications"]],
+            project_entries=[asdict(entry) for entry in project_result["project_entries"]],
+            file_index_entries=[asdict(entry) for entry in project_result["file_index_entries"]],
             rules=load_technology_rules(Path("technology_rules.yaml")),
         )
         recommendation_entries = build_recommendations(
-            installed_programs=[application.__dict__ for application in collect_result["applications"]],
-            disk_usage_rows=[entry.__dict__ for entry in disk_result["disk_entries"]],
-            mapping_rows=[entry.__dict__ for entry in mapping_entries],
+            installed_programs=[asdict(application) for application in collect_result["applications"]],
+            disk_usage_rows=[asdict(entry) for entry in disk_result["disk_entries"]],
+            mapping_rows=[asdict(entry) for entry in mapping_entries],
             category_rules=load_category_rules(Path("category_rules.yaml")),
-            project_rows=[entry.__dict__ for entry in project_result["project_entries"]],
+            project_rows=[asdict(entry) for entry in project_result["project_entries"]],
         )
         LOGGER.info(
             "Dry-run tamamlandi. programs=%s disks=%s projects=%s mappings=%s recommendations=%s",
@@ -176,6 +194,7 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
         **collect_result,
         **disk_result,
         **project_result,
+        **dotnet_result,
         **mapping_result,
         **recommendation_result,
     }

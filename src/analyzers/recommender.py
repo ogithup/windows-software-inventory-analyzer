@@ -18,6 +18,8 @@ RECOMMENDATION_HEADERS = (
     "category",
     "decision",
     "matched_projects",
+    "project_links",
+    "project_context",
     "project_count",
     "install_location",
     "estimated_size",
@@ -106,7 +108,7 @@ def build_recommendations(
     project_rows: list[dict[str, str]] | None = None,
 ) -> list[RecommendationEntry]:
     mapping_by_name = {row.get("software_name", "").casefold(): row for row in mapping_rows}
-    project_last_modified = build_project_last_modified_index(project_rows or [])
+    project_index = build_project_index(project_rows or [])
 
     recommendations: list[RecommendationEntry] = []
     for program in installed_programs:
@@ -116,19 +118,22 @@ def build_recommendations(
 
         mapping = mapping_by_name.get(software_name.casefold())
         matched_projects = mapping.get("matched_projects", "") if mapping else ""
+        project_links = mapping.get("matched_project_links", "") if mapping else ""
+        project_context = mapping.get("project_context", "") if mapping else ""
         project_count = safe_int(mapping.get("project_count", "0") if mapping else "0")
         mapping_confidence = safe_float(mapping.get("confidence_score", "0") if mapping else "0")
 
         category, protection_reason = categorize_program(program, mapping, category_rules)
         install_location = program.get("install_location", "").strip()
         estimated_size = estimate_program_size(install_location, disk_usage_rows)
-        last_related_project_activity = derive_last_related_project_activity(matched_projects, project_last_modified)
+        last_related_project_activity = derive_last_related_project_activity(matched_projects, project_index)
 
         decision, confidence_score, explanation = decide_recommendation(
             program=program,
             category=category,
             protection_reason=protection_reason,
             matched_projects=matched_projects,
+            project_context=project_context,
             project_count=project_count,
             mapping_confidence=mapping_confidence,
             estimated_size=estimated_size,
@@ -141,6 +146,8 @@ def build_recommendations(
                 category=category,
                 decision=decision,
                 matched_projects=matched_projects,
+                project_links=project_links,
+                project_context=project_context,
                 project_count=project_count,
                 install_location=install_location,
                 estimated_size=estimated_size,
@@ -221,22 +228,21 @@ def estimate_program_size(install_location: str, disk_usage_rows: list[dict[str,
     return best_row.get("size_human", "") if best_row else ""
 
 
-def derive_last_related_project_activity(matched_projects: str, project_last_modified: dict[str, str]) -> str:
+def derive_last_related_project_activity(matched_projects: str, project_index: dict[str, dict[str, str]]) -> str:
     if not matched_projects:
         return ""
 
-    timestamps = [project_last_modified.get(project.strip().casefold(), "") for project in matched_projects.split(",")]
+    timestamps = [project_index.get(project.strip().casefold(), {}).get("last_modified", "") for project in matched_projects.split(",")]
     timestamps = [value for value in timestamps if value]
     return max(timestamps) if timestamps else ""
 
 
-def build_project_last_modified_index(project_rows: list[dict[str, str]]) -> dict[str, str]:
-    index: dict[str, str] = {}
+def build_project_index(project_rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
+    index: dict[str, dict[str, str]] = {}
     for row in project_rows:
         project_name = row.get("project_name", "").strip().casefold()
-        last_modified = row.get("last_modified", "").strip()
-        if project_name and last_modified:
-            index[project_name] = last_modified
+        if project_name:
+            index[project_name] = row
     return index
 
 
@@ -245,6 +251,7 @@ def decide_recommendation(
     category: str,
     protection_reason: str,
     matched_projects: str,
+    project_context: str,
     project_count: int,
     mapping_confidence: float,
     estimated_size: str,
@@ -275,6 +282,8 @@ def decide_recommendation(
         )
         if last_related_project_activity:
             explanation += f" Ilgili proje aktivitesi en son {last_related_project_activity} tarihinde goruluyor."
+        if project_context:
+            explanation += f" Proje baglami: {shorten_context(project_context)}."
         if estimated_size:
             explanation += f" Tahmini kapladigi alan {estimated_size}."
         return "KEEP", min(0.65 + mapping_confidence * 0.3, 0.98), explanation
@@ -285,12 +294,16 @@ def decide_recommendation(
                 f"{software_name} {category} kategorisinde ama aktif proje eslesmesi bulunamadi. "
                 f"Tahmini boyutu {estimated_size} oldugu icin silmeden once emin olmak gerekir."
             )
+            if project_context:
+                explanation += f" Kayitli proje notu/aciklamasi: {shorten_context(project_context)}."
             return "UNSURE", 0.66, explanation
 
         explanation = (
             f"{software_name} {category} kategorisinde, ancak aktif proje iliskisi tespit edilmedi. "
             "Daha once gecici kullandiysan kaldirilabilir olabilir ama otomatik guven dusuk."
         )
+        if project_context:
+            explanation += f" Kayitli proje notu/aciklamasi: {shorten_context(project_context)}."
         return "UNSURE", 0.60, explanation
 
     if any(token in name_haystack for token in ("tool", "sdk", "library", "redistributable", "runtime")):
@@ -307,6 +320,11 @@ def decide_recommendation(
     if estimated_size:
         explanation += f" Tahmini boyutu {estimated_size}."
     return "CAN_REMOVE", 0.58, explanation
+
+
+def shorten_context(project_context: str) -> str:
+    compact = " ".join(project_context.split())
+    return compact[:220]
 
 
 def is_large_size(size_human: str) -> bool:

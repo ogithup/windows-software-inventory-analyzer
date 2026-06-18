@@ -3,7 +3,9 @@ scan:
     - "C:\\"
   project_roots:
     - "%USERPROFILE%\\source"
+    - "%USERPROFILE%"
     - "%USERPROFILE%\\projects"
+    - "C:\\Projects"
   disk_usage_roots:
     - "C:\\Program Files"
     - "C:\\Program Files (x86)"
@@ -14,6 +16,7 @@ scan:
     - "C:\\Program Files\\WindowsApps"
     - "C:\\$Recycle.Bin"
     - "C:\\System Volume Information"
+    - "%USERPROFILE%\\AppData"
   max_depth: 2
 
 report:

@@ -1,0 +1,3 @@
+project_name,repo_name,path_contains,github_url_override,repo_description_override,user_notes
+vision-app,vision-app,,https://github.com/kullanici/vision-app,OpenCV tabanli goruntu isleme araci,"Bu proje ara sira lazim; Python ve Docker'i tut."
+frontend-app,frontend-app,,https://github.com/kullanici/frontend-app,React tabanli istemci uygulamasi,"Node.js araci bu proje icin gerekli."

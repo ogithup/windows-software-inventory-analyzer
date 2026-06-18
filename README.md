@@ -70,12 +70,34 @@ behavior:
   allow_uninstall: false
 ```
 
+## Proje Notlari ve GitHub Linkleri
+
+Projelerin icin manuel baglam eklemek istersen `project_notes.example.csv` dosyasini kopyalayip `project_notes.csv` olustur:
+
+```powershell
+Copy-Item project_notes.example.csv project_notes.csv
+```
+
+Bu dosyada sunlari yazabilirsin:
+
+- `github_url_override`: lokal git remote yerine kullanilacak link
+- `repo_description_override`: proje aciklamasi
+- `user_notes`: "bu proje ara sira lazim", "Docker'i tut", "sadece okul projesiydi" gibi manuel notlar
+
+Sistem, proje raporlarinda ve `recommendations.csv` icindeki aciklamalarda bu baglami kullanir.
+
 ## Kullanim
 
 Tum pipeline:
 
 ```powershell
 python -m src.main --config config.yaml
+```
+
+Tek komutla tum verileri yenilemek icin:
+
+```powershell
+python -m src.main refresh-all --config config.yaml
 ```
 
 Onerilen komutlar:
@@ -86,6 +108,7 @@ python -m src.main scan-disk --config config.yaml
 python -m src.main scan-projects --config config.yaml
 python -m src.main map-software --config config.yaml
 python -m src.main recommend --config config.yaml
+python -m src.main analyze-dotnet-sdk --config config.yaml
 ```
 
 Dry-run:
@@ -113,6 +136,8 @@ Dashboard acmak icin:
 ```powershell
 python dashboard.py
 ```
+
+Dashboard icinde `Verileri Yenile` butonu vardir. Bu buton `refresh-all` komutunu arka planda calistirir ve tum CSV raporlarini gunceller.
 
 Alternatif:
 
@@ -155,6 +180,7 @@ Testler su senaryolari kapsar:
 - `project_files_index.csv`
 - `software_project_mapping.csv`
 - `recommendations.csv`
+- `dotnet_sdk_decision_report.csv`
 
 Ek raporlar:
 

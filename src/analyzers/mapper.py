@@ -16,6 +16,8 @@ MAPPING_HEADERS = (
     "software_name",
     "category",
     "matched_projects",
+    "matched_project_links",
+    "project_context",
     "project_count",
     "evidence",
     "confidence_score",
@@ -107,6 +109,8 @@ def map_software_to_projects(
             continue
 
         matched_projects: set[str] = set()
+        matched_project_links: set[str] = set()
+        project_contexts: list[str] = []
         evidence_parts: list[str] = []
         category = "uncategorized"
         confidence = 0.0
@@ -116,7 +120,7 @@ def map_software_to_projects(
                 continue
 
             category = str(rule.get("category", category))
-            rule_projects, rule_evidence, rule_confidence = find_projects_for_rule(
+            rule_projects, rule_links, rule_contexts, rule_evidence, rule_confidence = find_projects_for_rule(
                 project_entries=project_entries,
                 file_index_entries=file_index_entries,
                 rule=rule,
@@ -125,6 +129,8 @@ def map_software_to_projects(
                 continue
 
             matched_projects.update(rule_projects)
+            matched_project_links.update(rule_links)
+            project_contexts.extend(rule_contexts)
             evidence_parts.extend(f"{software_name}: {entry}" for entry in rule_evidence)
             confidence = max(confidence, rule_confidence)
 
@@ -136,6 +142,8 @@ def map_software_to_projects(
                 software_name=software_name,
                 category=category,
                 matched_projects=",".join(sorted(matched_projects, key=str.casefold)),
+                matched_project_links=",".join(sorted(matched_project_links, key=str.casefold)),
+                project_context=" | ".join(unique_strings(project_contexts)),
                 project_count=len(matched_projects),
                 evidence=" | ".join(unique_strings(evidence_parts)),
                 confidence_score=round(confidence, 2),
@@ -164,12 +172,14 @@ def find_projects_for_rule(
     project_entries: list[dict[str, str]],
     file_index_entries: list[dict[str, str]],
     rule: dict[str, object],
-) -> tuple[set[str], list[str], float]:
+) -> tuple[set[str], set[str], list[str], list[str], float]:
     technologies = [str(item).casefold() for item in rule.get("tech_keywords", []) if str(item).strip()]
     dependency_keywords = [str(item).casefold() for item in rule.get("dependency_keywords", []) if str(item).strip()]
     base_confidence = float(rule.get("base_confidence", 0.55))
 
     matched_projects: set[str] = set()
+    matched_links: set[str] = set()
+    project_contexts: list[str] = []
     evidence_parts: list[str] = []
     best_confidence = 0.0
 
@@ -188,6 +198,12 @@ def find_projects_for_rule(
             continue
 
         matched_projects.add(project_name)
+        github_url = project.get("github_url", "").strip()
+        if github_url:
+            matched_links.add(github_url)
+        context_text = build_project_context(project)
+        if context_text:
+            project_contexts.append(f"{project_name}: {context_text}")
         evidence = []
         if tech_matches:
             evidence.append(f"tech={','.join(sorted(tech_matches))}")
@@ -213,10 +229,16 @@ def find_projects_for_rule(
             if not file_matches:
                 continue
             matched_projects.add(project_name)
+            github_url = file_entry.get("github_url", "").strip()
+            if github_url:
+                matched_links.add(github_url)
+            context_text = build_project_context(file_entry)
+            if context_text:
+                project_contexts.append(f"{project_name}: {context_text}")
             evidence_parts.append(f"{project_name} ({file_name}: {','.join(sorted(file_matches))})")
             best_confidence = max(best_confidence, min(base_confidence + 0.25, 0.99))
 
-    return matched_projects, unique_strings(evidence_parts), best_confidence
+    return matched_projects, matched_links, unique_strings(project_contexts), unique_strings(evidence_parts), best_confidence
 
 
 def split_csv_like_field(value: str) -> set[str]:
@@ -245,6 +267,13 @@ def unique_strings(items: Iterable[str]) -> list[str]:
         if normalized and normalized not in seen:
             seen.append(normalized)
     return seen
+
+
+def build_project_context(project_row: dict[str, str]) -> str:
+    description = project_row.get("repo_description", "").strip()
+    user_notes = project_row.get("user_notes", "").strip()
+    parts = [part for part in (description, user_notes) if part]
+    return " ".join(parts)[:500]
 
 
 def search_mappings(entries: Iterable[SoftwareProjectMappingEntry], keyword: str) -> list[SoftwareProjectMappingEntry]:

@@ -78,6 +78,9 @@ class ProjectTechStackEntry:
     project_name: str
     repo_name: str
     path: str
+    github_url: str
+    repo_description: str
+    user_notes: str
     detected_technologies: str
     dependencies_summary: str
     last_modified: str
@@ -90,6 +93,9 @@ class ProjectFileIndexEntry:
     project_name: str
     repo_name: str
     project_path: str
+    github_url: str
+    repo_description: str
+    user_notes: str
     file_path: str
     file_name: str
     detected_technology: str
@@ -104,6 +110,8 @@ class SoftwareProjectMappingEntry:
     software_name: str
     category: str
     matched_projects: str
+    matched_project_links: str
+    project_context: str
     project_count: int
     evidence: str
     confidence_score: float
@@ -115,9 +123,25 @@ class RecommendationEntry:
     category: str
     decision: str
     matched_projects: str
+    project_links: str
+    project_context: str
     project_count: int
     install_location: str
     estimated_size: str
     last_related_project_activity: str
     confidence_score: float
     explanation: str
+
+
+@dataclass(slots=True)
+class DotnetSdkDecisionEntry:
+    sdk_version: str
+    feature_band: str
+    status: str
+    used_by: str
+    ide_context: str
+    workload_context: str
+    project_context: str
+    global_json_matches: str
+    csproj_signals: str
+    recommendation: str

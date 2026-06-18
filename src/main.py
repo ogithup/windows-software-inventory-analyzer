@@ -6,6 +6,7 @@ from pathlib import Path
 from src.windows_software_inventory_analyzer.pipeline import (
     enforce_read_only,
     prepare_config,
+    run_analyze_dotnet_sdk,
     run_collect_programs,
     run_full_pipeline,
     run_map_software,
@@ -22,7 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--verbose", action="store_true", help="Detayli log ac")
 
     subparsers = parser.add_subparsers(dest="command", required=False)
-    for command in ("collect-programs", "scan-disk", "scan-projects", "map-software", "recommend", "full-run"):
+    for command in ("collect-programs", "scan-disk", "scan-projects", "map-software", "recommend", "analyze-dotnet-sdk", "full-run", "refresh-all"):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, default=None, help=argparse.SUPPRESS)
         subparser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)
@@ -34,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    command = args.command or "full-run"
+    command = args.command or "refresh-all"
 
     config = prepare_config(args.config, verbose=args.verbose)
     enforce_read_only(config)
@@ -49,6 +50,8 @@ def main() -> int:
         run_map_software(config, dry_run=args.dry_run)
     elif command == "recommend":
         run_recommend(config, dry_run=args.dry_run)
+    elif command == "analyze-dotnet-sdk":
+        run_analyze_dotnet_sdk(config, dry_run=args.dry_run)
     else:
         run_full_pipeline(config, dry_run=args.dry_run)
 
