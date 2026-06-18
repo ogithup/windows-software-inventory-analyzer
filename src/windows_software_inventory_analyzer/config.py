@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from .models import AppConfig, BehaviorConfig, LoggingConfig, ReportConfig, ScanConfig
 
 
 DEFAULT_CONFIG_PATH = Path("config.example.yaml")
+
+
+def _expand_path(value: str) -> Path:
+    return Path(os.path.expandvars(value)).expanduser()
 
 
 def _parse_scalar(value: str) -> str | bool:
@@ -80,17 +85,19 @@ def load_config(config_path: Path | None = None) -> AppConfig:
     return AppConfig(
         scan=ScanConfig(
             disks=list(scan.get("disks", [])),
-            project_roots=[Path(item) for item in scan.get("project_roots", [])],
-            exclude_paths=[Path(item) for item in scan.get("exclude_paths", [])],
+            project_roots=[_expand_path(item) for item in scan.get("project_roots", [])],
+            exclude_paths=[_expand_path(item) for item in scan.get("exclude_paths", [])],
+            disk_usage_roots=[_expand_path(item) for item in scan.get("disk_usage_roots", [])],
+            max_depth=int(scan.get("max_depth", 3)),
         ),
         report=ReportConfig(
-            output_dir=Path(report.get("output_dir", "./data/output")),
+            output_dir=_expand_path(report.get("output_dir", "./data/output")),
             formats=list(report.get("formats", ["json"])),
         ),
         logging=LoggingConfig(
             level=str(logging.get("level", "INFO")).upper(),
             log_to_file=bool(logging.get("log_to_file", False)),
-            log_dir=Path(logging.get("log_dir", "./data/output/logs")),
+            log_dir=_expand_path(logging.get("log_dir", "./data/output/logs")),
         ),
         behavior=BehaviorConfig(
             read_only=bool(behavior.get("read_only", True)),

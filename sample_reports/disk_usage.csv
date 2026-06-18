@@ -1,0 +1,505 @@
+﻿path,scan_root,depth,size_bytes,size_human,category,risk
+C:\Program Files,C:\Program Files,0,180306698064,167.92 GB,installed_programs,manual_review
+C:\Program Files\Epic Games,C:\Program Files,1,129008146568,120.15 GB,directory,manual_review
+C:\Program Files\Epic Games\GTAV,C:\Program Files,2,127932637192,119.15 GB,directory,manual_review
+C:\Program Files (x86),C:\Program Files (x86),0,24620261475,22.93 GB,installed_programs,manual_review
+C:\Program Files\dotnet,C:\Program Files,1,8862537329,8.25 GB,directory,manual_review
+C:\Program Files\Microsoft Visual Studio\2022,C:\Program Files,2,6585561943,6.13 GB,directory,manual_review
+C:\Program Files\Microsoft Visual Studio,C:\Program Files,1,6585561943,6.13 GB,directory,manual_review
+C:\Program Files (x86)\Microsoft,C:\Program Files (x86),1,6576430981,6.12 GB,directory,manual_review
+C:\Program Files\Microsoft Office,C:\Program Files,1,5157269363,4.80 GB,directory,manual_review
+C:\Program Files\Microsoft Office\root,C:\Program Files,2,5143958717,4.79 GB,directory,manual_review
+C:\Program Files\dotnet\sdk,C:\Program Files,2,4572881176,4.26 GB,directory,manual_review
+C:\Program Files (x86)\Windows Kits,C:\Program Files (x86),1,4060432145,3.78 GB,directory,manual_review
+C:\Program Files (x86)\Windows Kits\10,C:\Program Files (x86),2,4053043182,3.77 GB,directory,manual_review
+C:\Program Files\Microsoft SQL Server,C:\Program Files,1,4020733546,3.74 GB,directory,manual_review
+C:\Program Files\Docker,C:\Program Files,1,3919193063,3.65 GB,directory,manual_review
+C:\Program Files (x86)\Microsoft Visual Studio,C:\Program Files (x86),1,3883005420,3.62 GB,directory,manual_review
+C:\Program Files (x86)\Microsoft Visual Studio\2022,C:\Program Files (x86),2,3651054387,3.40 GB,directory,manual_review
+C:\Program Files\Docker\Docker,C:\Program Files,2,3321791751,3.09 GB,directory,manual_review
+C:\Program Files\Android\Android Studio,C:\Program Files,2,3289010007,3.06 GB,directory,manual_review
+C:\Program Files\Android,C:\Program Files,1,3289010007,3.06 GB,directory,manual_review
+C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.1.4,C:\Program Files,2,3063563675,2.85 GB,directory,manual_review
+C:\Program Files\JetBrains,C:\Program Files,1,3063563675,2.85 GB,directory,manual_review
+C:\Program Files (x86)\R.G. Mechanics\Need for Speed - Most Wanted,C:\Program Files (x86),2,3029989136,2.82 GB,directory,manual_review
+C:\Program Files (x86)\R.G. Mechanics,C:\Program Files (x86),1,3029989136,2.82 GB,directory,manual_review
+C:\Program Files (x86)\Microsoft\EdgeCore,C:\Program Files (x86),2,2791556671,2.60 GB,directory,manual_review
+C:\Program Files\HP,C:\Program Files,1,2629227603,2.45 GB,directory,manual_review
+C:\Program Files\dotnet\shared,C:\Program Files,2,2615576690,2.44 GB,directory,manual_review
+C:\Program Files (x86)\Epic Games,C:\Program Files (x86),1,2422056055,2.26 GB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\160,C:\Program Files,2,2004172063,1.87 GB,directory,manual_review
+C:\Program Files (x86)\Steam,C:\Program Files (x86),1,1855864223,1.73 GB,directory,manual_review
+C:\Program Files (x86)\Microsoft\Edge,C:\Program Files (x86),2,1778721432,1.66 GB,directory,manual_review
+C:\Program Files\Microsoft SQL Server Management Studio 22\Release,C:\Program Files,2,1770982644,1.65 GB,directory,manual_review
+C:\Program Files\Microsoft SQL Server Management Studio 22,C:\Program Files,1,1770982644,1.65 GB,directory,manual_review
+C:\Program Files\HP\OMEN-Broadcast,C:\Program Files,2,1652373502,1.54 GB,directory,manual_review
+C:\Program Files (x86)\Epic Games\Launcher,C:\Program Files (x86),2,1571083065,1.46 GB,directory,manual_review
+C:\Program Files\dotnet\packs,C:\Program Files,2,1544318703,1.44 GB,directory,manual_review
+C:\Program Files\BraveSoftware\Brave-Browser,C:\Program Files,2,1052743654,1003.97 MB,directory,manual_review
+C:\Program Files\BraveSoftware,C:\Program Files,1,1052743654,1003.97 MB,directory,manual_review
+C:\Program Files\Epic Games\AmongUs,C:\Program Files,2,1004020835,957.51 MB,directory,manual_review
+C:\Program Files\PostgreSQL,C:\Program Files,1,991896933,945.95 MB,directory,manual_review
+C:\Program Files\PostgreSQL\18,C:\Program Files,2,991848130,945.90 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation,C:\Program Files,1,933935654,890.67 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft\Copilot,C:\Program Files (x86),2,895386855,853.91 MB,directory,manual_review
+C:\Program Files\Blender Foundation\Blender 4.4,C:\Program Files,2,891199177,849.91 MB,directory,manual_review
+C:\Program Files\Blender Foundation,C:\Program Files,1,891199177,849.91 MB,directory,manual_review
+C:\Program Files\WSL,C:\Program Files,1,882303829,841.43 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft\EdgeWebView,C:\Program Files (x86),2,879549179,838.80 MB,directory,manual_review
+C:\Program Files (x86)\Epic Games\Epic Online Services,C:\Program Files (x86),2,846642557,807.42 MB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\170,C:\Program Files,2,829954871,791.51 MB,directory,manual_review
+C:\Program Files (x86)\Steam\bin,C:\Program Files (x86),2,772190403,736.42 MB,directory,manual_review
+C:\Program Files\MySQL,C:\Program Files,1,760760368,725.52 MB,directory,manual_review
+C:\Program Files\Rockstar Games,C:\Program Files,1,706009226,673.30 MB,directory,manual_review
+C:\Program Files\PowerToys,C:\Program Files,1,667035533,636.13 MB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS01,C:\Program Files,2,614908342,586.42 MB,directory,manual_review
+C:\Program Files\Docker\cli-plugins,C:\Program Files,2,597401312,569.73 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation\NVIDIA App,C:\Program Files,2,597350503,569.68 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2,C:\Program Files,1,594954235,567.39 MB,directory,manual_review
+C:\Program Files\Microsoft OneDrive,C:\Program Files,1,575599566,548.93 MB,directory,manual_review
+C:\Program Files\MySQL\MySQL Server 8.0,C:\Program Files,2,574010829,547.42 MB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS,C:\Program Files,2,566855634,540.60 MB,directory,manual_review
+C:\Program Files (x86)\dotnet,C:\Program Files (x86),1,546618245,521.30 MB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\26.095.0519.0003,C:\Program Files,2,536257366,511.41 MB,directory,manual_review
+C:\Program Files (x86)\Google,C:\Program Files (x86),1,519303506,495.25 MB,directory,manual_review
+C:\Program Files (x86)\Google\GoogleUpdater,C:\Program Files (x86),2,510575290,486.92 MB,directory,manual_review
+C:\Program Files\Google\Chrome,C:\Program Files,2,494320197,471.42 MB,directory,manual_review
+C:\Program Files\Google,C:\Program Files,1,494320197,471.42 MB,directory,manual_review
+C:\Program Files\edb,C:\Program Files,1,476053102,454.00 MB,directory,manual_review
+C:\Program Files\HP\Documentation,C:\Program Files,2,475730844,453.69 MB,directory,manual_review
+C:\Program Files\Git,C:\Program Files,1,421761968,402.22 MB,directory,manual_review
+C:\Program Files\McAfee,C:\Program Files,1,405003943,386.24 MB,directory,manual_review
+C:\Program Files\Rockstar Games\Social Club,C:\Program Files,2,403903222,385.19 MB,directory,manual_review
+C:\Program Files (x86)\dotnet\shared,C:\Program Files (x86),2,372685933,355.42 MB,directory,manual_review
+C:\Program Files\edb\pem,C:\Program Files,2,370740278,353.57 MB,directory,manual_review
+C:\Program Files (x86)\Steam\steamapps,C:\Program Files (x86),2,364210095,347.34 MB,directory,manual_review
+C:\Program Files (x86)\Reference Assemblies\Microsoft,C:\Program Files (x86),2,353043555,336.69 MB,directory,manual_review
+C:\Program Files (x86)\Reference Assemblies,C:\Program Files (x86),1,353043555,336.69 MB,directory,manual_review
+C:\Program Files\Java\jdk-20,C:\Program Files,2,321568945,306.67 MB,directory,manual_review
+C:\Program Files\Java,C:\Program Files,1,321568945,306.67 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\bin,C:\Program Files,2,310964393,296.56 MB,directory,manual_review
+C:\Program Files\McAfee\WPS,C:\Program Files,2,310622547,296.23 MB,directory,manual_review
+C:\Program Files\PowerToys\WinUI3Apps,C:\Program Files,2,307775775,293.52 MB,directory,manual_review
+C:\Program Files (x86)\Panda Security,C:\Program Files (x86),1,304239673,290.15 MB,directory,manual_review
+C:\Program Files\Rockstar Games\Launcher,C:\Program Files,2,302106004,288.11 MB,directory,manual_review
+C:\Program Files (x86)\Panda Security\Panda Security Protection,C:\Program Files (x86),2,300684433,286.76 MB,directory,manual_review
+C:\Program Files\Wireshark,C:\Program Files,1,295526516,281.84 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation\Installer2,C:\Program Files,2,265331008,253.04 MB,directory,manual_review
+C:\Program Files (x86)\Steam\package,C:\Program Files (x86),2,251998486,240.32 MB,directory,manual_review
+C:\Program Files\Zotero,C:\Program Files,1,238398554,227.35 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft\EdgeUpdate,C:\Program Files (x86),2,231216844,220.51 MB,directory,manual_review
+C:\Program Files\Oracle\VirtualBox,C:\Program Files,2,220610040,210.39 MB,directory,manual_review
+C:\Program Files\Oracle,C:\Program Files,1,220610040,210.39 MB,directory,manual_review
+C:\Program Files (x86)\NVIDIA Corporation,C:\Program Files (x86),1,219890207,209.70 MB,directory,manual_review
+C:\Program Files\Git\mingw64,C:\Program Files,2,219734176,209.55 MB,directory,manual_review
+C:\Program Files\WSL\tools,C:\Program Files,2,217754472,207.67 MB,directory,manual_review
+C:\Program Files (x86)\NVIDIA Corporation\PhysX,C:\Program Files (x86),2,207938052,198.31 MB,directory,manual_review
+C:\Program Files\Common Files,C:\Program Files,1,197727999,188.57 MB,directory,manual_review
+C:\Program Files\WSL\wslsettings,C:\Program Files,2,195418306,186.37 MB,directory,manual_review
+C:\Program Files\Git\usr,C:\Program Files,2,194609855,185.59 MB,directory,manual_review
+C:\Program Files\MySQL\MySQL Workbench 8.0,C:\Program Files,2,186749539,178.10 MB,directory,manual_review
+C:\Program Files (x86)\dotnet\packs,C:\Program Files (x86),2,173397896,165.37 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs,C:\Program Files (x86),1,168201523,160.41 MB,directory,manual_review
+C:\Program Files\Common Files\microsoft shared,C:\Program Files,2,150347477,143.38 MB,directory,manual_review
+C:\Program Files (x86)\Common Files,C:\Program Files (x86),1,142481758,135.88 MB,directory,manual_review
+C:\Program Files (x86)\Teams Installer,C:\Program Files (x86),1,142222197,135.63 MB,directory,manual_review
+C:\Program Files\HP\SystemOptimizer,C:\Program Files,2,142213585,135.63 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft Visual Studio\Shared,C:\Program Files (x86),2,127105577,121.22 MB,directory,manual_review
+C:\Program Files\CMake,C:\Program Files,1,124335117,118.58 MB,directory,manual_review
+C:\Program Files\dotnet\templates,C:\Program Files,2,123464255,117.74 MB,directory,manual_review
+C:\Program Files\HP\Overlay,C:\Program Files,2,120328863,114.75 MB,directory,manual_review
+C:\Program Files\HPPrintScanDoctor,C:\Program Files,1,118082117,112.61 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft Visual Studio\Installer,C:\Program Files (x86),2,104845456,99.99 MB,directory,manual_review
+C:\Program Files (x86)\Steam\steamui,C:\Program Files (x86),2,101909632,97.19 MB,directory,manual_review
+C:\Program Files\nodejs,C:\Program Files,1,98177037,93.63 MB,directory,manual_review
+C:\Program Files (x86)\HP,C:\Program Files (x86),1,96133539,91.68 MB,directory,manual_review
+C:\Program Files (x86)\PostgreSQL,C:\Program Files (x86),1,95137040,90.73 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\NuGetPackages,C:\Program Files (x86),2,94623765,90.24 MB,directory,manual_review
+C:\Program Files\McAfee\WebAdvisor,C:\Program Files,2,94381396,90.01 MB,directory,manual_review
+C:\Program Files\HP\HP One Agent,C:\Program Files,2,93946607,89.59 MB,directory,manual_review
+C:\Program Files\wkhtmltopdf,C:\Program Files,1,90716527,86.51 MB,directory,manual_review
+C:\Program Files\wkhtmltopdf\bin,C:\Program Files,2,90519552,86.33 MB,directory,manual_review
+C:\Program Files\Tesseract-OCR,C:\Program Files,1,90200529,86.02 MB,directory,manual_review
+C:\Program Files\edb\EnterpriseDB-xDBReplicationServer,C:\Program Files,2,89837079,85.68 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\help,C:\Program Files,2,87215904,83.18 MB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5,C:\Program Files,1,84597242,80.68 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\font,C:\Program Files,2,81524074,77.75 MB,directory,manual_review
+C:\Program Files (x86)\PostgreSQL\EnterpriseDB-xDBReplicationServer,C:\Program Files (x86),2,78386638,74.76 MB,directory,manual_review
+C:\Program Files\Epic Games\Fortnite,C:\Program Files,2,71488541,68.18 MB,directory,manual_review
+C:\Program Files\HP\OmenInstallMonitor,C:\Program Files,2,71135882,67.84 MB,directory,manual_review
+C:\Program Files\CMake\bin,C:\Program Files,2,66958200,63.86 MB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN,C:\Program Files (x86),1,60194475,57.41 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation\FrameViewSDK,C:\Program Files,2,55028420,52.48 MB,directory,manual_review
+C:\Program Files (x86)\HP\HP Support Framework,C:\Program Files (x86),2,50675886,48.33 MB,directory,manual_review
+C:\Program Files\Windows Defender,C:\Program Files,1,49531710,47.24 MB,directory,manual_review
+C:\Program Files\DB Browser for SQLite,C:\Program Files,1,49270292,46.99 MB,directory,manual_review
+C:\Program Files\CMake\doc,C:\Program Files,2,43815821,41.79 MB,directory,manual_review
+C:\Program Files\BCUninstaller,C:\Program Files,1,43021107,41.03 MB,directory,manual_review
+C:\Program Files\HP\Binaries,C:\Program Files,2,42269104,40.31 MB,directory,manual_review
+C:\Program Files (x86)\BraveSoftware\Update,C:\Program Files (x86),2,41962112,40.02 MB,directory,manual_review
+C:\Program Files (x86)\BraveSoftware,C:\Program Files (x86),1,41962112,40.02 MB,directory,manual_review
+C:\Program Files (x86)\Common Files\BattlEye,C:\Program Files (x86),2,40553808,38.68 MB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN\expressvpnd,C:\Program Files (x86),2,38994515,37.19 MB,directory,manual_review
+C:\Program Files\Zotero\app,C:\Program Files,2,38576724,36.79 MB,directory,manual_review
+C:\Program Files\Reference Assemblies\Microsoft,C:\Program Files,2,37180649,35.46 MB,directory,manual_review
+C:\Program Files\Reference Assemblies,C:\Program Files,1,37180649,35.46 MB,directory,manual_review
+C:\Program Files (x86)\Common Files\Steam,C:\Program Files (x86),2,35893750,34.23 MB,directory,manual_review
+C:\Program Files (x86)\HP\HPX Support,C:\Program Files (x86),2,35617637,33.97 MB,directory,manual_review
+C:\Program Files (x86)\Steam\clientui,C:\Program Files (x86),2,34261598,32.67 MB,directory,manual_review
+C:\Program Files\Common Files\Adobe,C:\Program Files,2,33082727,31.55 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server,C:\Program Files (x86),1,30720657,29.30 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\art,C:\Program Files,2,30649777,29.23 MB,directory,manual_review
+C:\Program Files (x86)\Common Files\Microsoft Shared,C:\Program Files (x86),2,29725504,28.35 MB,directory,manual_review
+C:\Program Files\PowerToys\KeyboardManagerEditor,C:\Program Files,2,27417912,26.15 MB,directory,manual_review
+C:\Program Files (x86)\Common Files\Adobe,C:\Program Files (x86),2,26264678,25.05 MB,directory,manual_review
+C:\Program Files (x86)\Steam\win64,C:\Program Files (x86),2,25318592,24.15 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\Windows Kits,C:\Program Files (x86),2,23292900,22.21 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\saves,C:\Program Files,2,22998049,21.93 MB,directory,manual_review
+C:\Program Files (x86)\Steam\userdata,C:\Program Files (x86),2,22546263,21.50 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server\170,C:\Program Files (x86),2,21449844,20.46 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\Windows,C:\Program Files (x86),2,20864737,19.90 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\extensions,C:\Program Files,2,20513603,19.56 MB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN\expressvpn-ui,C:\Program Files (x86),2,20085534,19.16 MB,directory,manual_review
+C:\Program Files\Wireshark\snmp,C:\Program Files,2,18862247,17.99 MB,directory,manual_review
+C:\Program Files\Notepad++,C:\Program Files,1,18675061,17.81 MB,directory,manual_review
+C:\Program Files (x86)\Steam\appcache,C:\Program Files (x86),2,18637620,17.77 MB,directory,manual_review
+C:\Program Files (x86)\PostgreSQL\Npgsql,C:\Program Files (x86),2,16750402,15.97 MB,directory,manual_review
+C:\Program Files (x86)\Rockstar Games\Social Club,C:\Program Files (x86),2,16712445,15.94 MB,directory,manual_review
+C:\Program Files (x86)\Rockstar Games,C:\Program Files (x86),1,16712445,15.94 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\sounds,C:\Program Files,2,16289426,15.53 MB,directory,manual_review
+C:\Program Files\Microsoft Update Health Tools,C:\Program Files,1,15588584,14.87 MB,directory,manual_review
+C:\Program Files\edb\mtk,C:\Program Files,2,15475745,14.76 MB,directory,manual_review
+C:\Program Files\Tesseract-OCR\tessdata,C:\Program Files,2,15109125,14.41 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\ClickOnce Bootstrapper,C:\Program Files (x86),2,14558003,13.88 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\Portable,C:\Program Files (x86),2,14531174,13.86 MB,directory,manual_review
+C:\Program Files\PowerToys\RunPlugins,C:\Program Files,2,14105403,13.45 MB,directory,manual_review
+C:\Program Files\HP\HP Privacy Settings,C:\Program Files,2,13875736,13.23 MB,directory,manual_review
+C:\Program Files (x86)\Steam\public,C:\Program Files (x86),2,13718144,13.08 MB,directory,manual_review
+C:\Program Files\Wireshark\Wireshark User's Guide,C:\Program Files,2,13687586,13.05 MB,directory,manual_review
+C:\Program Files\Microsoft Update Health Tools\Logs,C:\Program Files,2,13631488,13.00 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft.NET,C:\Program Files (x86),1,13604839,12.97 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation\NvTelemetry,C:\Program Files,2,13157322,12.55 MB,directory,manual_review
+C:\Program Files\PowerToys\Assets,C:\Program Files,2,13091857,12.49 MB,directory,manual_review
+C:\Program Files (x86)\Steam\steam,C:\Program Files (x86),2,13081354,12.48 MB,directory,manual_review
+C:\Program Files\nodejs\node_modules,C:\Program Files,2,12895695,12.30 MB,developer_cache,manual_review
+C:\Program Files\Wireshark\translations,C:\Program Files,2,12448678,11.87 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\plugins,C:\Program Files,2,11760128,11.22 MB,directory,manual_review
+C:\Program Files (x86)\Steam\logs,C:\Program Files (x86),2,11495583,10.96 MB,directory,manual_review
+C:\Program Files (x86)\InstallShield Installation Information\{6468C4A5-E47E-405F-B675-A70A70983EA6},C:\Program Files (x86),2,10977576,10.47 MB,directory,manual_review
+C:\Program Files (x86)\InstallShield Installation Information,C:\Program Files (x86),1,10977576,10.47 MB,directory,manual_review
+C:\Program Files\Common Files\System,C:\Program Files,2,10784139,10.28 MB,directory,manual_review
+C:\Program Files (x86)\Common Files\System,C:\Program Files (x86),2,10022283,9.56 MB,directory,manual_review
+C:\Program Files (x86)\HP\Shared,C:\Program Files (x86),2,9823080,9.37 MB,directory,manual_review
+C:\Program Files (x86)\Steam\controller_base,C:\Program Files (x86),2,9808333,9.35 MB,directory,manual_review
+C:\Program Files\Microsoft Office 15\ClientX64,C:\Program Files,2,9317120,8.89 MB,directory,manual_review
+C:\Program Files\Microsoft Office 15,C:\Program Files,1,9317120,8.89 MB,directory,manual_review
+C:\Program Files\CMake\share,C:\Program Files,2,9246073,8.82 MB,directory,manual_review
+C:\Program Files (x86)\Steam\graphics,C:\Program Files (x86),2,8977619,8.56 MB,directory,manual_review
+C:\Program Files\WinRAR,C:\Program Files,1,8778792,8.37 MB,directory,manual_review
+C:\Program Files (x86)\Google\Update,C:\Program Files (x86),2,8728216,8.32 MB,directory,manual_review
+C:\Program Files\WSL\lib,C:\Program Files,2,8624232,8.22 MB,directory,manual_review
+C:\Program Files (x86)\NVIDIA Corporation\NVIDIA App,C:\Program Files (x86),2,8598843,8.20 MB,directory,manual_review
+C:\Program Files (x86)\Steam\resource,C:\Program Files (x86),2,8550073,8.15 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft.NET\Primary Interop Assemblies,C:\Program Files (x86),2,8272120,7.89 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server\160,C:\Program Files (x86),2,8153444,7.78 MB,directory,manual_review
+C:\Program Files\Microsoft Office\PackageManifests,C:\Program Files,2,7660478,7.31 MB,directory,manual_review
+C:\Program Files\HP\OMEN Gaming Hub,C:\Program Files,2,6897248,6.58 MB,directory,manual_review
+C:\Program Files (x86)\Steam\tenfoot,C:\Program Files (x86),2,6775908,6.46 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\languages,C:\Program Files,2,6440079,6.14 MB,directory,manual_review
+C:\Program Files\Windows Photo Viewer,C:\Program Files,1,5886504,5.61 MB,directory,manual_review
+C:\Program Files\7-Zip,C:\Program Files,1,5835685,5.57 MB,directory,manual_review
+C:\Program Files (x86)\Windows Photo Viewer,C:\Program Files (x86),1,5539368,5.28 MB,directory,manual_review
+C:\Program Files (x86)\Windows Defender,C:\Program Files (x86),1,5448024,5.20 MB,directory,manual_review
+C:\Program Files\HP\HP System Event Utility,C:\Program Files,2,5408328,5.16 MB,directory,manual_review
+C:\Program Files (x86)\Microsoft.NET\ADOMD.NET,C:\Program Files (x86),2,5308784,5.06 MB,directory,manual_review
+C:\Program Files\Microsoft.NET\ADOMD.NET,C:\Program Files,2,5308768,5.06 MB,directory,manual_review
+C:\Program Files\Microsoft.NET,C:\Program Files,1,5308768,5.06 MB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\setup,C:\Program Files,2,5278868,5.03 MB,directory,manual_review
+C:\Program Files\Windows Media Player,C:\Program Files,1,5036681,4.80 MB,directory,manual_review
+C:\Program Files (x86)\MySQL\MySQL Installer for Windows,C:\Program Files (x86),2,4765817,4.55 MB,directory,manual_review
+C:\Program Files (x86)\MySQL,C:\Program Files (x86),1,4765817,4.55 MB,directory,manual_review
+C:\Program Files\Zotero\integration,C:\Program Files,2,4610901,4.40 MB,directory,manual_review
+C:\Program Files\dotnet\host,C:\Program Files,2,4461960,4.26 MB,directory,manual_review
+C:\Program Files (x86)\Epic Games\DirectXRedist,C:\Program Files (x86),2,4330433,4.13 MB,directory,manual_review
+C:\Program Files\CMake\man,C:\Program Files,2,4315023,4.12 MB,directory,manual_review
+C:\Program Files (x86)\Windows Kits\NETFXSDK,C:\Program Files (x86),2,4049131,3.86 MB,directory,manual_review
+C:\Program Files\WindowsPowerShell\Modules,C:\Program Files,2,3956904,3.77 MB,directory,manual_review
+C:\Program Files\WindowsPowerShell,C:\Program Files,1,3956904,3.77 MB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\win64,C:\Program Files,2,3786160,3.61 MB,directory,manual_review
+C:\Program Files (x86)\Panda Security\Panda Devices Agent,C:\Program Files (x86),2,3555240,3.39 MB,directory,manual_review
+C:\Program Files\Common Files\Oracle,C:\Program Files,2,3484128,3.32 MB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player,C:\Program Files (x86),1,3463269,3.30 MB,directory,manual_review
+C:\Program Files (x86)\WindowsPowerShell\Modules,C:\Program Files (x86),2,3440928,3.28 MB,directory,manual_review
+C:\Program Files (x86)\WindowsPowerShell,C:\Program Files (x86),1,3440928,3.28 MB,directory,manual_review
+C:\Program Files (x86)\NVIDIA Corporation\NvTelemetry,C:\Program Files (x86),2,3353312,3.20 MB,directory,manual_review
+C:\Program Files (x86)\Windows Kits\8.1,C:\Program Files (x86),2,3339832,3.19 MB,directory,manual_review
+C:\Program Files\Notepad++\themes,C:\Program Files,2,3259230,3.11 MB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\26.088.0510.0004,C:\Program Files,2,3144440,3.00 MB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\translations,C:\Program Files,2,3120871,2.98 MB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\90,C:\Program Files,2,3033519,2.89 MB,directory,manual_review
+C:\Program Files\Windows NT\TableTextService,C:\Program Files,2,3008856,2.87 MB,directory,manual_review
+C:\Program Files\Windows NT,C:\Program Files,1,3008856,2.87 MB,directory,manual_review
+C:\Program Files\NVIDIA Corporation\NvContainer,C:\Program Files,2,2961120,2.82 MB,directory,manual_review
+C:\Program Files (x86)\Windows NT\TableTextService,C:\Program Files (x86),2,2943832,2.81 MB,directory,manual_review
+C:\Program Files (x86)\Windows NT,C:\Program Files (x86),1,2943832,2.81 MB,directory,manual_review
+C:\Program Files (x86)\Steam\friends,C:\Program Files (x86),2,2859753,2.73 MB,directory,manual_review
+C:\Program Files\HP\HP Media Network,C:\Program Files,2,2791611,2.66 MB,directory,manual_review
+C:\Program Files\Wireshark\plugins,C:\Program Files,2,2623088,2.50 MB,directory,manual_review
+C:\Program Files\Internet Explorer,C:\Program Files,1,2588354,2.47 MB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\win32,C:\Program Files,2,2584992,2.47 MB,directory,manual_review
+C:\Program Files\Notepad++\autoCompletion,C:\Program Files,2,2295804,2.19 MB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\autorun,C:\Program Files,2,1923399,1.83 MB,directory,manual_review
+C:\Program Files\Npcap,C:\Program Files,1,1904555,1.82 MB,directory,manual_review
+C:\Program Files (x86)\Internet Explorer,C:\Program Files (x86),1,1804047,1.72 MB,directory,manual_review
+C:\Program Files\Notepad++\updater,C:\Program Files,2,1782383,1.70 MB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\Client SDK,C:\Program Files,2,1591997,1.52 MB,directory,manual_review
+C:\Program Files\dotnet\sdk-manifests,C:\Program Files,2,1578839,1.51 MB,directory,manual_review
+C:\Program Files\PowerToys\Tools,C:\Program Files,2,1566000,1.49 MB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\imageformats,C:\Program Files,2,1538928,1.47 MB,directory,manual_review
+C:\Program Files (x86)\MSBuild,C:\Program Files (x86),1,1504869,1.44 MB,directory,manual_review
+C:\Program Files (x86)\MSBuild\15.0,C:\Program Files (x86),2,1479112,1.41 MB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\platforms,C:\Program Files,2,1477104,1.41 MB,directory,manual_review
+C:\Program Files\Zotero\fonts,C:\Program Files,2,1474284,1.41 MB,directory,manual_review
+C:\Program Files\BCUninstaller\runtimes,C:\Program Files,2,1454824,1.39 MB,directory,manual_review
+C:\Program Files\Git\etc,C:\Program Files,2,1447601,1.38 MB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\StandaloneUpdater,C:\Program Files,2,1312548,1.25 MB,directory,manual_review
+C:\Program Files\HP\HpHwDiag,C:\Program Files,2,1227071,1.17 MB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\include,C:\Program Files,2,1186186,1.13 MB,directory,manual_review
+C:\Program Files (x86)\Online Services,C:\Program Files (x86),1,1172909,1.12 MB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\templates,C:\Program Files,2,1151473,1.10 MB,directory,manual_review
+C:\Program Files\Wireshark\radius,C:\Program Files,2,1129622,1.08 MB,directory,manual_review
+C:\Program Files (x86)\Online Services\Amazon,C:\Program Files (x86),2,1051439,1.00 MB,directory,manual_review
+C:\Program Files\Wireshark\platforms,C:\Program Files,2,999592,976.16 KB,directory,manual_review
+C:\Program Files\7-Zip\Lang,C:\Program Files,2,956931,934.50 KB,directory,manual_review
+C:\Program Files\PowerToys\KeyboardManagerEngine,C:\Program Files,2,942120,920.04 KB,directory,manual_review
+C:\Program Files\Wireshark\multimedia,C:\Program Files,2,931656,909.82 KB,directory,manual_review
+C:\Program Files\Cisco Packet Tracer 8.2.2\backgrounds,C:\Program Files,2,874583,854.08 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\extensions,C:\Program Files,2,853524,833.52 KB,directory,manual_review
+C:\Program Files\Wireshark\diameter,C:\Program Files,2,798945,780.22 KB,directory,manual_review
+C:\Program Files\Windows Defender\Offline,C:\Program Files,2,778376,760.13 KB,directory,manual_review
+C:\Program Files\HP\Shared,C:\Program Files,2,758191,740.42 KB,directory,manual_review
+C:\Program Files\Notepad++\plugins,C:\Program Files,2,733688,716.49 KB,directory,manual_review
+C:\Program Files\Wireshark\imageformats,C:\Program Files,2,718496,701.66 KB,directory,manual_review
+C:\Program Files\Windows Mail,C:\Program Files,1,716800,700.00 KB,directory,manual_review
+C:\Program Files\Wireshark\tls,C:\Program Files,2,688104,671.98 KB,directory,manual_review
+C:\Program Files (x86)\Windows Mail,C:\Program Files (x86),1,626688,612.00 KB,directory,manual_review
+C:\Program Files\Wireshark\tpncp,C:\Program Files,2,582227,568.58 KB,directory,manual_review
+C:\Program Files\Git\cmd,C:\Program Files,2,539303,526.66 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\languages,C:\Program Files,2,528052,515.68 KB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server\Client SDK,C:\Program Files (x86),2,519463,507.29 KB,directory,manual_review
+C:\Program Files\HPCommRecovery,C:\Program Files,1,511727,499.73 KB,directory,manual_review
+C:\Program Files\Zotero\uninstall,C:\Program Files,2,508026,496.12 KB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN\tap,C:\Program Files (x86),2,497520,485.86 KB,directory,manual_review
+C:\Program Files\Notepad++\contextMenu,C:\Program Files,2,441884,431.53 KB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN\bootstrap,C:\Program Files (x86),2,439664,429.36 KB,directory,manual_review
+C:\Program Files\Application Verifier,C:\Program Files,1,392824,383.62 KB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server\90,C:\Program Files (x86),2,364370,355.83 KB,directory,manual_review
+C:\Program Files\Wireshark\extcap,C:\Program Files,2,359080,350.66 KB,directory,manual_review
+C:\Program Files\Microsoft,C:\Program Files,1,354839,346.52 KB,directory,manual_review
+C:\Program Files (x86)\Microsoft SDKs\ClickOnce,C:\Program Files (x86),2,330944,323.19 KB,directory,manual_review
+C:\Program Files (x86)\Application Verifier,C:\Program Files (x86),1,319064,311.59 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\plugins,C:\Program Files,2,313328,305.98 KB,directory,manual_review
+C:\Program Files (x86)\dotnet\host,C:\Program Files (x86),2,306984,299.79 KB,directory,manual_review
+C:\Program Files\Microsoft\AzureAttestService,C:\Program Files,2,260080,253.98 KB,directory,manual_review
+C:\Program Files\Windows Defender\tr-TR,C:\Program Files,2,254680,248.71 KB,directory,manual_review
+C:\Program Files\Windows Defender\en-US,C:\Program Files,2,249048,243.21 KB,directory,manual_review
+C:\Program Files\WSL\de-DE,C:\Program Files,2,233544,228.07 KB,directory,manual_review
+C:\Program Files (x86)\Microsoft SQL Server\80,C:\Program Files (x86),2,233536,228.06 KB,directory,manual_review
+C:\Program Files\WSL\fr-FR,C:\Program Files,2,229448,224.07 KB,directory,manual_review
+C:\Program Files\Wireshark\styles,C:\Program Files,2,223400,218.16 KB,directory,manual_review
+C:\Program Files\BCUninstaller\Resources,C:\Program Files,2,221662,216.47 KB,directory,manual_review
+C:\Program Files\WSL\nl-NL,C:\Program Files,2,219712,214.56 KB,directory,manual_review
+C:\Program Files\WSL\es-ES,C:\Program Files,2,217152,212.06 KB,directory,manual_review
+C:\Program Files\Microsoft SQL Server\80,C:\Program Files,2,217120,212.03 KB,directory,manual_review
+C:\Program Files\WSL\pl-PL,C:\Program Files,2,215640,210.59 KB,directory,manual_review
+C:\Program Files\WSL\pt-BR,C:\Program Files,2,211544,206.59 KB,directory,manual_review
+C:\Program Files\WSL\it-IT,C:\Program Files,2,210496,205.56 KB,directory,manual_review
+C:\Program Files\WSL\ru-RU,C:\Program Files,2,209472,204.56 KB,directory,manual_review
+C:\Program Files\WSL\da-DK,C:\Program Files,2,208968,204.07 KB,directory,manual_review
+C:\Program Files\Notepad++\localization,C:\Program Files,2,207404,202.54 KB,directory,manual_review
+C:\Program Files\Windows Defender\en-GB,C:\Program Files,2,205528,200.71 KB,directory,manual_review
+C:\Program Files\PowerToys\uk-UA,C:\Program Files,2,204160,199.38 KB,directory,manual_review
+C:\Program Files\PowerToys\ru-RU,C:\Program Files,2,203920,199.14 KB,directory,manual_review
+C:\Program Files\PowerToys\fa-IR,C:\Program Files,2,202880,198.12 KB,directory,manual_review
+C:\Program Files\PowerToys\ar-SA,C:\Program Files,2,201208,196.49 KB,directory,manual_review
+C:\Program Files\PowerToys\he-IL,C:\Program Files,2,200152,195.46 KB,directory,manual_review
+C:\Program Files\PowerToys\ja-JP,C:\Program Files,2,199728,195.05 KB,directory,manual_review
+C:\Program Files\PowerToys\de-DE,C:\Program Files,2,199536,194.86 KB,directory,manual_review
+C:\Program Files\PowerToys\fr-FR,C:\Program Files,2,199224,194.55 KB,directory,manual_review
+C:\Program Files\PowerToys\hu-HU,C:\Program Files,2,199136,194.47 KB,directory,manual_review
+C:\Program Files\PowerToys\es-ES,C:\Program Files,2,198976,194.31 KB,directory,manual_review
+C:\Program Files\PowerToys\ko-KR,C:\Program Files,2,198840,194.18 KB,directory,manual_review
+C:\Program Files\PowerToys\nl-NL,C:\Program Files,2,198824,194.16 KB,directory,manual_review
+C:\Program Files\WSL\sv-SE,C:\Program Files,2,198784,194.12 KB,directory,manual_review
+C:\Program Files\PowerToys\tr-TR,C:\Program Files,2,198608,193.95 KB,directory,manual_review
+C:\Program Files\PowerToys\cs-CZ,C:\Program Files,2,198576,193.92 KB,directory,manual_review
+C:\Program Files\PowerToys\pt-BR,C:\Program Files,2,198496,193.84 KB,directory,manual_review
+C:\Program Files\PowerToys\pl-PL,C:\Program Files,2,198312,193.66 KB,directory,manual_review
+C:\Program Files\PowerToys\sv-SE,C:\Program Files,2,198272,193.62 KB,directory,manual_review
+C:\Program Files\PowerToys\pt-PT,C:\Program Files,2,198240,193.59 KB,directory,manual_review
+C:\Program Files\WSL\nb-NO,C:\Program Files,2,198208,193.56 KB,directory,manual_review
+C:\Program Files\PowerToys\it-IT,C:\Program Files,2,198080,193.44 KB,directory,manual_review
+C:\Program Files\PowerToys\zh-TW,C:\Program Files,2,196304,191.70 KB,directory,manual_review
+C:\Program Files\WSL\en-US,C:\Program Files,2,196176,191.58 KB,directory,manual_review
+C:\Program Files\PowerToys\zh-CN,C:\Program Files,2,196056,191.46 KB,directory,manual_review
+C:\Program Files\WSL\en-gb,C:\Program Files,2,195696,191.11 KB,directory,manual_review
+C:\Program Files\WSL\fi-FI,C:\Program Files,2,193600,189.06 KB,directory,manual_review
+C:\Program Files\BCUninstaller\ru,C:\Program Files,2,180224,176.00 KB,directory,manual_review
+C:\Program Files (x86)\ExpressVPN\wintun,C:\Program Files (x86),2,177120,172.97 KB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\LogoImages,C:\Program Files,2,169459,165.49 KB,directory,manual_review
+C:\Program Files\BCUninstaller\ja,C:\Program Files,2,168960,165.00 KB,directory,manual_review
+C:\Program Files\HP\Consent Manager,C:\Program Files,2,164904,161.04 KB,directory,manual_review
+C:\Program Files\BCUninstaller\fr,C:\Program Files,2,159232,155.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\es,C:\Program Files,2,157184,153.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\vi,C:\Program Files,2,156672,153.00 KB,directory,manual_review
+C:\Program Files\BCUninstaller\it,C:\Program Files,2,156160,152.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\de,C:\Program Files,2,155648,152.00 KB,directory,manual_review
+C:\Program Files\BCUninstaller\tr,C:\Program Files,2,155136,151.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\ar,C:\Program Files,2,153088,149.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\pl,C:\Program Files,2,152576,149.00 KB,directory,manual_review
+C:\Program Files\BCUninstaller\sv,C:\Program Files,2,151552,148.00 KB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\UpdaterService,C:\Program Files,2,147250,143.80 KB,directory,manual_review
+C:\Program Files\BCUninstaller\pt-BR,C:\Program Files,2,145920,142.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\nl,C:\Program Files,2,144896,141.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\zh-Hant,C:\Program Files,2,144384,141.00 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\styles,C:\Program Files,2,144368,140.98 KB,directory,manual_review
+C:\Program Files\Notepad++\functionList,C:\Program Files,2,142694,139.35 KB,directory,manual_review
+C:\Program Files\Git\bin,C:\Program Files,2,141960,138.63 KB,directory,manual_review
+C:\Program Files\BCUninstaller\sl,C:\Program Files,2,140288,137.00 KB,directory,manual_review
+C:\Program Files\BCUninstaller\hu,C:\Program Files,2,138752,135.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\cs,C:\Program Files,2,137216,134.00 KB,directory,manual_review
+C:\Program Files\BCUninstaller\pt,C:\Program Files,2,135680,132.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\zh-Hans,C:\Program Files,2,134656,131.50 KB,directory,manual_review
+C:\Program Files\WSL\ja-JP,C:\Program Files,2,133720,130.59 KB,directory,manual_review
+C:\Program Files (x86)\Steam\dumps,C:\Program Files (x86),2,128181,125.18 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\clibs64,C:\Program Files,2,128000,125.00 KB,directory,manual_review
+C:\Program Files\wkhtmltopdf\lib,C:\Program Files,2,127212,124.23 KB,directory,manual_review
+C:\Program Files (x86)\Online Services\LastPass,C:\Program Files (x86),2,117168,114.42 KB,directory,manual_review
+C:\Program Files\Windows Media Player\tr-TR,C:\Program Files,2,113152,110.50 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\clibs32,C:\Program Files,2,109568,107.00 KB,directory,manual_review
+C:\Program Files\Windows Media Player\en-US,C:\Program Files,2,109056,106.50 KB,directory,manual_review
+C:\Program Files\Zotero\gmp-clearkey,C:\Program Files,2,107278,104.76 KB,directory,manual_review
+C:\Program Files\HP\SystemOptimizerResult,C:\Program Files,2,106127,103.64 KB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\Update,C:\Program Files,2,105647,103.17 KB,directory,manual_review
+C:\Program Files\Windows Media Player\en-GB,C:\Program Files,2,105472,103.00 KB,directory,manual_review
+C:\Program Files\Wireshark\generic,C:\Program Files,2,104616,102.16 KB,directory,manual_review
+C:\Program Files\WSL\zh-TW,C:\Program Files,2,101440,99.06 KB,directory,manual_review
+C:\Program Files\WSL\zh-CN,C:\Program Files,2,99928,97.59 KB,directory,manual_review
+C:\Program Files\Wireshark\wimaxasncp,C:\Program Files,2,95243,93.01 KB,directory,manual_review
+C:\Program Files\Microsoft\OneDrive,C:\Program Files,2,94759,92.54 KB,directory,manual_review
+C:\Program Files\Microsoft OneDrive\FileSyncHelper,C:\Program Files,2,84868,82.88 KB,directory,manual_review
+C:\Program Files (x86)\Steam\depotcache,C:\Program Files (x86),2,78426,76.59 KB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\tr-TR,C:\Program Files (x86),2,77312,75.50 KB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\en-US,C:\Program Files (x86),2,75264,73.50 KB,directory,manual_review
+C:\Program Files\Wireshark\iconengines,C:\Program Files,2,73384,71.66 KB,directory,manual_review
+C:\Program Files\Wireshark\networkinformation,C:\Program Files,2,72872,71.16 KB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\en-GB,C:\Program Files (x86),2,71680,70.00 KB,directory,manual_review
+C:\Program Files\Windows Media Player\Skins,C:\Program Files,2,66030,64.48 KB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\Skins,C:\Program Files (x86),2,66030,64.48 KB,directory,manual_review
+C:\Program Files\Windows Media Player\Network Sharing,C:\Program Files,2,58916,57.54 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\licenses,C:\Program Files,2,58529,57.16 KB,directory,manual_review
+C:\Program Files (x86)\Steam\music,C:\Program Files (x86),2,57777,56.42 KB,directory,manual_review
+C:\Program Files (x86)\Windows Defender\tr-TR,C:\Program Files (x86),2,57344,56.00 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\printsupport,C:\Program Files,2,55280,53.98 KB,directory,manual_review
+C:\Program Files\Windows Media Player\Media Renderer,C:\Program Files,2,53879,52.62 KB,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\Media Renderer,C:\Program Files (x86),2,53879,52.62 KB,directory,manual_review
+C:\Program Files\QGIS 3.40.8,C:\Program Files,1,53421,52.17 KB,directory,manual_review
+C:\Program Files (x86)\Windows Defender\en-GB,C:\Program Files (x86),2,53248,52.00 KB,directory,manual_review
+C:\Program Files (x86)\Windows Defender\en-US,C:\Program Files (x86),2,53248,52.00 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\bearer,C:\Program Files,2,53232,51.98 KB,directory,manual_review
+C:\Program Files\QGIS 3.40.8\var,C:\Program Files,2,53029,51.79 KB,directory,manual_review
+C:\Program Files (x86)\Steam\config,C:\Program Files (x86),2,49057,47.91 KB,directory,manual_review
+C:\Program Files\PostgreSQL\13,C:\Program Files,2,48803,47.66 KB,directory,manual_review
+C:\Program Files\Windows Photo Viewer\tr-TR,C:\Program Files,2,46080,45.00 KB,directory,manual_review
+C:\Program Files (x86)\Windows Photo Viewer\tr-TR,C:\Program Files (x86),2,46080,45.00 KB,directory,manual_review
+C:\Program Files\Windows Photo Viewer\en-GB,C:\Program Files,2,44032,43.00 KB,directory,manual_review
+C:\Program Files\Windows Photo Viewer\en-US,C:\Program Files,2,44032,43.00 KB,directory,manual_review
+C:\Program Files (x86)\Windows Photo Viewer\en-GB,C:\Program Files (x86),2,44032,43.00 KB,directory,manual_review
+C:\Program Files (x86)\Windows Photo Viewer\en-US,C:\Program Files (x86),2,44032,43.00 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\tcclib,C:\Program Files,2,43727,42.70 KB,directory,manual_review
+C:\Program Files\DB Browser for SQLite\iconengines,C:\Program Files,2,41968,40.98 KB,directory,manual_review
+C:\Program Files\Common Files\DESIGNER,C:\Program Files,2,29528,28.84 KB,directory,manual_review
+C:\Program Files\Microsoft Office\Updates,C:\Program Files,2,26310,25.69 KB,directory,manual_review
+C:\Program Files\Wireshark\dtds,C:\Program Files,2,25785,25.18 KB,directory,manual_review
+C:\Program Files\MSBuild\Microsoft,C:\Program Files,2,25757,25.15 KB,directory,manual_review
+C:\Program Files\MSBuild,C:\Program Files,1,25757,25.15 KB,directory,manual_review
+C:\Program Files (x86)\MSBuild\Microsoft,C:\Program Files (x86),2,25757,25.15 KB,directory,manual_review
+C:\Program Files (x86)\Microsoft.NET\RedistList,C:\Program Files (x86),2,23935,23.37 KB,directory,manual_review
+C:\Program Files\Tesseract-OCR\doc,C:\Program Files,2,20287,19.81 KB,directory,manual_review
+C:\Program Files (x86)\Common Files\Designer,C:\Program Files (x86),2,19512,19.05 KB,directory,manual_review
+C:\Program Files (x86)\HP\HP Software Framework,C:\Program Files (x86),2,16936,16.54 KB,directory,manual_review
+C:\Program Files\Cheat Engine 7.5\badassets,C:\Program Files,2,13481,13.17 KB,directory,manual_review
+C:\Program Files\Wireshark\profiles,C:\Program Files,2,11147,10.89 KB,directory,manual_review
+C:\Program Files\wkhtmltopdf\include,C:\Program Files,2,10941,10.68 KB,directory,manual_review
+C:\Program Files\Internet Explorer\en-US,C:\Program Files,2,10752,10.50 KB,directory,manual_review
+C:\Program Files (x86)\Internet Explorer\en-US,C:\Program Files (x86),2,10752,10.50 KB,directory,manual_review
+C:\Program Files (x86)\Mozilla Maintenance Service\UpdateLogs,C:\Program Files (x86),2,10499,10.25 KB,directory,manual_review
+C:\Program Files (x86)\Mozilla Maintenance Service,C:\Program Files (x86),1,10499,10.25 KB,directory,manual_review
+C:\Program Files\BCUninstaller\zh-CN,C:\Program Files,2,9728,9.50 KB,directory,manual_review
+C:\Program Files\Internet Explorer\en-GB,C:\Program Files,2,8704,8.50 KB,directory,manual_review
+C:\Program Files\Internet Explorer\tr-TR,C:\Program Files,2,8704,8.50 KB,directory,manual_review
+C:\Program Files (x86)\Internet Explorer\en-GB,C:\Program Files (x86),2,8704,8.50 KB,directory,manual_review
+C:\Program Files (x86)\Internet Explorer\tr-TR,C:\Program Files (x86),2,8704,8.50 KB,directory,manual_review
+C:\Program Files\Wireshark\protobuf,C:\Program Files,2,7965,7.78 KB,directory,manual_review
+C:\Program Files\dotnet\swidtag,C:\Program Files,2,5722,5.59 KB,directory,manual_review
+C:\Program Files\BCUninstaller\fi-FI,C:\Program Files,2,5632,5.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\hr,C:\Program Files,2,5632,5.50 KB,directory,manual_review
+C:\Program Files\BCUninstaller\ko-KR,C:\Program Files,2,5632,5.50 KB,directory,manual_review
+C:\Program Files\Internet Explorer\images,C:\Program Files,2,5430,5.30 KB,directory,manual_review
+C:\Program Files\Microsoft Visual Studio 10.0\Common7,C:\Program Files,2,4849,4.74 KB,directory,manual_review
+C:\Program Files\Microsoft Visual Studio 10.0,C:\Program Files,1,4849,4.74 KB,directory,manual_review
+C:\Program Files\Online Services,C:\Program Files,1,4302,4.20 KB,directory,manual_review
+C:\Program Files\Online Services\Bing_icon,C:\Program Files,2,4222,4.12 KB,directory,manual_review
+C:\Program Files (x86)\Online Services\Bing_icon,C:\Program Files (x86),2,4222,4.12 KB,directory,manual_review
+C:\Program Files (x86)\Common Files\Microsoft,C:\Program Files (x86),2,2223,2.17 KB,directory,manual_review
+C:\Program Files (x86)\NuGet\Config,C:\Program Files (x86),2,680,680 B,directory,manual_review
+C:\Program Files (x86)\NuGet,C:\Program Files (x86),1,680,680 B,directory,manual_review
+C:\Program Files\Internet Explorer\SIGNUP,C:\Program Files,2,452,452 B,directory,manual_review
+C:\Program Files (x86)\Internet Explorer\SIGNUP,C:\Program Files (x86),2,452,452 B,directory,manual_review
+C:\Program Files\QGIS 3.40.8\etc,C:\Program Files,2,287,287 B,directory,manual_review
+C:\Program Files\Git\dev,C:\Program Files,2,172,172 B,directory,manual_review
+C:\Program Files\QGIS 3.40.8\bin,C:\Program Files,2,105,105 B,directory,manual_review
+C:\Program Files\Adobe,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\Common Files\Microsoft,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\datronicsoft\spacedeskTemporarySetupFiles,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\datronicsoft,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\dotnet\metadata,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\draw.io,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\Git\tmp,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\GNU Octave,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\Microsoft\EdgeUpdater,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\ModifiableWindowsApps,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\NVIDIA Corporation\NVIDIA GeForce Experience,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\NVIDIA Corporation\ShadowPlay,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\NVIDIA Corporation\vGPU Licensing,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\PackageManagement\ProviderAssemblies,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\PackageManagement,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\PostgreSQL\16,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Uninstall Information,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\Windows Defender\Platform,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows Media Player\Icons,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows Media Player\Visualizations,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows NT\Accessories,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows Sidebar\Gadgets,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows Sidebar\Shared Gadgets,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\Windows Sidebar,C:\Program Files,1,0,0 B,directory,manual_review
+C:\Program Files\WindowsPowerShell\Configuration,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files\WindowsPowerShell\Scripts,C:\Program Files,2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Adobe,C:\Program Files (x86),1,0,0 B,directory,manual_review
+C:\Program Files (x86)\BraveSoftware\Temp,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Common Files\VMware,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Embarcadero,C:\Program Files (x86),1,0,0 B,directory,manual_review
+C:\Program Files (x86)\Internet Explorer\images,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Microsoft\Temp,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Steam\siteserverui,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Steam\steamui-public,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\VMware\VMware Workstation,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\VMware,C:\Program Files (x86),1,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\Icons,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\Network Sharing,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Media Player\Visualizations,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows NT\Accessories,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Sidebar\Gadgets,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Sidebar\Shared Gadgets,C:\Program Files (x86),2,0,0 B,directory,manual_review
+C:\Program Files (x86)\Windows Sidebar,C:\Program Files (x86),1,0,0 B,directory,manual_review
+C:\Program Files (x86)\WindowsPowerShell\Configuration,C:\Program Files (x86),2,0,0 B,directory,manual_review

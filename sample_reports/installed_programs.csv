@@ -1,0 +1,669 @@
+﻿name,version,publisher,install_location,uninstall_string,source
+7-Zip 24.08 (x64),24.08,Igor Pavlov,C:\Program Files\7-Zip\,"""C:\Program Files\7-Zip\Uninstall.exe"" /S",registry
+Android Studio,2025.1,Google LLC,,C:\Program Files\Android\Android Studio\uninstall.exe,registry
+Application Verifier x64 External Package (DesktopEditions),10.1.22621.5040,Microsoft,,MsiExec.exe /I{ACB8119F-54A6-C93C-CA2F-3A1476EE8869},registry
+Application Verifier x64 External Package (DesktopEditions),10.1.26100.7175,Microsoft,,MsiExec.exe /I{C0B0A1D9-9045-54FE-86F6-1B0F836E665E},registry
+Application Verifier x64 External Package (OnecoreUAP),10.1.22621.5040,Microsoft,,MsiExec.exe /I{C53ECC06-72B1-FEBF-D241-038A4BC83E57},registry
+Application Verifier x64 External Package (OnecoreUAP),10.1.26100.7175,Microsoft,,MsiExec.exe /I{674C8368-9677-55A8-FAD9-A86A3073E60D},registry
+BCUninstaller 5.9.0.0,5.9.0.0,Marcin Szeniak,C:\Program Files\BCUninstaller\,"""C:\Program Files\BCUninstaller\unins000.exe"" /SILENT",registry
+Blender,4.4.3,Blender Foundation,C:\Program Files\Blender Foundation\Blender 4.4\,MsiExec.exe /X{18B187C8-0D7C-4A4F-AA2B-67B10442BC1E},registry
+Brave,149.1.91.175,Brave Software Inc,C:\Program Files\BraveSoftware\Brave-Browser\Application,"""C:\Program Files\BraveSoftware\Brave-Browser\Application\149.1.91.175\Installer\setup.exe"" --uninstall --system-level",registry
+Browser for SQL Server 2025,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /X{DD36BE85-7BAC-4FEA-876E-060BD7936895},registry
+Cheat Engine 7.5,,Cheat Engine,C:\Program Files\Cheat Engine 7.5\,"""C:\Program Files\Cheat Engine 7.5\unins000.exe"" /SILENT",registry
+Cisco Packet Tracer 8.2.2 64Bit,8.2.2.400,"Cisco Systems, Inc.",C:\Program Files\Cisco Packet Tracer 8.2.2\,"""C:\Program Files\Cisco Packet Tracer 8.2.2\unins000.exe"" /SILENT",registry
+ClickOnce Bootstrapper Package for Microsoft .NET Framework,4.8.09256,Microsoft Corporation,,MsiExec.exe /X{BDF8C840-5B9A-4D9B-9BCA-CE4163973563},registry
+CMake,4.0.3,Kitware,C:\Program Files\CMake\,MsiExec.exe /X{9E6907CB-0F65-4666-BD5A-75012DE9B26D},registry
+Copilot,149.0.4022.66,Microsoft Corporation,C:\Program Files (x86)\Microsoft\Copilot\Application,"""C:\Program Files (x86)\Microsoft\Copilot\Application\149.0.4022.66\Installer\copilot_setup.exe"" --uninstall --mscopilot --channel=stable --system-level --verbose-logging",registry
+DB Browser for SQLite,3.13.1,DB Browser for SQLite Team,C:\Program Files\DB Browser for SQLite\,MsiExec.exe /I{541AE182-7C1D-426C-8155-4867303B75A4},registry
+DiagnosticsHub_CollectionService,18.0.36317,Microsoft Corporation,,MsiExec.exe /I{5B46695A-06E3-47AD-BD0B-7C0A7192FF79},registry
+Docker Desktop,4.54.0,Docker Inc.,C:\Program Files\Docker\Docker,"""C:\Program Files\Docker\Docker\Docker Desktop Installer.exe"" ""uninstall""",registry
+Entity Framework 6.5.0 Tools for Visual Studio 2022,6.5.0.0,Microsoft Corporation,,MsiExec.exe /X{24B966F3-162C-429F-A075-9B11D89AE721},registry
+Epic Games Launcher,1.3.82.0,"Epic Games, Inc.",C:\Program Files (x86)\Epic Games\,MsiExec.exe /X{5D289F38-829E-4ED1-B34E-FF4A50917570},registry
+Epic Online Services,4.3.1,"Epic Games, Inc.",,MsiExec.exe /X{6300A8E0-851B-4638-ADBB-1385DCF1248D},registry
+ExpressVPN,10.29.0.16,ExpressVPN,,MsiExec.exe /X{E5B9C3E5-889C-4F22-A959-F4B8779D7841},registry
+GDR 1050 for SQL Server 2025 (KB5073177) (64-bit),17.0.1050.2,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\170\Setup Bootstrap\Update Cache\KB5073177\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1105 for SQL Server 2025 (KB5077468) (64-bit),17.0.1105.2,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\170\Setup Bootstrap\Update Cache\KB5077468\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1110 for SQL Server 2025 (KB5084814) (64-bit),17.0.1110.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\170\Setup Bootstrap\Update Cache\KB5084814\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1115 for SQL Server 2025 (KB5091223) (64-bit),17.0.1115.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\170\Setup Bootstrap\Update Cache\KB5091223\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1121 for SQL Server 2022 (KB5040936) (64-bit),16.0.1121.4,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5040936\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1125 for SQL Server 2022 (KB5042211) (64-bit),16.0.1125.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5042211\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1130 for SQL Server 2022 (KB5046057) (64-bit),16.0.1130.5,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5046057\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1135 for SQL Server 2022 (KB5046861) (64-bit),16.0.1135.2,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5046861\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1140 for SQL Server 2022 (KB5058712) (64-bit),16.0.1140.6,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5058712\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1145 for SQL Server 2022 (KB5063756) (64-bit),16.0.1145.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5063756\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1150 for SQL Server 2022 (KB5065221) (64-bit),16.0.1150.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5065221\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1160 for SQL Server 2022 (KB5068407) (64-bit),16.0.1160.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5068407\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1165 for SQL Server 2022 (KB5073031) (64-bit),16.0.1165.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5073031\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1170 for SQL Server 2022 (KB5077465) (64-bit),16.0.1170.5,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5077465\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1175 for SQL Server 2022 (KB5084815) (64-bit),16.0.1175.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5084815\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GDR 1180 for SQL Server 2022 (KB5091158) (64-bit),16.0.1180.1,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Update Cache\KB5091158\GDR\setup.exe"" /Action=RemovePatch /AllInstances",registry
+GeoGuessr Steam Edition,,GeoGuessr,C:\Program Files (x86)\Steam\steamapps\common\GeoGuessr Duels,"""C:\Program Files (x86)\Steam\steam.exe"" steam://uninstall/3478870",registry
+Git,2.46.2,The Git Development Community,C:\Program Files\Git\,"""C:\Program Files\Git\unins000.exe"" /SILENT",registry
+Google Chrome,149.0.7827.115,Google LLC,C:\Program Files\Google\Chrome\Application,"""C:\Program Files\Google\Chrome\Application\149.0.7827.115\Installer\setup.exe"" --uninstall --channel=stable --system-level --verbose-logging",registry
+HP Connection Optimizer,2.0.20.0,HP Inc,C:\Program Files (x86)\HP Inc\HP Connection Optimizer,"""C:\Program Files (x86)\InstallShield Installation Information\{6468C4A5-E47E-405F-B675-A70A70983EA6}\setup.exe"" -runfromtemp -l0x041f -removeonly",registry
+HP Documentation,1.0.0.1,HP Inc.,,"CMD /C ""C:\Program Files\HP\Documentation\Doc_Uninstall.cmd""",registry
+HP One Agent,1.1.0.43452,HP Inc.,,"""C:\ProgramData\Package Cache\{a627b9e0-7cf0-4264-a532-0a44e949e6f5}\HPOneAgent.exe"" /uninstall /quiet",registry
+HP One Agent,1.1.0.47916,HP Inc.,,"""C:\ProgramData\Package Cache\{b15d06b5-b210-4ce1-93a2-4ff6a0f041ef}\HPOneAgent.exe"" /uninstall /quiet",registry
+HP One Agent,1.1.0.48566,HP Inc.,,"""C:\ProgramData\Package Cache\{E2FEEA09-F2FE-4CFB-A024-82B39F234429}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.0.58460,HP Inc.,,"""C:\ProgramData\Package Cache\{28510657-A7F6-4942-AD21-C79028388777}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.683.2629,HP Inc.,,"""C:\ProgramData\Package Cache\{31B16C04-055C-4681-8ED6-B7EDCDF600CE}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.716.6012,HP Inc.,,"""C:\ProgramData\Package Cache\{99F462D8-2F12-4D5C-B2D3-563B9942D929}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.789.5870,HP Inc.,,"""C:\ProgramData\Package Cache\{8C28E089-8D7A-4870-AB19-D9E6AC57E985}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.901.7762,HP Inc.,,"""C:\ProgramData\Package Cache\{20A9EF5E-995B-4CA0-B028-79FBDCD99773}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.1.973.9172,HP Inc.,,"""C:\ProgramData\Package Cache\{7CF09040-C14A-4FAA-B61A-1A7F2BDE3719}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.2.007.1708,HP Inc.,,"""C:\ProgramData\Package Cache\{D3913CAA-0A30-494D-AE06-F79A68997FAB}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.2.055.3578,HP Inc.,,"""C:\ProgramData\Package Cache\{DD84A52B-8D5B-484F-82D4-5AEA657B6A21}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP One Agent,1.3.214.7339,HP Inc.,C:\Program Files\HP\HP One Agent\,"""C:\ProgramData\Package Cache\{54E95B92-D59B-4461-9FD4-863FE612A796}\HPOneAgent.exe"" /burn.clean.room /uninstall /quiet",registry
+HP PC Hardware Diagnostics UEFI,10.6.0.0,HP,C:\Windows\HP\,,registry
+HP Software Framework,7.1.15.1,HP,C:\Program Files (x86)\HP\HP Software Framework\,MsiExec.exe /X{71E18A14-1BDB-4B58-A67F-1BCDA12462FD},registry
+icecap_collection_neutral,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{BCC96BA3-E53C-452D-9265-16C7B0D86F89},registry
+icecap_collection_x64,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{6DE9FE72-8A86-45DE-A689-049D43CBBF0B},registry
+icecap_collectionresources,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{3580AF88-6703-4677-8B03-FDB2610D6DD1},registry
+icecap_collectionresourcesx64,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{F0EBE22B-83B1-4B73-A339-3AADD3A0D182},registry
+IntelliJ IDEA Community Edition 2023.1.4,231.9225.16,JetBrains s.r.o.,C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.1.4,C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2023.1.4\bin\Uninstall.exe,registry
+IntelliTraceProfilerProxy,15.0.21225.01,Microsoft Corporation,,MsiExec.exe /I{F8B9E8C8-61E8-4E9E-879D-F3F498AD0230},registry
+Java(TM) SE Development Kit 20.0.2 (64-bit),20.0.2.0,Oracle Corporation,C:\Program Files\Java\jdk-20\,MsiExec.exe /X{D2D0311F-1C55-57CC-95CC-F973FA7660D4},registry
+Kits Configuration Installer,10.1.22621.5040,Microsoft,,MsiExec.exe /I{339AB223-E0F8-60D5-1595-15431519EB74},registry
+Kurumlar için Microsoft 365 Uygulamaları - tr-tr,16.0.20026.20168,Microsoft Corporation,C:\Program Files\Microsoft Office,"""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" scenario=install scenariosubtype=ARP sourcetype=None productstoremove=O365ProPlusRetail.16_tr-tr_x-none culture=tr-tr version.16=16.0",registry
+Language Pack 3.5,3.5,EnterpriseDB,C:\edb\languagepack\v3,"""C:\edb\languagepack\v3\uninstall-edb-languagepack.exe""",registry
+Launcher Prerequisites (x64),1.0.0.0,"Epic Games, Inc.",,"""C:\ProgramData\Package Cache\{43a03b9c-4770-409c-a999-587b60700b63}\LauncherPrereqSetup_x64.exe"" /uninstall /quiet",registry
+McAfee,1.39.160.1,"McAfee, LLC",,"""C:\Program Files\McAfee\wps\1.39.160.1\mc-update.exe"" /uninstall",registry
+McAfee WebAdvisor,4.1.1.1124,"McAfee, LLC",C:\Program Files\McAfee\WebAdvisor,C:\Program Files\McAfee\WebAdvisor\Uninstaller.exe,registry
+Microsoft .NET 8.0 Templates 8.0.416 (x64),32.13.62978,Microsoft Corporation,,MsiExec.exe /I{2564BE43-9239-40E0-A938-11A773628263},registry
+Microsoft .NET 9.0 Templates 9.0.102 (x64),36.8.53199,Microsoft Corporation,,MsiExec.exe /I{D495A8C6-191D-4CE2-91B3-05AC7A46052F},registry
+Microsoft .NET 9.0 Templates 9.0.104 (x64),36.9.54274,Microsoft Corporation,,MsiExec.exe /I{045C09E2-8823-44E3-B5F2-3CFCB76C62AE},registry
+Microsoft .NET 9.0 Templates 9.0.108 (x64),36.9.58283,Microsoft Corporation,,MsiExec.exe /I{2A5F91D5-C797-4CBE-91F7-298A4423C15B},registry
+Microsoft .NET 9.0 Templates 9.0.110 (x64),36.11.52287,Microsoft Corporation,,MsiExec.exe /I{DCD94484-1061-4E9E-BFEE-57CEFC031F53},registry
+Microsoft .NET 9.0 Templates 9.0.112 (x64),36.11.62288,Microsoft Corporation,,MsiExec.exe /I{5BA404CF-CD06-455F-9AF6-3258711EEDB2},registry
+Microsoft .NET 9.0 Templates 9.0.113 (x64),36.11.5643,Microsoft Corporation,,MsiExec.exe /I{86E43FA2-7E62-4565-BEE9-0550225A27F1},registry
+Microsoft .NET 9.0 Templates 9.0.114 (x64),36.11.51548,Microsoft Corporation,,MsiExec.exe /I{D475A6B0-6AAC-42F5-8F94-B9CE717FE7B2},registry
+Microsoft .NET 9.0 Templates 9.0.115 (x64),36.11.56643,Microsoft Corporation,,MsiExec.exe /I{E9377848-DD27-43A0-879F-5BEBC5586D39},registry
+Microsoft .NET 9.0 Templates 9.0.116 (x64),36.11.62244,Microsoft Corporation,,MsiExec.exe /I{CD24CA25-1228-451F-8F32-CEAB05F2EE4F},registry
+Microsoft .NET 9.0 Templates 9.0.117 (x64),36.15.2114,Microsoft Corporation,,MsiExec.exe /I{F509A135-B5D6-4799-902F-5834E9791D35},registry
+Microsoft .NET 9.0 Templates 9.0.118 (x64),36.15.22401,Microsoft Corporation,,MsiExec.exe /I{35779ABB-8642-41DD-BE62-25DEB4A0192A},registry
+Microsoft .NET 9.0 Templates 9.0.308 (x64),36.10.50002,Microsoft Corporation,,MsiExec.exe /I{5086B1F6-9BCF-4FA5-AE1D-A41C77156F0A},registry
+Microsoft .NET AppHost Pack - 8.0.22 (x64),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{E8F8575D-45CF-4FEA-A117-75B94AE853E0},registry
+Microsoft .NET AppHost Pack - 8.0.22 (x64_arm64),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{FFC716C3-545B-4D70-BF6C-3D0728470438},registry
+Microsoft .NET AppHost Pack - 8.0.22 (x64_x86),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{2A4FD089-B7E6-42F7-B11F-9F5EC7B2AD54},registry
+Microsoft .NET AppHost Pack - 9.0.1 (x64),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{051ACC3C-E8A1-4409-BFFE-56460E2EDA06},registry
+Microsoft .NET AppHost Pack - 9.0.1 (x64_arm64),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{8C97B5D8-824D-41C1-8F1D-B70B1708D3DB},registry
+Microsoft .NET AppHost Pack - 9.0.1 (x64_x86),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{ABB11EA1-8B33-4442-BF21-1CBFC3607489},registry
+Microsoft .NET AppHost Pack - 9.0.11 (x64),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{CCFEB77C-CD41-4A48-B2F3-72D52A595780},registry
+Microsoft .NET AppHost Pack - 9.0.11 (x64_arm64),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{B581407C-77BD-4CF6-9EEA-C23275A16991},registry
+Microsoft .NET AppHost Pack - 9.0.11 (x64_x86),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{0755E842-6114-46EE-969E-025B04941676},registry
+Microsoft .NET AppHost Pack - 9.0.12 (x64),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{5512A127-4779-44D4-B097-F37C48E82940},registry
+Microsoft .NET AppHost Pack - 9.0.12 (x64_arm64),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{39E53D64-4534-4864-91E5-3D8597A9A7D3},registry
+Microsoft .NET AppHost Pack - 9.0.12 (x64_x86),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{B218AD83-45D7-44A9-85A2-A27D404434A9},registry
+Microsoft .NET AppHost Pack - 9.0.13 (x64),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{41E6284C-70C2-4D99-A0AE-D7D19567181B},registry
+Microsoft .NET AppHost Pack - 9.0.13 (x64_arm64),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{ADD8CE4E-D1CC-4021-AEF3-C3270F020CC8},registry
+Microsoft .NET AppHost Pack - 9.0.13 (x64_x86),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{787E7F6B-9E52-43B0-9FED-AD9F820D7739},registry
+Microsoft .NET AppHost Pack - 9.0.14 (x64),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{7755F4D3-1735-4CD7-B1B8-293F1822CD96},registry
+Microsoft .NET AppHost Pack - 9.0.14 (x64_arm64),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{DD425E5F-3B08-4EFB-B0E7-999FE0A11545},registry
+Microsoft .NET AppHost Pack - 9.0.14 (x64_x86),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{A8EBAB5C-7A03-4C95-BCDC-979E5D1C8D68},registry
+Microsoft .NET AppHost Pack - 9.0.15 (x64),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{070D0BAB-49DE-4562-B040-FFACE14B7D32},registry
+Microsoft .NET AppHost Pack - 9.0.15 (x64_arm64),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{C9DA4405-13BA-4A60-80AF-2B7FCFAA9453},registry
+Microsoft .NET AppHost Pack - 9.0.15 (x64_x86),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{A4C4C263-AA54-4279-A200-633522723257},registry
+Microsoft .NET AppHost Pack - 9.0.16 (x64),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{AF140745-3CCB-48C2-B436-F90C52BCCA3D},registry
+Microsoft .NET AppHost Pack - 9.0.16 (x64_arm64),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{892D91CA-2AF9-498C-95FE-986C443280BB},registry
+Microsoft .NET AppHost Pack - 9.0.16 (x64_x86),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{B1570298-B0F3-4B22-9221-B3374496D315},registry
+Microsoft .NET AppHost Pack - 9.0.17 (x64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{5949F89F-8608-492F-BE7D-F2EAE70078D0},registry
+Microsoft .NET AppHost Pack - 9.0.17 (x64_arm64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{AE9DAABB-BF85-4C89-8687-2B484E86DB84},registry
+Microsoft .NET AppHost Pack - 9.0.17 (x64_x86),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{825B853C-9641-4984-9539-51D8DFD4D600},registry
+Microsoft .NET AppHost Pack - 9.0.3 (x64),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{9C4FB739-BFFA-4E0F-B07B-62140986CD13},registry
+Microsoft .NET AppHost Pack - 9.0.3 (x64_arm64),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{0BE353FE-7AE5-4F45-B4F9-85940FC0B29B},registry
+Microsoft .NET AppHost Pack - 9.0.3 (x64_x86),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{BCE8A91A-C009-4F93-8204-032AFEC2B826},registry
+Microsoft .NET AppHost Pack - 9.0.7 (x64),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{744C0465-0D06-4DB7-A8AE-15117E6B01D0},registry
+Microsoft .NET AppHost Pack - 9.0.7 (x64_arm64),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{AA28C97E-5F3E-4BF7-B15D-E1F51A91C1F9},registry
+Microsoft .NET AppHost Pack - 9.0.7 (x64_x86),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{DB481562-071D-456C-939B-25F75E36629E},registry
+Microsoft .NET AppHost Pack - 9.0.9 (x64),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{329EE302-F396-405F-A6B1-8C9DA047F823},registry
+Microsoft .NET AppHost Pack - 9.0.9 (x64_arm64),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{64F7DF8D-9FD7-4EAA-BF38-4B4988223A6C},registry
+Microsoft .NET AppHost Pack - 9.0.9 (x64_x86),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{4640BA27-FE1C-4238-9B0F-FD1C39F8A6D5},registry
+Microsoft .NET Framework 4.7.2 Targeting Pack,4.7.03062,Microsoft Corporation,,MsiExec.exe /X{1784A8CD-F7FE-47E2-A87D-1F31E7242D0D},registry
+Microsoft .NET Framework 4.7.2 Targeting Pack (Türkçe),4.7.03062,Microsoft Corporation,,MsiExec.exe /X{F8DA70AA-B0C2-4FD1-911B-68AFC084A08D},registry
+Microsoft .NET Framework 4.8 SDK,4.8.03928,Microsoft Corporation,,MsiExec.exe /X{949C0535-171C-480F-9CF4-D25C9E60FE88},registry
+Microsoft .NET Framework 4.8 SDK (Türkçe),4.8.03761,Microsoft Corporation,,MsiExec.exe /X{9B7716C3-74B8-4C29-A113-15E671591C50},registry
+Microsoft .NET Framework 4.8 Targeting Pack,4.8.03761,Microsoft Corporation,,MsiExec.exe /X{BAAF5851-0759-422D-A1E9-90061B597188},registry
+Microsoft .NET Framework 4.8 Targeting Pack (Türkçe),4.8.03761,Microsoft Corporation,,MsiExec.exe /X{F3B0CC77-ED10-4AD4-A436-CE60F5F10FA0},registry
+Microsoft .NET Host - 6.0.36 (x64),48.144.23141,Microsoft Corporation,,MsiExec.exe /X{D6932D97-36F1-40B8-9CDC-CA8365B21000},registry
+Microsoft .NET Host - 9.0.11 (x86),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{500BE2F7-6E63-4B3B-9525-2BAD362526D0},registry
+Microsoft .NET Host - 9.0.17 (x64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{8880D1FE-29A8-491A-9F71-F38EAD502A3F},registry
+Microsoft .NET Host FX Resolver - 6.0.36 (x64),48.144.23141,Microsoft Corporation,,MsiExec.exe /X{A9E32B25-994B-4856-A12B-0EBED3050410},registry
+Microsoft .NET Host FX Resolver - 9.0.1 (x64),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{E73EA6EC-66AB-4756-9B4E-98AF5D711C69},registry
+Microsoft .NET Host FX Resolver - 9.0.11 (x64),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{EABD407D-A4D7-426F-BCEB-2BD0C34B63AA},registry
+Microsoft .NET Host FX Resolver - 9.0.11 (x86),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{C0814FA3-559C-4353-8B28-13C752E56FB7},registry
+Microsoft .NET Host FX Resolver - 9.0.12 (x64),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{C70906D7-4A73-42A3-A985-3BEFC2788D07},registry
+Microsoft .NET Host FX Resolver - 9.0.13 (x64),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{45D7F314-4193-43EA-A004-52C2F45953EB},registry
+Microsoft .NET Host FX Resolver - 9.0.14 (x64),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{A5622318-9DBD-4A19-808D-CDA0929CA1DF},registry
+Microsoft .NET Host FX Resolver - 9.0.15 (x64),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{04C98367-FC14-4376-8866-17AD112FB6B9},registry
+Microsoft .NET Host FX Resolver - 9.0.16 (x64),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{33CBD71A-9813-4440-92B8-B06C04852B34},registry
+Microsoft .NET Host FX Resolver - 9.0.17 (x64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{38BEBAEF-02B0-4915-973F-1EFFE4239967},registry
+Microsoft .NET Host FX Resolver - 9.0.3 (x64),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{0FD489DC-A3E9-4F57-9770-812CD1059FA5},registry
+Microsoft .NET Host FX Resolver - 9.0.7 (x64),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{1E4FA106-E70C-42C1-8F95-1E9364563D50},registry
+Microsoft .NET Host FX Resolver - 9.0.9 (x64),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{76699793-91D6-4C61-8D4B-F3EC2DAEA97A},registry
+Microsoft .NET Runtime - 6.0.36 (x64),48.144.23141,Microsoft Corporation,,MsiExec.exe /X{C912E33F-956A-4921-9F55-CC11AE8F09AF},registry
+Microsoft .NET Runtime - 8.0.22 (x64),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{C43A1A89-0CA5-43FD-BDC4-3B85DAD06A41},registry
+Microsoft .NET Runtime - 8.0.22 (x86),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{3BAD90A6-48B6-4C89-97FF-02FEB96227C1},registry
+Microsoft .NET Runtime - 9.0.1 (x64),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{ABE5ADF0-4D1C-4AB3-9526-9635B0357DD1},registry
+Microsoft .NET Runtime - 9.0.11 (x64),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{15A74731-6EA1-4EDD-9A78-2E1A0BCBE573},registry
+Microsoft .NET Runtime - 9.0.11 (x86),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{BC33C5BD-2A34-4592-B236-06DF5E77C29B},registry
+Microsoft .NET Runtime - 9.0.12 (x64),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{7498D287-D936-4786-AA56-67E81A7E7348},registry
+Microsoft .NET Runtime - 9.0.13 (x64),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{F4381ABE-B1E5-45F9-AEA5-4BF1235163C3},registry
+Microsoft .NET Runtime - 9.0.14 (x64),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{7D8CA9A1-03AD-4726-8FAD-91DE906279DE},registry
+Microsoft .NET Runtime - 9.0.15 (x64),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{97184660-56D3-4CCB-8919-34067AB40CD6},registry
+Microsoft .NET Runtime - 9.0.16 (x64),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{AB89A259-8D10-4578-B462-43AEDC4F166E},registry
+Microsoft .NET Runtime - 9.0.17 (x64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{F2C84F3F-E093-4D2B-A895-DDA05BB06222},registry
+Microsoft .NET Runtime - 9.0.3 (x64),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{102DCD41-F00B-484D-9D6B-5D2919D8FCF8},registry
+Microsoft .NET Runtime - 9.0.7 (x64),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{1E385F99-81C4-4738-9336-4CB107EE3ECC},registry
+Microsoft .NET Runtime - 9.0.9 (x64),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{FE41F1B2-B25E-46DA-9AE7-46AA354A0A91},registry
+Microsoft .NET SDK 9.0.102 (x64),9.1.224.61103,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{f38c80ed-7c21-42c4-a9d2-58226fd818b3}\dotnet-sdk-9.0.102-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.104 (x64),9.1.425.11330,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{6df33b07-4991-43e5-b5cb-8204cecb7c4d}\dotnet-sdk-9.0.104-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.108 (x64),9.1.825.31723,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{14778cac-a914-4979-a01e-f800633d5839}\dotnet-sdk-9.0.108-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.110 (x64),9.1.1025.42111,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{4882d7c3-279e-43e5-b3ff-07a3703d0f62}\dotnet-sdk-9.0.110-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.112 (x64),9.1.1225.52112,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{3e83eb1f-2fbc-4d59-b9b4-9b86622d065b}\dotnet-sdk-9.0.112-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.113 (x64),9.1.1325.61003,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{5fd04178-656a-42e7-bc73-cc6446edbfbc}\dotnet-sdk-9.0.113-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.114 (x64),9.1.1426.6908,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{3a06e51d-9dfc-419a-859d-1542a8b233b4}\dotnet-sdk-9.0.114-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.115 (x64),9.1.1526.12003,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{0aea7340-6a3b-4998-9734-5f4c8df51821}\dotnet-sdk-9.0.115-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.116 (x64),9.1.1626.17604,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{05539ce2-9e60-4fbc-bf62-be0ad872e8ab}\dotnet-sdk-9.0.116-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.117 (x64),9.1.1726.23010,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{5eba5e57-387c-4550-857e-83642c820066}\dotnet-sdk-9.0.117-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.118 (x64),9.1.1826.26913,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{b8c46069-d35e-46ee-a7ac-452f580c5b73}\dotnet-sdk-9.0.118-win-x64.exe"" /uninstall /quiet",registry
+Microsoft .NET SDK 9.0.308 (x64) from Visual Studio,9.3.825.56210,Microsoft Corporation,,MsiExec.exe /X{B8C7B694-AE98-4E0B-94D9-A73A2BC23518},registry
+Microsoft .NET Standard Targeting Pack - 2.1.0 (x64),24.0.28113,Microsoft Corporation,,MsiExec.exe /X{A7036CFB-B403-4598-85FF-D397ABB88173},registry
+Microsoft .NET Targeting Pack - 8.0.22 (x64),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{D9CC2C55-F8FE-4613-911D-634167065E3B},registry
+Microsoft .NET Targeting Pack - 8.0.22 (x86),64.88.42551,Microsoft Corporation,,MsiExec.exe /X{3058565F-0511-420E-83AD-E59973D68D24},registry
+Microsoft .NET Targeting Pack - 9.0.1 (x64),72.4.26282,Microsoft Corporation,,MsiExec.exe /X{7D5553AE-1EBD-4494-A358-500830C66ADB},registry
+Microsoft .NET Targeting Pack - 9.0.11 (x64),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{934E2806-AEC2-4DF5-B1EA-261DCDE79171},registry
+Microsoft .NET Targeting Pack - 9.0.11 (x86),72.44.42384,Microsoft Corporation,,MsiExec.exe /X{531F1083-D3B4-4A39-B766-BDC5731ABCCE},registry
+Microsoft .NET Targeting Pack - 9.0.12 (x64),72.48.45417,Microsoft Corporation,,MsiExec.exe /X{C5D97BE2-96C0-42E9-A044-CEE36BCC2C42},registry
+Microsoft .NET Targeting Pack - 9.0.13 (x64),72.52.47121,Microsoft Corporation,,MsiExec.exe /X{4D1ACCE8-2BCB-4B22-BBCC-46EA8F2D4A09},registry
+Microsoft .NET Targeting Pack - 9.0.14 (x64),72.56.48826,Microsoft Corporation,,MsiExec.exe /X{F51EFB18-E243-4626-966E-11E0847B3877},registry
+Microsoft .NET Targeting Pack - 9.0.15 (x64),72.60.50518,Microsoft Corporation,,MsiExec.exe /X{4A4C3003-8D5C-49EC-84E5-2DBFF2F54883},registry
+Microsoft .NET Targeting Pack - 9.0.16 (x64),72.64.52183,Microsoft Corporation,,MsiExec.exe /X{458A7093-5F71-4EC1-984D-918EA21DE89A},registry
+Microsoft .NET Targeting Pack - 9.0.17 (x64),72.68.53536,Microsoft Corporation,,MsiExec.exe /X{F2F9B3BE-044F-4E8D-8915-6F1C3379B5B9},registry
+Microsoft .NET Targeting Pack - 9.0.3 (x64),72.12.29501,Microsoft Corporation,,MsiExec.exe /X{FCD0BC0C-B9CC-4578-A757-FA44F4052B2F},registry
+Microsoft .NET Targeting Pack - 9.0.7 (x64),72.28.35968,Microsoft Corporation,,MsiExec.exe /X{5CDEEB68-C2B0-416A-8A62-1C34A308CFED},registry
+Microsoft .NET Targeting Pack - 9.0.9 (x64),72.36.39216,Microsoft Corporation,,MsiExec.exe /X{EFDDEA26-297C-4E27-9EBC-D89C04F29AAC},registry
+Microsoft .NET Toolset 9.0.102 (x64),36.8.36815,Microsoft Corporation,,MsiExec.exe /X{6CE86543-9CF6-4C50-A587-DD4535020960},registry
+Microsoft .NET Toolset 9.0.104 (x64),36.9.21506,Microsoft Corporation,,MsiExec.exe /X{C7132FE1-26DA-4FFA-8AC0-9FD4DEA4A3F2},registry
+Microsoft .NET Toolset 9.0.108 (x64),36.11.41899,Microsoft Corporation,,MsiExec.exe /X{81F27F9E-2DB0-46C7-8D90-386C95BEE894},registry
+Microsoft .NET Toolset 9.0.110 (x64),36.11.52287,Microsoft Corporation,,MsiExec.exe /X{0AE0495F-1642-409B-AA94-20866E9DD2F9},registry
+Microsoft .NET Toolset 9.0.112 (x64),36.11.62288,Microsoft Corporation,,MsiExec.exe /X{D1F4B484-731B-47E2-9C02-A501A2C55D15},registry
+Microsoft .NET Toolset 9.0.113 (x64),36.11.22027,Microsoft Corporation,,MsiExec.exe /X{53E33007-C236-49AB-B670-41EBC9033123},registry
+Microsoft .NET Toolset 9.0.114 (x64),36.11.51548,Microsoft Corporation,,MsiExec.exe /X{7F472E43-190F-4370-996E-A69818254367},registry
+Microsoft .NET Toolset 9.0.115 (x64),36.11.56643,Microsoft Corporation,,MsiExec.exe /X{C717C9D2-3A8E-4A50-899F-5E4D614231A4},registry
+Microsoft .NET Toolset 9.0.116 (x64),36.14.62244,Microsoft Corporation,,MsiExec.exe /X{ACB545D1-3837-4BC7-889D-C98B2DE7D522},registry
+Microsoft .NET Toolset 9.0.117 (x64),36.15.18498,Microsoft Corporation,,MsiExec.exe /X{433BFC66-FED1-4F33-86A3-6999558D9117},registry
+Microsoft .NET Toolset 9.0.118 (x64),36.15.38785,Microsoft Corporation,,MsiExec.exe /X{04052863-F7ED-4366-8A8F-49CC6A290BF2},registry
+Microsoft .NET Toolset 9.0.308 (x64),36.10.850,Microsoft Corporation,,MsiExec.exe /X{F1CDED6B-34EF-46AE-B112-862638D9CADB},registry
+Microsoft 365 Apps for enterprise - en-gb,16.0.20026.20168,Microsoft Corporation,C:\Program Files\Microsoft Office,"""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" scenario=install scenariosubtype=ARP sourcetype=None productstoremove=O365ProPlusRetail.16_en-gb_x-none culture=en-gb version.16=16.0",registry
+Microsoft ASP.NET Core 8.0.22 Shared Framework (x64),8.0.22.25528,Microsoft Corporation,,MsiExec.exe /X{4675A82C-4BC0-3E41-99B1-25CFCEE2114D},registry
+Microsoft ASP.NET Core 8.0.22 Shared Framework (x86),8.0.22.25528,Microsoft Corporation,,MsiExec.exe /X{1DFBD7A0-CB7B-392F-B3B0-76B85C9B01EB},registry
+Microsoft ASP.NET Core 8.0.22 Targeting Pack (x64),8.0.22.25528,Microsoft Corporation,,MsiExec.exe /X{A6F1F643-F412-36F2-9565-7A6920DC1FB3},registry
+Microsoft ASP.NET Core 8.0.22 Targeting Pack (x86),8.0.22.25528,Microsoft Corporation,,MsiExec.exe /X{3EEE7803-EDF0-3F3A-9B8D-2BC275964380},registry
+Microsoft ASP.NET Core 9.0.1 Shared Framework (x64),9.0.1.24610,Microsoft Corporation,,MsiExec.exe /X{332C3F8D-8B59-3ED7-86F4-F052497D83A1},registry
+Microsoft ASP.NET Core 9.0.1 Targeting Pack (x64),9.0.1.24610,Microsoft Corporation,,MsiExec.exe /X{99053FAE-3A7C-381D-948A-6F614864781D},registry
+Microsoft ASP.NET Core 9.0.11 Shared Framework (x64),9.0.11.25520,Microsoft Corporation,,MsiExec.exe /X{47E8592A-2CF1-3C32-AF12-7F8D58802E6A},registry
+Microsoft ASP.NET Core 9.0.11 Shared Framework (x86),9.0.11.25520,Microsoft Corporation,,MsiExec.exe /X{4450B4C5-B6FE-3734-A3C6-DF191EFE8F8E},registry
+Microsoft ASP.NET Core 9.0.11 Targeting Pack (x64),9.0.11.25520,Microsoft Corporation,,MsiExec.exe /X{093A2F2F-33E4-3F2B-AD33-8C5085C6E8D0},registry
+Microsoft ASP.NET Core 9.0.11 Targeting Pack (x86),9.0.11.25520,Microsoft Corporation,,MsiExec.exe /X{5422E43B-0EF1-3DF7-BD99-3FE3E7DBFFE1},registry
+Microsoft ASP.NET Core 9.0.12 Shared Framework (x64),9.0.12.25609,Microsoft Corporation,,MsiExec.exe /X{159887BB-BC8D-3426-A17D-1142A455EE72},registry
+Microsoft ASP.NET Core 9.0.12 Targeting Pack (x64),9.0.12.25609,Microsoft Corporation,,MsiExec.exe /X{27A134F4-EAAB-3B35-ABED-A6DBE9E6808A},registry
+Microsoft ASP.NET Core 9.0.13 Shared Framework (x64),9.0.13.26064,Microsoft Corporation,,MsiExec.exe /X{C1D88000-27CD-3011-AA9C-4385316BFACE},registry
+Microsoft ASP.NET Core 9.0.13 Targeting Pack (x64),9.0.13.26064,Microsoft Corporation,,MsiExec.exe /X{D80126D8-95DE-3489-B375-97D21DAC9C8E},registry
+Microsoft ASP.NET Core 9.0.14 Shared Framework (x64),9.0.14.26119,Microsoft Corporation,,MsiExec.exe /X{05C6BB69-26B0-3DDE-94A6-E8EE704DC45A},registry
+Microsoft ASP.NET Core 9.0.14 Targeting Pack (x64),9.0.14.26119,Microsoft Corporation,,MsiExec.exe /X{93AA5DC3-A927-3582-BADC-071D914460DB},registry
+Microsoft ASP.NET Core 9.0.15 Shared Framework (x64),9.0.15.26176,Microsoft Corporation,,MsiExec.exe /X{7913E590-B83F-3B76-A397-FB2A017D2755},registry
+Microsoft ASP.NET Core 9.0.15 Targeting Pack (x64),9.0.15.26176,Microsoft Corporation,,MsiExec.exe /X{C3C279C6-DE0F-3E30-AA7B-F303B618263F},registry
+Microsoft ASP.NET Core 9.0.16 Shared Framework (x64),9.0.16.26230,Microsoft Corporation,,MsiExec.exe /X{A97FFE91-38B0-3017-9D0E-53D0BB7AF224},registry
+Microsoft ASP.NET Core 9.0.16 Targeting Pack (x64),9.0.16.26230,Microsoft Corporation,,MsiExec.exe /X{F40E0B10-47A3-3A37-A7E8-5873743FB3FE},registry
+Microsoft ASP.NET Core 9.0.17 Shared Framework (x64),9.0.17.26269,Microsoft Corporation,,MsiExec.exe /X{8EDBD049-6D22-3D8E-B32A-40B732EC6B1A},registry
+Microsoft ASP.NET Core 9.0.17 Targeting Pack (x64),9.0.17.26269,Microsoft Corporation,,MsiExec.exe /X{72A3545E-8772-3285-9251-6BC926571AEC},registry
+Microsoft ASP.NET Core 9.0.3 Shared Framework (x64),9.0.3.25112,Microsoft Corporation,,MsiExec.exe /X{1C056265-B962-3D4C-9049-AD0250BD024D},registry
+Microsoft ASP.NET Core 9.0.3 Targeting Pack (x64),9.0.3.25112,Microsoft Corporation,,MsiExec.exe /X{60C712CC-7335-3B48-9072-261601C12CDD},registry
+Microsoft ASP.NET Core 9.0.7 Shared Framework (x64),9.0.7.25317,Microsoft Corporation,,MsiExec.exe /X{02624192-F87A-3F61-B242-747B6726C9E3},registry
+Microsoft ASP.NET Core 9.0.7 Targeting Pack (x64),9.0.7.25317,Microsoft Corporation,,MsiExec.exe /X{0C967581-DBBF-3816-8000-1D9FD60FEAD0},registry
+Microsoft ASP.NET Core 9.0.9 Shared Framework (x64),9.0.9.25420,Microsoft Corporation,,MsiExec.exe /X{E8C6D68B-F6D2-3B48-B8D3-8B150EE4BA32},registry
+Microsoft ASP.NET Core 9.0.9 Targeting Pack (x64),9.0.9.25420,Microsoft Corporation,,MsiExec.exe /X{4A79E74B-9714-33B5-B262-B6E88C828F79},registry
+Microsoft Edge,149.0.4022.69,Microsoft Corporation,C:\Program Files (x86)\Microsoft\Edge\Application,"""C:\Program Files (x86)\Microsoft\Edge\Application\149.0.4022.69\Installer\setup.exe"" --uninstall --msedge --channel=stable --system-level --verbose-logging",registry
+Microsoft Edge WebView2 Çalışma Zamanı,149.0.4022.69,Microsoft Corporation,C:\Program Files (x86)\Microsoft\EdgeWebView\Application,"""C:\Program Files (x86)\Microsoft\EdgeWebView\Application\149.0.4022.69\Installer\setup.exe"" --uninstall --msedgewebview --system-level --verbose-logging",registry
+Microsoft ODBC Driver 17 for SQL Server,17.10.6.1,Microsoft Corporation,,MsiExec.exe /I{0E0F96AC-80DE-4400-A40C-429D63293651},registry
+Microsoft ODBC Driver 18 for SQL Server,18.5.2.1,Microsoft Corporation,,MsiExec.exe /I{55422B70-0DE4-4793-8872-A44B58683F33},registry
+Microsoft Office Ev ve Öğrenci 2021 - tr-tr,16.0.20026.20168,Microsoft Corporation,C:\Program Files\Microsoft Office,"""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" scenario=install scenariosubtype=ARP sourcetype=None productstoremove=HomeStudent2021Retail.16_tr-tr_x-none culture=tr-tr version.16=16.0",registry
+Microsoft OLE DB Driver for SQL Server,18.7.5.0,Microsoft Corporation,,MsiExec.exe /I{9E43DE89-BFB0-49E5-A622-E9A01F1C63DB},registry
+Microsoft OneDrive,26.095.0519.0003,Microsoft Corporation,,"""C:\Program Files\Microsoft OneDrive\26.095.0519.0003\OneDriveSetup.exe"" /uninstall /allusers",registry
+Microsoft OneNote - en-gb,16.0.20026.20168,Microsoft Corporation,C:\Program Files\Microsoft Office,"""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" scenario=install scenariosubtype=ARP sourcetype=None productstoremove=OneNoteFreeRetail.16_en-gb_x-none culture=en-gb version.16=16.0",registry
+Microsoft OneNote - tr-tr,16.0.20026.20168,Microsoft Corporation,C:\Program Files\Microsoft Office,"""C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe"" scenario=install scenariosubtype=ARP sourcetype=None productstoremove=OneNoteFreeRetail.16_tr-tr_x-none culture=tr-tr version.16=16.0",registry
+Microsoft SQL Server 2022 (64-bit),,,,,registry
+Microsoft SQL Server 2022 (64-bit),,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\SQL2022\x64\SetupARP.exe""",registry
+Microsoft SQL Server 2022 RsFx Driver,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{629C8FC9-3763-4C58-8264-5288AE34AFEF},registry
+Microsoft SQL Server 2022 Setup (English),16.0.1180.1,Microsoft Corporation,,MsiExec.exe /X{B4A4257E-2A7E-4DFD-9B1D-CFF84C86ED52},registry
+Microsoft SQL Server 2025 (64-bit),,,,,registry
+Microsoft SQL Server 2025 (64-bit),,Microsoft Corporation,,"""C:\Program Files\Microsoft SQL Server\170\Setup Bootstrap\SQL2025\x64\SetupARP.exe""",registry
+Microsoft SQL Server 2025 RsFx Driver,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{D0B7FEAB-4315-44E5-90E1-58E967E8F1C1},registry
+Microsoft SQL Server 2025 Setup (English),17.0.1115.1,Microsoft Corporation,,MsiExec.exe /X{BCA5F61A-5D2A-4A27-9C7D-0BAA6AC3DF40},registry
+Microsoft System CLR Types for SQL Server 2019,15.0.2000.5,Microsoft Corporation,,MsiExec.exe /I{5BC7E9EB-13E8-45DB-8A60-F2481FEB4595},registry
+Microsoft Teams Meeting Add-in for Microsoft Office,1.26.11802,Microsoft,,MsiExec.exe /I{A7AB73A3-CB10-4AA5-9D38-6AEFFBDE4C91},registry
+Microsoft TestPlatform SDK Local Feed,17.10.0.9037153,Microsoft,,MsiExec.exe /I{7F86DEBA-AF7D-43F2-8312-DBCB65F116A9},registry
+Microsoft Update Health Tools,5.72.0.0,Microsoft Corporation,,MsiExec.exe /X{C6FD611E-7EFE-488C-A0E0-974C09EF6473},registry
+Microsoft Visual C++ 2012 Redistributable (x64) - 11.0.61030,11.0.61030.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}\vcredist_x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2012 Redistributable (x86) - 11.0.61030,11.0.61030.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{33d1fd90-4274-48a1-9bc1-97e33d9c2d6f}\vcredist_x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2012 x64 Additional Runtime - 11.0.61030,11.0.61030,Microsoft Corporation,,MsiExec.exe /X{37B8F9C7-03FB-3253-8781-2517C99D7C00},registry
+Microsoft Visual C++ 2012 x64 Minimum Runtime - 11.0.61030,11.0.61030,Microsoft Corporation,,MsiExec.exe /X{CF2BEA3C-26EA-32F8-AA9B-331F7E34BA97},registry
+Microsoft Visual C++ 2012 x86 Additional Runtime - 11.0.61030,11.0.61030,Microsoft Corporation,,MsiExec.exe /X{B175520C-86A2-35A7-8619-86DC379688B9},registry
+Microsoft Visual C++ 2012 x86 Minimum Runtime - 11.0.61030,11.0.61030,Microsoft Corporation,,MsiExec.exe /X{BD95A8CD-1D9F-35AD-981A-3E7925026EBB},registry
+Microsoft Visual C++ 2013 Redistributable (x64) - 12.0.30501,12.0.30501.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{050d4fc8-5d48-4b8f-8972-47c82c46020f}\vcredist_x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2013 Redistributable (x64) - 12.0.40664,12.0.40664.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{042d26ef-3dbe-4c25-95d3-4c1b11b235a7}\vcredist_x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.40664,12.0.40664.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{9dff3540-fc85-4ed5-ac84-9e3c7fd8bece}\vcredist_x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2013 x64 Additional Runtime - 12.0.40664,12.0.40664,Microsoft Corporation,,MsiExec.exe /X{010792BA-551A-3AC0-A7EF-0FAB4156C382},registry
+Microsoft Visual C++ 2013 x64 Minimum Runtime - 12.0.40664,12.0.40664,Microsoft Corporation,,MsiExec.exe /X{53CF6934-A98D-3D84-9146-FC4EDF3D5641},registry
+Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.40664,12.0.40664,Microsoft Corporation,,MsiExec.exe /X{D401961D-3A20-3AC7-943B-6139D5BD490A},registry
+Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.40664,12.0.40664,Microsoft Corporation,,MsiExec.exe /X{8122DAB1-ED4D-3676-BB0A-CA368196543E},registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.32.31326,14.32.31326.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{2d507699-404c-4c8b-a54a-38e352f32cdd}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.32.31332,14.32.31332.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{3746f21b-c990-4045-bb33-1cf98cff7a68}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.36.32532,14.36.32532.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{8bdfe669-9705-4184-9368-db9ce581e0e7}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.40.33810,14.40.33810.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{5af95fd8-a22e-458f-acee-c61bd787178e}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.42.34433,14.42.34433.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{804e7d66-ccc2-4c12-84ba-476da31d103d}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.44.35211,14.44.35211.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{d8bbe9f9-7c5b-42c6-b715-9ee898a2e515}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.32.31326,14.32.31326.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{817e21c1-6b3a-4bc1-8c49-67e4e1887b3a}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.34.31931,14.34.31931.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{6ba9fb5e-8366-4cc4-bf65-25fe9819b2fc}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.36.32532,14.36.32532.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{410c0ee1-00bb-41b6-9772-e12c2828b02f}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.40.33810,14.40.33810.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{47109d57-d746-4f8b-9618-ed6a17cc922b}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.42.34438,14.42.34438.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{ba10fda9-f731-441f-a999-000bbb7ceec2}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2015-2022 Redistributable (x86) - 14.44.35211,14.44.35211.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{0b5169e3-39da-4313-808e-1f9c0407f3bf}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ 2022 X64 Additional Runtime - 14.50.35710,14.50.35710,Microsoft Corporation,,MsiExec.exe /I{9393725C-A0DA-47F1-8DB9-D1C223A0DD5A},registry
+Microsoft Visual C++ 2022 X64 Debug Runtime - 14.44.35211,14.44.35211,Microsoft Corporation,,MsiExec.exe /I{FE85AA49-3522-4663-9F52-9CD9E9837189},registry
+Microsoft Visual C++ 2022 X64 Minimum Runtime - 14.50.35710,14.50.35710,Microsoft Corporation,,MsiExec.exe /I{0BCFDDE2-AA44-4087-8E77-E0025551AC6E},registry
+Microsoft Visual C++ 2022 X86 Additional Runtime - 14.50.35710,14.50.35710,Microsoft Corporation,,MsiExec.exe /I{72086DBA-CAFE-4A5B-BF04-F67C29E51E91},registry
+Microsoft Visual C++ 2022 X86 Debug Runtime - 14.44.35211,14.44.35211,Microsoft Corporation,,MsiExec.exe /I{BC104582-4691-4D4C-8922-C215D941A2EB},registry
+Microsoft Visual C++ 2022 X86 Minimum Runtime - 14.50.35710,14.50.35710,Microsoft Corporation,,MsiExec.exe /I{C150A847-130E-4622-BEA4-F37266C6A02F},registry
+Microsoft Visual C++ v14 Redistributable (x64) - 14.50.35710,14.50.35710.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{b2f5e2cc-18af-40da-9bb9-c296da1cb96c}\VC_redist.x64.exe"" /uninstall /quiet",registry
+Microsoft Visual C++ v14 Redistributable (x86) - 14.50.35710,14.50.35710.0,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{3fdfb881-a139-4811-9788-61520be14e1f}\VC_redist.x86.exe"" /uninstall /quiet",registry
+Microsoft Visual Studio Installer,4.0.2166.47498,Microsoft Corporation,"""C:\Program Files (x86)\Microsoft Visual Studio\Installer""","""C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"" /uninstall",registry
+Microsoft Visual Studio Setup Configuration,4.0.2113.32518,Microsoft Corporation,,MsiExec.exe /I{FE0F3D75-53F4-417A-97FD-58466C7E7328},registry
+Microsoft Visual Studio Setup WMI Provider,4.0.2113.32518,Microsoft Corporation,,MsiExec.exe /I{284D5429-2F5D-4CA2-9E3C-7E8EDCE33C77},registry
+Microsoft Visual Studio Tools for Applications 2019,16.0.31110,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{f3fbabb4-bcfb-45eb-8fff-9b784fd68c38}\vsta_setup.exe"" /uninstall /quiet",registry
+Microsoft Visual Studio Tools for Applications 2019 x64 Hosting Support,16.0.31110,Microsoft Corporation,,MsiExec.exe /X{8E7A3713-551D-333A-9271-10EF4D77A80F},registry
+Microsoft Visual Studio Tools for Applications 2019 x86 Hosting Support,16.0.31110,Microsoft Corporation,,MsiExec.exe /X{E7A0CD34-1F9B-3496-ADB3-2F180D302F6A},registry
+Microsoft VSS Writer for SQL Server 2025,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{FEC10394-D378-48E4-8A10-5BFCE3098A05},registry
+Microsoft Windows Desktop Runtime - 6.0.36 (x64),48.144.23186,Microsoft Corporation,,MsiExec.exe /X{61D4736B-3325-4D4A-BD41-8BD206C6A86E},registry
+Microsoft Windows Desktop Runtime - 6.0.36 (x64),6.0.36.34217,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{0532b8f2-12d7-43de-95fc-7b87006758a8}\windowsdesktop-runtime-6.0.36-win-x64.exe"" /uninstall /quiet",registry
+Microsoft Windows Desktop Runtime - 8.0.22 (x64),64.88.42561,Microsoft Corporation,,MsiExec.exe /X{4CCC1CCD-6FA3-4DD5-A06B-E94EA90094CF},registry
+Microsoft Windows Desktop Runtime - 8.0.22 (x86),64.88.42561,Microsoft Corporation,,MsiExec.exe /X{AABE221C-DA7E-4DDA-9AD6-322E03B95E2D},registry
+Microsoft Windows Desktop Runtime - 9.0.1 (x64),72.4.26276,Microsoft Corporation,,MsiExec.exe /X{BF2E27B7-89B1-4D5B-8D06-18FEFC91A8CB},registry
+Microsoft Windows Desktop Runtime - 9.0.11 (x64),72.44.42433,Microsoft Corporation,,MsiExec.exe /X{1291A37E-2C01-4CA2-BD4B-490B42279CB6},registry
+Microsoft Windows Desktop Runtime - 9.0.11 (x86),72.44.42433,Microsoft Corporation,,MsiExec.exe /X{32E18794-2172-4439-81AE-4C9A01ED39D3},registry
+Microsoft Windows Desktop Runtime - 9.0.12 (x64),72.48.45460,Microsoft Corporation,,MsiExec.exe /X{FE52B4ED-13FE-4577-AF57-150ED5995731},registry
+Microsoft Windows Desktop Runtime - 9.0.13 (x64),72.52.47159,Microsoft Corporation,,MsiExec.exe /X{A58D99B5-9613-4E04-9254-8052BDC85B4B},registry
+Microsoft Windows Desktop Runtime - 9.0.14 (x64),72.56.48819,Microsoft Corporation,,MsiExec.exe /X{8CE06646-49A6-427F-9155-5E1F50190E08},registry
+Microsoft Windows Desktop Runtime - 9.0.15 (x64),72.60.50530,Microsoft Corporation,,MsiExec.exe /X{49C0C973-52B5-4F6D-AD4F-9B9DF928BAC6},registry
+Microsoft Windows Desktop Runtime - 9.0.16 (x64),72.64.52194,Microsoft Corporation,,MsiExec.exe /X{68B6EE5D-A526-4492-9481-0132A3479FD0},registry
+Microsoft Windows Desktop Runtime - 9.0.17 (x64),72.68.53601,Microsoft Corporation,,MsiExec.exe /X{02387076-6763-4FC4-A33C-41F4B807DE44},registry
+Microsoft Windows Desktop Runtime - 9.0.3 (x64),72.12.29522,Microsoft Corporation,,MsiExec.exe /X{E4F4C068-697F-4148-8CDA-738802A3A83A},registry
+Microsoft Windows Desktop Runtime - 9.0.7 (x64),72.28.35985,Microsoft Corporation,,MsiExec.exe /X{56FCF501-A7CF-42F8-B159-6B9F19090AED},registry
+Microsoft Windows Desktop Runtime - 9.0.9 (x64),72.36.39253,Microsoft Corporation,,MsiExec.exe /X{74A3ED70-360C-45CE-8032-568ADA78352E},registry
+Microsoft Windows Desktop Targeting Pack - 8.0.22 (x64),64.88.42561,Microsoft Corporation,,MsiExec.exe /X{019B5E05-8AF0-401A-9E49-9ADA9A21C9DF},registry
+Microsoft Windows Desktop Targeting Pack - 8.0.22 (x86),64.88.42561,Microsoft Corporation,,MsiExec.exe /X{D36E8177-52FB-41CF-922E-D4BD8A944831},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.1 (x64),72.4.26276,Microsoft Corporation,,MsiExec.exe /X{022F4ED5-C2B0-44A7-9909-003CA5749853},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.11 (x64),72.44.42433,Microsoft Corporation,,MsiExec.exe /X{03E3CFF2-B212-4659-AA9E-BBCF1C1EE396},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.11 (x86),72.44.42433,Microsoft Corporation,,MsiExec.exe /X{E7435B88-D375-4960-BDEE-6AED70EC6ACE},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.12 (x64),72.48.45460,Microsoft Corporation,,MsiExec.exe /X{4D537243-1C36-4E80-8A27-A4E43A811C81},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.13 (x64),72.52.47159,Microsoft Corporation,,MsiExec.exe /X{8EFA3414-6591-4296-97A4-0C2DBD5D2BAD},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.14 (x64),72.56.48819,Microsoft Corporation,,MsiExec.exe /X{701F71AE-5DE0-410F-A621-55A232BC8E24},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.15 (x64),72.60.50530,Microsoft Corporation,,MsiExec.exe /X{4F587A66-B03B-4869-B1FD-0ACC324378B7},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.16 (x64),72.64.52194,Microsoft Corporation,,MsiExec.exe /X{E9ED4D6F-DEC9-44C4-887F-930F97323824},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.17 (x64),72.68.53601,Microsoft Corporation,,MsiExec.exe /X{9DF6104E-5BF8-4486-8189-DD4C06C01D8C},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.3 (x64),72.12.29522,Microsoft Corporation,,MsiExec.exe /X{17E364FB-ECDB-49FC-9EBC-7A84F8999B9D},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.7 (x64),72.28.35985,Microsoft Corporation,,MsiExec.exe /X{B2325289-1BF5-4BDB-B1B0-B8E854267126},registry
+Microsoft Windows Desktop Targeting Pack - 9.0.9 (x64),72.36.39253,Microsoft Corporation,,MsiExec.exe /X{78459006-1582-48B9-BA30-6B62FBF78E0B},registry
+Microsoft.NET.Sdk.Android.Manifest-9.0.100 (x64),35.0.7,Microsoft Corporation,,MsiExec.exe /X{76737228-5B3F-4431-9C02-BC3C1B25198B},registry
+Microsoft.NET.Sdk.Android.Manifest-9.0.100 (x64),35.0.78,Microsoft Corporation,,MsiExec.exe /X{6C7D2654-26BF-4029-809E-2E018404BA4E},registry
+Microsoft.NET.Sdk.Aspire.Manifest-8.0.100 (x64),64.136.23253,Microsoft Corporation,,MsiExec.exe /X{2E5C5364-621F-4F22-8B81-18524D6F0361},registry
+Microsoft.NET.Sdk.iOS.Manifest-9.0.100 (x64),18.0.9617,Microsoft Corporation,,MsiExec.exe /X{736FFE9E-6571-4059-B73D-F97F07E9F98D},registry
+Microsoft.NET.Sdk.iOS.Manifest-9.0.100 (x64),26.0.9752,Microsoft Corporation,,MsiExec.exe /X{DCB49BE7-CAB9-4AF2-9CB5-C3F0567771AE},registry
+Microsoft.NET.Sdk.MacCatalyst.Manifest-9.0.100 (x64),18.0.9617,Microsoft Corporation,,MsiExec.exe /X{393886C4-81D0-4CB7-BE11-B2B974BAE978},registry
+Microsoft.NET.Sdk.MacCatalyst.Manifest-9.0.100 (x64),26.0.9752,Microsoft Corporation,,MsiExec.exe /X{8B045548-527C-4D2A-8A42-44713C3DBA15},registry
+Microsoft.NET.Sdk.macOS.Manifest-9.0.100 (x64),15.0.9617,Microsoft Corporation,,MsiExec.exe /X{16C48C75-42D8-4E6A-845B-233207524190},registry
+Microsoft.NET.Sdk.macOS.Manifest-9.0.100 (x64),26.0.9752,Microsoft Corporation,,MsiExec.exe /X{121950B6-0F21-4F0D-BF23-663BD6AA1926},registry
+Microsoft.NET.Sdk.Maui.Manifest-9.0.100 (x64),9.0.0,Microsoft Corporation,,MsiExec.exe /X{3214CADE-AAED-4B9A-8927-49D866E2A758},registry
+Microsoft.NET.Sdk.Maui.Manifest-9.0.100 (x64),9.0.111,Microsoft Corporation,,MsiExec.exe /X{899DB162-0A4A-407D-BF87-7C6D65F15610},registry
+Microsoft.NET.Sdk.tvOS.Manifest-9.0.100 (x64),18.0.9617,Microsoft Corporation,,MsiExec.exe /X{CF59BE56-B314-4B17-B3C2-8B7197681D56},registry
+Microsoft.NET.Sdk.tvOS.Manifest-9.0.100 (x64),26.0.9752,Microsoft Corporation,,MsiExec.exe /X{86975E52-FB78-4CFF-9D23-E4DEA2F26F8A},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.44.26179,Microsoft Corporation,,MsiExec.exe /X{ED4843DF-A375-4522-AAC8-81456F595023},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.48.29394,Microsoft Corporation,,MsiExec.exe /X{0EE7607E-885A-4C77-A5C3-A5EDBB913112},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.48.35778,Microsoft Corporation,,MsiExec.exe /X{55D78F9F-2D0B-445D-98CC-B2B13A8DB8E1},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.48.39204,Microsoft Corporation,,MsiExec.exe /X{E5A89090-5379-42D6-A930-FA0C1E75A65E},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.52.42372,Microsoft Corporation,,MsiExec.exe /X{19CAB1A4-530C-444B-817A-B0B4DB167836},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.52.45351,Microsoft Corporation,,MsiExec.exe /X{8B1173E1-D5D3-4FE7-B72C-B9831589E2E7},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.56.47012,Microsoft Corporation,,MsiExec.exe /X{A14C997B-64D8-410B-8322-D360226DDEB4},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.56.48675,Microsoft Corporation,,MsiExec.exe /X{AB59D4BA-BE3B-4C22-B984-AA9E065842D0},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.56.50513,Microsoft Corporation,,MsiExec.exe /X{EF09C859-73C8-4DD6-A7BA-17A3E4263F14},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.56.52051,Microsoft Corporation,,MsiExec.exe /X{A23E7627-A531-4DFE-BC43-EF426FA9AAE0},registry
+Microsoft.NET.Workload.Emscripten.Current.Manifest (x64),72.56.53443,Microsoft Corporation,,MsiExec.exe /X{1DD46564-4DAC-434D-8B07-08EC3AE5A84F},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.44.26179,Microsoft Corporation,,MsiExec.exe /X{80CED549-E591-4EDD-9006-D0907A6E687E},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.48.29394,Microsoft Corporation,,MsiExec.exe /X{9BE80FDC-ECC6-4B78-85F5-54A52EEE2810},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.48.35778,Microsoft Corporation,,MsiExec.exe /X{E51C9E85-9FC8-48FE-B1B9-BC671809A2BD},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.48.39204,Microsoft Corporation,,MsiExec.exe /X{01C2ADFF-D133-4B03-A219-438AFC7C1718},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.52.42372,Microsoft Corporation,,MsiExec.exe /X{79CAB1F5-56AB-47D9-B133-AEA53DB75213},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.52.45351,Microsoft Corporation,,MsiExec.exe /X{262A7A20-5481-49A9-B15A-BA7D9449DFB4},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.56.47012,Microsoft Corporation,,MsiExec.exe /X{9A3BB95D-1BC2-45CE-9E20-4857361BA9D1},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.56.48675,Microsoft Corporation,,MsiExec.exe /X{DA29E54E-9E8C-4DA4-9D78-A9024BE5876C},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.56.50513,Microsoft Corporation,,MsiExec.exe /X{296C204F-0CC9-4A2D-9B57-0FF6A3861AEA},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.56.52051,Microsoft Corporation,,MsiExec.exe /X{8337FF28-AE0C-4BD2-97D3-ECDBA41E5C03},registry
+Microsoft.NET.Workload.Emscripten.net6.Manifest (x64),72.56.53443,Microsoft Corporation,,MsiExec.exe /X{889B1BA6-3136-4673-BB5F-9B300C191F95},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.44.26179,Microsoft Corporation,,MsiExec.exe /X{3147923D-653F-4494-8FDC-3738E733EDB3},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.48.29394,Microsoft Corporation,,MsiExec.exe /X{3D8061EE-69F1-4D9E-A065-326235AB338E},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.48.35778,Microsoft Corporation,,MsiExec.exe /X{AFDF18C2-65C1-4FF2-A62E-869175C7A56A},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.48.39204,Microsoft Corporation,,MsiExec.exe /X{9827913F-CFC0-46B2-AD2F-94749CA9F450},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.52.42372,Microsoft Corporation,,MsiExec.exe /X{6B5CCDC9-4C86-40D3-B068-909F210F0325},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.52.45351,Microsoft Corporation,,MsiExec.exe /X{78D949E6-D4C3-4C33-9C59-81B193DBDF3D},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.56.47012,Microsoft Corporation,,MsiExec.exe /X{4BFF3B52-A83E-4508-BEE1-D0608E11D8DD},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.56.48675,Microsoft Corporation,,MsiExec.exe /X{C6644939-33AC-4395-B668-402FD42BA3D7},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.56.50513,Microsoft Corporation,,MsiExec.exe /X{8E6D9593-13A1-4A33-AB84-5B49BB9C9AEA},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.56.52051,Microsoft Corporation,,MsiExec.exe /X{17CB33B1-4779-4BBF-A78D-FC247E7DE562},registry
+Microsoft.NET.Workload.Emscripten.net7.Manifest (x64),72.56.53443,Microsoft Corporation,,MsiExec.exe /X{D3DCADB0-2437-4ABB-8D41-18BE10B2A537},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.44.26179,Microsoft Corporation,,MsiExec.exe /X{3BF99384-85F0-49DC-A595-3B5785EB053D},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.48.29394,Microsoft Corporation,,MsiExec.exe /X{D3EB7368-5E79-4BFF-9FBB-A16BE2C06376},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.48.35778,Microsoft Corporation,,MsiExec.exe /X{95C20316-CE5A-4298-8104-16B1A51F7E86},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.48.39204,Microsoft Corporation,,MsiExec.exe /X{EAD43E4D-F5D5-42D2-AD59-C77111D31AC0},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.52.42372,Microsoft Corporation,,MsiExec.exe /X{92A84299-B0DD-4E1F-96BC-832369C427D9},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.52.45351,Microsoft Corporation,,MsiExec.exe /X{5EA28EA0-5F31-484F-B792-7AF0739FFD03},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.56.47012,Microsoft Corporation,,MsiExec.exe /X{C168F46F-2A5B-475F-BD48-91C2B48E3122},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.56.48675,Microsoft Corporation,,MsiExec.exe /X{1B9AD5AC-6636-4611-AFDD-E4FE9EC3B885},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.56.50513,Microsoft Corporation,,MsiExec.exe /X{51EE69E5-AA0F-4386-8D59-97ACE65FB296},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.56.52051,Microsoft Corporation,,MsiExec.exe /X{5D6FA998-7E06-4109-BC2A-9BCB9FBD5C80},registry
+Microsoft.NET.Workload.Emscripten.net8.Manifest (x64),72.56.53443,Microsoft Corporation,,MsiExec.exe /X{8C4FFF6F-29C5-4C13-BEB3-90258264D761},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.26282,Microsoft Corporation,,MsiExec.exe /X{ADBD362B-E092-4D12-8810-7D8B00A56134},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.29501,Microsoft Corporation,,MsiExec.exe /X{03DDDDB9-5602-43BC-81E8-557096BD886A},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.35968,Microsoft Corporation,,MsiExec.exe /X{1A8A1F37-1338-4380-AEAE-15897A4C212A},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.39216,Microsoft Corporation,,MsiExec.exe /X{4E1FC472-E489-4EEA-BDE8-BA96F62F4A93},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.42384,Microsoft Corporation,,MsiExec.exe /X{57B37245-9507-4121-9CAE-5A222479E6B7},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.45417,Microsoft Corporation,,MsiExec.exe /X{000DB6DD-94F4-42AF-B1C8-545708DB4961},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.47121,Microsoft Corporation,,MsiExec.exe /X{D685277E-7E78-46E7-B444-3461D2AEDEBE},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.48826,Microsoft Corporation,,MsiExec.exe /X{65ADB65C-239A-4B43-9580-4F3F5564E91C},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.50518,Microsoft Corporation,,MsiExec.exe /X{F02130C1-4BAE-435F-A207-719EAD3FA6D8},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.52183,Microsoft Corporation,,MsiExec.exe /X{42892BBF-0A1B-49B0-9D93-300314DD80A9},registry
+Microsoft.NET.Workload.Mono.Toolchain.Current.Manifest (x64),72.0.53536,Microsoft Corporation,,MsiExec.exe /X{B64C1D4B-316F-45C6-AFCF-78F786DC9205},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.26282,Microsoft Corporation,,MsiExec.exe /X{F8AEBA6F-26E2-4456-8828-720EF59FDE0C},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.29501,Microsoft Corporation,,MsiExec.exe /X{6F6F63FE-A772-4CB6-9A09-7622FD389134},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.35968,Microsoft Corporation,,MsiExec.exe /X{4047115E-55CF-4B95-953E-CCA2E1C78F7B},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.39216,Microsoft Corporation,,MsiExec.exe /X{D9914CA9-109C-49C7-9789-9A1EC4887F3F},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.42384,Microsoft Corporation,,MsiExec.exe /X{07B3DD33-AE7C-4602-A336-70450DE99ACE},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.45417,Microsoft Corporation,,MsiExec.exe /X{B77986A4-4C29-4954-822D-F3C41F70A754},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.47121,Microsoft Corporation,,MsiExec.exe /X{A0E8369D-7CA6-443D-9D75-5F05DD177261},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.48826,Microsoft Corporation,,MsiExec.exe /X{2C405A91-A1AB-4A47-AC40-CD35C632E4CD},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.50518,Microsoft Corporation,,MsiExec.exe /X{38040FC8-D27A-48EB-9510-89449B4D21F4},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.52183,Microsoft Corporation,,MsiExec.exe /X{ECB34BE2-9FB8-4EAD-9022-14775DCCB8EA},registry
+Microsoft.NET.Workload.Mono.Toolchain.net6.Manifest (x64),72.0.53536,Microsoft Corporation,,MsiExec.exe /X{3C1B9E79-6BCE-4374-BB8A-1D33C728A397},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.26282,Microsoft Corporation,,MsiExec.exe /X{C57AD08A-B3FF-46A1-933C-38902B7C79AF},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.29501,Microsoft Corporation,,MsiExec.exe /X{610364FC-8A10-402D-9191-5E2BBD429D7E},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.35968,Microsoft Corporation,,MsiExec.exe /X{DD034F79-68A3-4009-A477-0CE697E4D675},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.39216,Microsoft Corporation,,MsiExec.exe /X{CF35453F-ADE9-4897-9DC5-CC05017149F5},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.42384,Microsoft Corporation,,MsiExec.exe /X{339F62B1-2CFC-43F3-A338-04FA96E30AC7},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.45417,Microsoft Corporation,,MsiExec.exe /X{01739235-8A23-4A22-8799-8DCA9131DA78},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.47121,Microsoft Corporation,,MsiExec.exe /X{1251DF12-4CF1-4DF5-89D2-5E1469E88E21},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.48826,Microsoft Corporation,,MsiExec.exe /X{55DFE7C5-961B-4685-9561-ECA6E3C2ADB7},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.50518,Microsoft Corporation,,MsiExec.exe /X{5C53C623-9782-4AD5-A146-38CF2121F7D4},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.52183,Microsoft Corporation,,MsiExec.exe /X{BF70C598-51E6-4932-AB5E-AF1BEA8304B1},registry
+Microsoft.NET.Workload.Mono.Toolchain.net7.Manifest (x64),72.0.53536,Microsoft Corporation,,MsiExec.exe /X{DD3DFC08-60AE-4CEE-94F6-9BE15123FE1F},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.26282,Microsoft Corporation,,MsiExec.exe /X{9F958C7B-8379-4F3B-B402-0470CD697284},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.29501,Microsoft Corporation,,MsiExec.exe /X{F3F4D342-59D7-4476-AFE8-F1A932829A19},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.35968,Microsoft Corporation,,MsiExec.exe /X{EE9A81C7-66CA-4C71-9C1D-E1312A435E78},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.39216,Microsoft Corporation,,MsiExec.exe /X{FF07AD3B-F82B-41F2-8062-88BDBDBDAEBB},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.42384,Microsoft Corporation,,MsiExec.exe /X{FBA3B2AC-561E-4417-8243-6BCE84AABD65},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.45417,Microsoft Corporation,,MsiExec.exe /X{243AF932-FC77-41A2-8F39-37EDF77E2D3B},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.47121,Microsoft Corporation,,MsiExec.exe /X{A4ACBC43-E197-464F-A5A1-0F0FB4CFFB22},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.48826,Microsoft Corporation,,MsiExec.exe /X{0EDAC286-5E7D-46E0-BCE5-8D71CBC0C1A0},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.50518,Microsoft Corporation,,MsiExec.exe /X{9420464F-8E4D-412D-A0F5-56EB7E56AC8D},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.52183,Microsoft Corporation,,MsiExec.exe /X{39C9C6A8-4579-407C-9A81-D4FCF3C342DC},registry
+Microsoft.NET.Workload.Mono.Toolchain.net8.Manifest (x64),72.0.53536,Microsoft Corporation,,MsiExec.exe /X{1989DD4F-CE49-4C9A-8153-F8D5E4261633},registry
+Migration Toolkit 55.7.0-1,55.7.0-1,EnterpriseDB,C:\Program Files\edb\mtk,"""C:\Program Files\edb\mtk\uninstall-edb-migrationtoolkit.exe""",registry
+MSI Development Tools,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{6F03AE03-2D20-0681-A104-133BEAC8956D},registry
+MSI Development Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{0EB12BFD-6929-FDA3-5C9B-A5BA3CC107F9},registry
+MySQL Installer,1.6.14.0,Oracle Corporation,,MsiExec.exe /I{3E861290-D963-4AC5-9A0B-93226D47F0F8},registry
+MySQL Server 8.0,8.0.42,Oracle Corporation,C:\Program Files\MySQL\MySQL Server 8.0\,MsiExec.exe /I{A12B0204-7560-4821-9D34-A5F170287309},registry
+MySQL Workbench 8.0 CE,8.0.42,Oracle Corporation,C:\Program Files\MySQL\MySQL Workbench 8.0,MsiExec.exe /I{CB651F1E-4B3C-496C-88DA-54499A6F8C6B},registry
+Need for Speed - Most Wanted,,"R.G. Mechanics, markfiter",C:\Program Files (x86)\R.G. Mechanics\Need for Speed - Most Wanted\,"""C:\Users\oğuz\AppData\Roaming\Need for Speed - Most Wanted\Uninstall\unins000.exe"" /SILENT",registry
+Node.js,22.19.0,Node.js Foundation,,MsiExec.exe /I{D5D89783-337A-43B7-B476-F14BA3F2FA26},registry
+Notepad++ (64-bit x64),8.8.3,Notepad++ Team,,"""C:\Program Files\Notepad++\uninstall.exe"" /S",registry
+Npcap,1.87,Nmap Project,C:\Program Files\Npcap,"""C:\Program Files\Npcap\uninstall.exe"" /S",registry
+Npgsql 3.2.6,3.2.6-3,EnterpriseDB,C:\Program Files (x86)\PostgreSQL\Npgsql,"""C:\Program Files (x86)\PostgreSQL\Npgsql\uninstall-npgsql.exe""",registry
+NvCpl,1.0,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\Display.NvApp.NvCPL.{5FF0F737-E85A-462E-8AC7-01296C30997E},,registry
+NVIDIA AIUser Container,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvContainer.AIUser.{2B987CA9-BBB0-476F-B9FB-1CE8E135BDDD},,registry
+NVIDIA App 11.0.7.247,11.0.7.247,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\Display.NvApp.{EB178282-A6CE-43F5-AF51-1D2596FD28AC},"""C:\WINDOWS\SysWOW64\RunDll32.EXE"" ""C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.DLL"",UninstallPackage Display.NvApp",registry
+NVIDIA Backend,11.0.7.247,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\Display.NvApp.NvBackend.{8DE05113-BB19-4F3D-9AAB-52836506848C},,registry
+NVIDIA Container,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\NvContainer,,registry
+NVIDIA FrameView SDK 1.7.12227.37421622,1.7.12227.37421622,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\FrameViewSDK,"""C:\WINDOWS\SysWOW64\RunDll32.EXE"" ""C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.DLL"",UninstallPackage FrameViewSdk",registry
+NVIDIA Grafik Sürücüsü 595.97,595.97,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\Display.Driver.{AE9C2473-E411-43F7-B8D2-295836D5D60C},"""C:\WINDOWS\SysWOW64\RunDll32.EXE"" ""C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.DLL"",UninstallPackage Display.Driver",registry
+NVIDIA HD Ses Sürücüsü 1.4.5.7,1.4.5.7,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\HDAudio.Driver.{AC3F1F79-77FD-4F95-9E02-6C53A77F1179},"""C:\WINDOWS\SysWOW64\RunDll32.EXE"" ""C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.DLL"",UninstallPackage HDAudio.Driver",registry
+NVIDIA Install Application,2.1002.442.0,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore,,registry
+NVIDIA LocalSystem Container,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvContainer.LocalSystem.{3F13C673-BFAC-4B1B-A215-9923ED8DEE91},,registry
+NVIDIA MessageBus 3 for NvApp,3.21,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\Display.NvApp.MessageBus.{F3265BDC-76EB-493A-BC14-5EC269C0F56A},,registry
+NVIDIA NvDLISR,1.0,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvDLISR.{AE32A1F6-D10C-4953-80C7-EE47CF5AE4F7},,registry
+NVIDIA PhysX Sistem Yazılımı 9.23.1019,9.23.1019,NVIDIA Corporation,C:\Program Files (x86)\NVIDIA Corporation\PhysX,"""C:\windows\SysWOW64\RunDll32.EXE"" ""C:\Program Files\NVIDIA Corporation\Installer2\InstallerCore\NVI2.DLL"",UninstallPackage Display.PhysX",registry
+NVIDIA Platform Controllers and Framework,595.31,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NVPCF.{4B1305A4-5EDE-4C09-A458-C30DF7E4E49B},,registry
+NVIDIA Session Container,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvContainer.Session.{3F6E3A21-0B40-4949-BFEA-ADE92B909E73},,registry
+NVIDIA ShadowPlay 11.0.7.0,11.0.7.0,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\NVIDIA App\ShadowPlay,,registry
+NVIDIA Telemetry Client,19.5.13.0,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\NvTelemetry,,registry
+NVIDIA User Container,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvContainer.User.{3BCDB736-4BAE-4DDC-90B2-843776441081},,registry
+NVIDIA Virtual Audio 4.65.0.12,4.65.0.12,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\VirtualAudio.Driver.{960E110B-D4E1-423D-9ADA-B92071C3199B},,registry
+NVIDIA Watchdog Plugin for NvContainer,1.48,NVIDIA Corporation,C:\Program Files\NVIDIA Corporation\Installer2\NvPlugin.Watchdog.{D6E1D09A-5C1B-4B97-9C30-513C53245A93},,registry
+Office 16 Click-to-Run Extensibility Component,16.0.20026.20076,Microsoft Corporation,,MsiExec.exe /X{90160000-008C-0000-1000-0000000FF1CE},registry
+Oracle VM VirtualBox 7.0.20,7.0.20,Oracle and/or its affiliates,,MsiExec.exe /I{F12A8CE3-F4AB-45D6-AB30-94F844B9D70F},registry
+Panda Devices Agent,1.03.09,Panda Security,C:\Program Files (x86)\Panda Security\Panda Devices Agent\,MsiExec.exe /X{DB0164A2-ADE9-4FEE-B080-D506BDD6427F},registry
+Panda Devices Agent,1.08.09,Panda Security,C:\Program Files (x86)\Panda Security\Panda Devices Agent\,MsiExec.exe /X{DB0164A2-ADE9-4FEE-B080-D506BDD6427F},registry
+Panda Dome,12.60.00,Panda Security,C:\Program Files (x86)\Panda Security\Panda Security Protection\,MsiExec.exe /X{4137EDBA-0A36-424D-8708-E8A453686569},registry
+Panda Dome,23.00.00.0000,Panda Security,C:\Program Files (x86)\Panda Security\Panda Security Protection\,"""C:\Program Files (x86)\Panda Security\Panda Security Protection\Setup.exe"" /X{4137EDBA-0A36-424D-8708-E8A453686569}",registry
+Pandoc 3.8.3,3.8.3,John MacFarlane,C:\Users\oğuz\AppData\Local\Pandoc\,MsiExec.exe /X{738F887E-1F72-499C-8D60-C57FC8B86FFB},registry
+PEM-HTTPD 2.4.65,2.4.65-1,EnterpriseDB,C:\Program Files\edb\pem\httpd,"""C:\Program Files\edb\pem\httpd\uninstall-pemhttpd.exe""",registry
+pgAgent_PG18 4.2.3,4.2.3-1,EnterpriseDB,C:\Program Files\PostgreSQL\18,"""C:\Program Files\PostgreSQL\18\uninstall-pgagent.exe""",registry
+Postgres Enterprise Manager Agent 8.7.1-2,8.7.1-2,EnterpriseDB,C:\Program Files\edb\pem,"""C:\Program Files\edb\pem\agent-x64\uninstall-pemagent.exe""",registry
+Postgres Enterprise Manager Server 8.7.1-2,8.7.1-2,EnterpriseDB,C:\Program Files\edb\pem,"""C:\Program Files\edb\pem\server\uninstall-pemserver.exe""",registry
+PostgreSQL 18,18.2-1,PostgreSQL Global Development Group,C:\Program Files\PostgreSQL\18,"""C:\Program Files\PostgreSQL\18\uninstall-postgresql.exe""",registry
+PowerToys (Preview),0.78.0,Microsoft Corporation,C:\Program Files\PowerToys\,MsiExec.exe /X{E1A5AB2F-313E-43C7-8B6D-057FEB530285},registry
+Python 3.10.6 Add to Path (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{541B7582-6B11-4457-ACB7-AAC2058B3229},registry
+Python 3.10.6 Core Interpreter (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{C91F8E4B-F9C1-4FD1-BCF3-4A91CDAD4B72},registry
+Python 3.10.6 Development Libraries (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{07CDAC2C-737C-4D8A-AF42-6BCE111699AE},registry
+Python 3.10.6 Documentation (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{4306E3B9-B285-4747-B84D-9FAF08AA412D},registry
+Python 3.10.6 Executables (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{750538B5-3E77-4F94-A64A-D3F09E608CA2},registry
+Python 3.10.6 pip Bootstrap (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{3983F17E-1088-46F9-BB00-53B888FF3835},registry
+Python 3.10.6 Standard Library (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{C3A057F3-209B-4244-9697-D69031B81AAB},registry
+Python 3.10.6 Tcl/Tk Support (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{A551B92B-102D-45DC-8050-5CE10DE81CD0},registry
+Python 3.10.6 Test Suite (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{1204E654-144E-4FBA-ACA0-558F6E54FC5A},registry
+Python 3.10.6 Utility Scripts (64-bit),3.10.6150.0,Python Software Foundation,,MsiExec.exe /I{1D60E386-848D-45D1-BB0A-7E26A3E32011},registry
+Python 3.13.1 Add to Path (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{95338D2D-2A7C-4C57-ABC4-39FF8568C2FF},registry
+Python 3.13.1 Core Interpreter (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{B7C30E07-E007-43ED-A9E1-EEDA7F57C8BC},registry
+Python 3.13.1 Development Libraries (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{FE9B3181-7FDD-4F6A-855A-305940D9A6E8},registry
+Python 3.13.1 Documentation (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{29EEEBD6-F97B-4274-A640-FD8715025124},registry
+Python 3.13.1 Executables (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{8AFC9846-E7A8-4817-93FD-3542456A3E52},registry
+Python 3.13.1 pip Bootstrap (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{2BB3559A-6DFD-453E-8B7B-E6166958D099},registry
+Python 3.13.1 Standard Library (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{29A3DBE6-A3D3-42C9-9338-A321F61C897A},registry
+Python 3.13.1 Tcl/Tk Support (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{C6718DB8-8965-4EE7-A056-1AA8F3836208},registry
+Python 3.13.1 Test Suite (64-bit),3.13.1150.0,Python Software Foundation,,MsiExec.exe /I{7A5D8A6D-A0A9-4459-88EF-33C91DAFB0C2},registry
+Python Launcher,3.13.1150.0,Python Software Foundation,,MsiExec.exe /X{7102CAE5-270C-4E81-AC25-27699156D8AE},registry
+Rockstar Games Launcher,1.0.106.2874,Rockstar Games,C:\Program Files\Rockstar Games\Launcher,"""C:\Program Files\Rockstar Games\Launcher\uninstall.exe"" /S",registry
+Rockstar Games SDK,2.4.0.194,Rockstar Games,,C:\Program Files\Rockstar Games\Social Club\uninstallRGSCRedistributable.exe,registry
+SDK ARM64 Additions,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{7D0E0601-E6CC-870D-0002-C93DD14EDA30},registry
+SDK ARM64 Redistributables,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{B5A82F3D-95CE-085A-5904-D2D16FD3AE4F},registry
+spacedesk Windows DRIVER,1.0.67.0,datronicsoft Inc.,,MsiExec.exe /X{DC71F7EA-DD81-4E02-A1F8-47A4406B7FC0},registry
+SQL Server 2022 Batch Parser,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{7EFD8B19-A9E6-41CF-A96F-B9B6E30EC345},registry
+SQL Server 2022 Common Files,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{6A68D32C-4C0D-4847-B70C-58E6B4D76A12},registry
+SQL Server 2022 Connection Info,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{770DA7F2-817B-4AA6-9160-08BB658ABDC6},registry
+SQL Server 2022 Database Engine Services,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{6621C765-569C-4D46-A8E9-C69A47971357},registry
+SQL Server 2022 Database Engine Shared,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{161B8D12-C41B-4ACF-9BB5-E1FEE6788869},registry
+SQL Server 2022 DMF,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{5AB77D4E-9E5F-4627-B78B-129A5EC2858A},registry
+SQL Server 2022 Shared Management Objects,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{12618131-AA9A-4DAE-9387-CE4417955B9F},registry
+SQL Server 2022 Shared Management Objects Extensions,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{35EC6145-E333-42DB-BCB3-380DF6140C11},registry
+SQL Server 2022 SQL Diagnostics,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{0CEFE958-E71A-4171-9DEF-77E9234A5613},registry
+SQL Server 2022 XEvent,16.0.1000.6,Microsoft Corporation,,MsiExec.exe /I{94AEB0A0-365C-449B-B573-D2ECB353EB06},registry
+SQL Server 2025 Batch Parser,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{2EC6BB27-0233-4CB4-9941-5565C751297A},registry
+SQL Server 2025 Common Files,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{00B16944-973B-4F1E-83FC-DFC8D6D1321E},registry
+SQL Server 2025 Connection Info,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{148D25D7-B33F-4DE3-A0F3-E13142ED72F1},registry
+SQL Server 2025 Database Engine Services,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{8DDD5614-50EC-4EA8-8AC9-05522D3133A7},registry
+SQL Server 2025 Database Engine Shared,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{A2B4819A-61D5-41FF-9297-65993A52C14B},registry
+SQL Server 2025 DMF,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{3042B424-F056-4B2B-BEE5-8C89B8A94ED1},registry
+SQL Server 2025 Shared Management Objects,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{6A53D608-E9C7-4FCA-B0D1-E8F69B940E1D},registry
+SQL Server 2025 Shared Management Objects Extensions,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{94962D86-1582-46C3-8627-20F31D634678},registry
+SQL Server 2025 SQL Diagnostics,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{E50D9138-967D-43C2-93C8-60E874B8F8BF},registry
+SQL Server 2025 XEvent,17.0.1000.7,Microsoft Corporation,,MsiExec.exe /I{C347F6C3-80D1-4396-A0B9-EF2F66863D04},registry
+SQL Server için Microsoft OLE DB Sürücüsü 19,19.4.1.0,Microsoft Corporation,,MsiExec.exe /I{9225949C-E86F-40FE-A687-E1331D490710},registry
+SQL Server Management Studio 22,22.0.0,Microsoft Corporation,C:\Program Files\Microsoft SQL Server Management Studio 22\Release,"""C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"" uninstall --installPath ""C:\Program Files\Microsoft SQL Server Management Studio 22\Release""",registry
+Steam,2.10.91.91,Valve Corporation,,C:\Program Files (x86)\Steam\uninstall.exe,registry
+Teams Machine-Wide Installer,1.6.0.11166,Microsoft Corporation,,MsiExec.exe /I{731F6BAA-A986-45A4-8936-7C3AAAAA760B},registry
+Tesseract-OCR - open source OCR engine,5.5.0.20241111,Tesseract-OCR community,,"""C:\Program Files\Tesseract-OCR\tesseract-uninstall.exe"" /S",registry
+UE Prerequisites (x64),1.0.20.0,"Epic Games, Inc.",,"""C:\ProgramData\Package Cache\{b24cae82-bb64-4ad2-820a-dc2c4031c914}\UEPrereqSetup_x64.exe"" /uninstall /quiet",registry
+Universal CRT Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{C77D7BE2-B9B7-B6D5-5DFF-35CB6601C91B},registry
+Universal CRT Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{17D838D5-F629-9E56-3F16-0EA48C3905F7},registry
+Universal CRT Headers Libraries and Sources,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{E46FFDDB-220B-543F-63E4-4C31EAE2B3EA},registry
+Universal CRT Headers Libraries and Sources,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{4848F8AA-19FC-351A-030B-7092A476AA52},registry
+Universal CRT Redistributable,10.0.26624,Microsoft Corporation,,MsiExec.exe /I{0460C87B-7F4C-3170-FAC9-B7A6AE5CE4E9},registry
+Universal CRT Redistributable,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{6B9089CB-51B0-1F55-CED4-B6E0DE9FA6F2},registry
+Universal CRT Redistributable,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{91A9666E-74FD-E29C-73E1-F80224B8A1B1},registry
+Universal CRT Tools x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{9148976E-7F75-C671-E6BB-E2675C55CB43},registry
+Universal CRT Tools x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{84E32B8D-5471-246E-5E0A-E19954BD7D3D},registry
+Universal General MIDI DLS Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{8D9EB659-EE43-64F8-B490-F0980DF823A2},registry
+Universal General MIDI DLS Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{70A5208E-B854-F943-DA13-8F5E14C2299E},registry
+vcpp_crt.redist.clickonce,14.42.34438,Microsoft Corporation,,MsiExec.exe /I{74861744-466F-4E55-B4FB-D81F9384D26D},registry
+vcpp_crt.redist.clickonce,14.44.35211,Microsoft Corporation,,MsiExec.exe /I{4E280F05-D704-4846-B163-DCAAB793DE6C},registry
+Visual Studio Community 2022,17.14.23,Microsoft Corporation,C:\Program Files\Microsoft Visual Studio\2022\Community,"""C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"" uninstall --installPath ""C:\Program Files\Microsoft Visual Studio\2022\Community""",registry
+Visual Studio Derleme Araçları 2022 (2),17.14.7,Microsoft Corporation,C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools,"""C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe"" uninstall --installPath ""C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools""",registry
+Visual Studio için Microsoft .NET Framework Toplu Intellisense Paketi (Türkçe),4.8.09037,Microsoft Corporation,,MsiExec.exe /X{1FD9F0BC-92D7-4407-8D98-9BC633CF84F7},registry
+VS Immersive Activate Helper,17.0.157.0,Microsoft Corporation,,MsiExec.exe /I{BE00F49A-2FA1-46E6-B30F-A2653BF7CD75},registry
+VS JIT Debugger,17.0.157.0,Microsoft Corporation,,MsiExec.exe /I{6C1EDC0A-E71D-44D2-821C-213A5CD15498},registry
+VS Script Debugging Common,17.0.157.0,Microsoft Corporation,,MsiExec.exe /I{F5796163-6EC6-488A-B2DE-E1E94477F6AD},registry
+vs_BlendMsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{99614A72-109A-4B4F-BF78-7AB13A59CAFF},registry
+vs_clickoncebootstrappermsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{1A1BF820-6D25-4B65-8C95-F29487B1CB34},registry
+vs_clickoncebootstrappermsires,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{9D460280-D43F-4AA5-A712-88D841B764BC},registry
+vs_clickoncesigntoolmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{506605DE-0E7C-48AD-9F3C-74C738C4BFE0},registry
+vs_communitymsires,18.0.11104,Microsoft Corporation,,MsiExec.exe /I{777B9804-12EF-430A-818C-4DB80E18E241},registry
+vs_communitysharedmsi,18.0.11121,Microsoft Corporation,,MsiExec.exe /I{85A8BDFB-73C5-4DD2-A928-D2148D4A244D},registry
+vs_communityx64msi,18.0.11121,Microsoft Corporation,,MsiExec.exe /I{367AAA94-8F56-4713-95C3-11C2CE97F210},registry
+vs_CoreEditorFonts,17.7.40001,Microsoft Corporation,,MsiExec.exe /I{1851460E-0E63-4117-B5BA-25A2F045801B},registry
+vs_devenvsharedmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{B4AE0B55-6C49-4E6E-9FA9-45ADCDA64354},registry
+vs_devenx64vmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{5B7C4B06-7F22-461E-AABE-29E7719CB225},registry
+vs_filehandler_amd64,18.0.11121,Microsoft Corporation,,MsiExec.exe /I{92371FA3-CA14-4303-917A-A8CED3A57060},registry
+vs_filehandler_x86,18.0.11121,Microsoft Corporation,,MsiExec.exe /I{6A15B24C-7B44-4B48-9E0D-07DA67DF0BC0},registry
+vs_FileTracker_Singleton,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{8026396C-E06C-4952-9DC9-6D0A6AFED5AF},registry
+vs_githubprotocolhandlermsi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{7A4E6A56-184C-4582-8DC7-C6F3D9BFBE32},registry
+vs_Graphics_Singletonx64,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{5C6E65EA-152C-472E-8538-D4D04F64B2B1},registry
+vs_Graphics_Singletonx86,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{D66B561B-88B3-4BB0-ABF5-C5CF736F7311},registry
+vs_minshellinteropmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{A2FDDC26-4232-4287-8839-2F53A01E1E97},registry
+vs_minshellinteropsharedmsi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{008C4184-6C99-4211-AA94-12E192632A4C},registry
+vs_minshellinteropx64msi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{1F183C8C-D1D4-4E02-BFF4-08C5AB78D674},registry
+vs_minshellmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{C9DF1E1B-6F41-47DF-85C6-7C39DD1084C8},registry
+vs_minshellmsires,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{BF76BF80-2CBD-4BFB-9921-DC1304453BBA},registry
+vs_minshellsharedmsi,18.0.11121,Microsoft Corporation,,MsiExec.exe /I{515AB21C-D491-4325-9901-14ACED0B8B01},registry
+vs_minshellx64msi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{9317F80D-F1E2-4723-B5FD-98B8502E2D40},registry
+vs_SQLClickOnceBootstrappermsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{D1A4C2CE-7804-492B-82C0-CA9F9705C60A},registry
+vs_ssmsprotocolselectormsi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{7D0DDD1E-082D-4CFC-900A-6ECC8B4A3E5B},registry
+vs_ssmsprotocolselectormsires,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{0EDCF636-7846-4196-A06B-542B6C2F770C},registry
+vs_tipsmsi,17.14.36015,Microsoft Corporation,,MsiExec.exe /I{1A3719B4-93AA-4DCD-885C-2AF1AB6EC358},registry
+vs_vswebprotocolselectormsi,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{57E735DF-CE88-4C84-90D6-9AE79410CD95},registry
+vs_vswebprotocolselectormsires,18.0.11101,Microsoft Corporation,,MsiExec.exe /I{8092BA1E-9CF9-4BC4-9F56-3C014F478579},registry
+WinAppDeploy,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{B9DFA002-E65B-570D-4FB4-70F5D0EE154B},registry
+WinAppDeploy,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{6A42C143-7C8D-F97C-FC25-BBBDC160CC49},registry
+Windows App Certification Kit Native Components,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{428D5353-2260-9FA3-C9D3-DF30655A1DB2},registry
+Windows App Certification Kit SupportedApiList x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{907C021B-383E-837F-8213-B1C6714F48DA},registry
+Windows App Certification Kit x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{8C92A051-F5CF-0258-AE17-567037FB8741},registry
+Windows App Certification Kit x64 (OnecoreUAP),10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{B750E36B-E18D-F0D4-9099-B1F531FB0F31},registry
+Windows Desktop Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{61CA8D3B-6426-D9E3-91CB-1706839276BE},registry
+Windows Desktop Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{780A409F-FF4C-3361-372A-D97E456C1B9E},registry
+Windows Desktop Extension SDK Contracts,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{B73B126E-2832-752B-C24D-B50D236DF1CA},registry
+Windows Desktop Extension SDK Contracts,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{08CA91C8-29C9-527B-445F-A092F07E2E7A},registry
+Windows IoT Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{39EBF327-9F05-795D-3D71-25F5210D85D4},registry
+Windows IoT Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{7C298756-AA56-7087-763F-AEF33AE569C3},registry
+Windows IoT Extension SDK Contracts,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{DF85874C-C242-8352-7F7F-AC98ED102311},registry
+Windows IoT Extension SDK Contracts,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{D732C721-14D9-43CF-21CD-9394F0912656},registry
+Windows Mobile Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{A7FD5BDD-07E5-963E-B442-0DA8738EF18D},registry
+Windows Mobile Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{569126D6-2540-F73B-8F7F-09AFF1FC2CEF},registry
+Windows Mobile Extension SDK Contracts,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{ADD6795C-1115-DFF1-3932-E044F98D97CA},registry
+Windows Mobile Extension SDK Contracts,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{76E2EA76-04AE-2CCD-4F8F-3E9F25B16034},registry
+Windows SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{BD8FDB18-B514-2FCD-A4F0-CC1D08941D4C},registry
+Windows SDK AddOn,10.1.0.0,Microsoft Corporation,,MsiExec.exe /I{F1E37C98-16B7-421F-BA33-6C5B5400012A},registry
+Windows SDK ARM Desktop Tools,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{32F2F158-3261-006E-5AA6-62A927EEBB29},registry
+Windows SDK ARM64 Desktop Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{0E7C147F-B447-5D34-A27B-F731EB5C5866},registry
+Windows SDK Desktop Headers arm,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{8A4F839F-89EC-EF7E-EE73-07D4E02CC63B},registry
+Windows SDK Desktop Headers arm64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{5FC776BD-E780-F34A-2BCA-F6BABF7699B2},registry
+Windows SDK Desktop Headers arm64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{24A09BED-02FD-8FF8-46C1-76030D482B4F},registry
+Windows SDK Desktop Headers x64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{1F079CA3-A855-D075-2DBD-013FDCE1A711},registry
+Windows SDK Desktop Headers x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{403033BA-0E91-DC0B-4368-EFCEE5ABC570},registry
+Windows SDK Desktop Headers x86,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{293DAAA3-1A33-3825-B6A7-6C9A7FC8F847},registry
+Windows SDK Desktop Headers x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{DD870EAE-65A8-9AFC-2395-8EF4BD8588F2},registry
+Windows SDK Desktop Libs arm,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{DD312DEC-9A32-8DB3-6D7B-499F084D4C6B},registry
+Windows SDK Desktop Libs arm64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{0503A374-8AB6-5702-BA17-BCE21EE33103},registry
+Windows SDK Desktop Libs arm64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{6A4A9BCC-ECBE-C338-0CF8-1806767710FC},registry
+Windows SDK Desktop Libs x64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{A82C1991-2667-0151-896F-C92C3FCD8AA1},registry
+Windows SDK Desktop Libs x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{B7DCB3D5-470C-5224-43E4-017B132735EF},registry
+Windows SDK Desktop Libs x86,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{EE2F89EC-0FED-CF05-46E5-9EFE9715FC66},registry
+Windows SDK Desktop Libs x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{EDBF8086-745A-5300-12DB-4E22C2CC50E0},registry
+Windows SDK Desktop Tools arm64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{58A9FF8E-CABC-BE66-9588-78430B054EDA},registry
+Windows SDK Desktop Tools arm64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{C2B82E29-6791-B430-46FC-B0E42D66D4D5},registry
+Windows SDK Desktop Tools x64,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{2DBDB095-D491-1983-F74F-EF988CA60CF7},registry
+Windows SDK Desktop Tools x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{606D574B-F0E5-9F8D-803C-C7A89573440F},registry
+Windows SDK Desktop Tools x86,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{884234AF-FE4E-3B81-B758-C38EB045C832},registry
+Windows SDK Desktop Tools x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{040203F6-1D53-CAD8-4856-5DB42936BCE4},registry
+Windows SDK DirectX x64 Remote,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{5F5EB296-B579-325A-26B8-318C4CC1B657},registry
+Windows SDK DirectX x86 Remote,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{F4D0EBF2-E397-F743-122D-4F7E24D39E8A},registry
+Windows SDK EULA,10.1.22621.5040,Microsoft Corporations,,MsiExec.exe /I{1B9DE5A3-4B45-E518-3E41-ED155A646D8F},registry
+Windows SDK EULA,10.1.26100.7175,Microsoft Corporations,,MsiExec.exe /I{A62FF366-EE22-B0B8-727B-027421680FEE},registry
+Windows SDK Facade Windows WinMD Versioned,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{C47FC21E-F496-4817-95A3-1A12B51A6E69},registry
+Windows SDK Facade Windows WinMD Versioned,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{978C5573-515E-3F58-37F7-458528F92495},registry
+Windows SDK for Windows Store Apps,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{076DDDE2-F8CB-F138-95FB-E958C6E497CF},registry
+Windows SDK for Windows Store Apps Contracts,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{0E336D71-64EA-A481-76B8-37CB7C5630EE},registry
+Windows SDK for Windows Store Apps Contracts,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{DFAC5BD2-7E53-6302-A784-38A168663931},registry
+Windows SDK for Windows Store Apps DirectX x86 Remote,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{E468D844-27F7-3DFA-23F0-ABDC2CF555D0},registry
+Windows SDK for Windows Store Apps DirectX x86 Remote,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{D4E30DDE-077F-1652-B081-66BB1F98DF94},registry
+Windows SDK for Windows Store Apps Headers,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{B13573B3-86DE-950D-07DD-71ECE767F8E0},registry
+Windows SDK for Windows Store Apps Headers,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{CBFB4481-A259-6F87-3ED3-ED679D68B90E},registry
+Windows SDK for Windows Store Apps Headers OnecoreUap,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{3DB9B1DF-8209-0E7F-1A36-12F99736E384},registry
+Windows SDK for Windows Store Apps Libs,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{538F2EF7-8807-5E59-3621-E606FE025D15},registry
+Windows SDK for Windows Store Apps Libs,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{E37FF7C3-0A25-CDB9-895B-4809A7C9AEDE},registry
+Windows SDK for Windows Store Apps Metadata,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{04259A4C-FF76-FAFB-20B2-6BA2FB589796},registry
+Windows SDK for Windows Store Apps Metadata,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{E5430440-EE14-56B9-5A53-6955BC847BDB},registry
+Windows SDK for Windows Store Apps Tools,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{DB0A2082-E91C-2D58-7D65-19113BEDB221},registry
+Windows SDK for Windows Store Apps Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{4F4CE2FF-5300-5B48-75B7-92B869735A09},registry
+Windows SDK for Windows Store Managed Apps Libs,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{28AF0D1C-2092-E950-2208-FBB43F8092AD},registry
+Windows SDK for Windows Store Managed Apps Libs,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{F6C8FA5D-F1D6-1333-0FE8-F258DAA03EAB},registry
+Windows SDK Modern Non-Versioned Developer Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{D73FD6A9-F887-0E76-B9DC-7474A637D9A7},registry
+Windows SDK Modern Versioned Developer Tools,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{A5980723-EA0A-9FF0-2F17-D3CA231D037C},registry
+Windows SDK Modern Versioned Developer Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{4D9BD000-A45D-1E33-FBBF-30B0B8094B3F},registry
+Windows SDK OnecoreUap Headers arm64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{63991DD7-89E8-DC4E-9A54-695B07040D3E},registry
+Windows SDK OnecoreUap Headers x64,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{2B1FEEC7-7A01-0D73-AC29-3E32AB18670C},registry
+Windows SDK OnecoreUap Headers x86,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{DCF60599-EBD4-6565-2D12-CAB66B1C3FDC},registry
+Windows SDK Redistributables,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{54FA2EAA-3564-F73D-4C14-BA8A09144F45},registry
+Windows SDK Signing Tools,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{ED8E386F-E3AB-9A0B-55E5-8BF791D9534B},registry
+Windows SDK Signing Tools,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{086287C2-689F-844D-E3DD-1C806001EC43},registry
+Windows Software Development Kit - Windows 10.0.22621.5040,10.1.22621.5040,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{b72d4013-dd88-405a-9f9d-e88c278dcefe}\winsdksetup.exe"" /uninstall /quiet",registry
+Windows Software Development Kit - Windows 10.0.26100.3916,10.1.26100.3916,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{50106ec5-d0ec-4ea1-9e01-e9899676ba3f}\winsdksetup.exe"" /uninstall /quiet",registry
+Windows Software Development Kit - Windows 10.0.26100.7175,10.1.26100.7175,Microsoft Corporation,,"""C:\ProgramData\Package Cache\{b5ab6bbd-62a1-45bd-af43-2ea6ac4c3486}\winsdksetup.exe"" /uninstall /quiet",registry
+Windows Subsystem for Linux,2.6.2.0,Microsoft Corporation,,MsiExec.exe /X{6EB15DDD-5983-4269-A73E-F459398B8B98},registry
+Windows Team Extension SDK,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{E6EE1604-474D-770E-B5FF-C55D709C734E},registry
+Windows Team Extension SDK,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{F0C7F3F4-8FE8-8ED2-5CA0-CFF9CDFA9DEA},registry
+Windows Team Extension SDK Contracts,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{9BB3D482-022F-1105-BE47-84A933EBEE79},registry
+Windows Team Extension SDK Contracts,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{A9B4A927-5520-B58D-C20A-249A720B2472},registry
+WinRAR 6.22 (64 bit),6.22.0,win.rar GmbH,C:\Program Files\WinRAR\,C:\Program Files\WinRAR\uninstall.exe,registry
+WinRT Intellisense Desktop - en-us,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{09DF0CB1-7ED5-524F-A208-A121D90026F2},registry
+WinRT Intellisense Desktop - en-us,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{01933586-56BC-4722-D8AB-59F2A24C90EE},registry
+WinRT Intellisense Desktop - Other Languages,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{F5F3B189-4127-3630-A818-EDA53B73AB63},registry
+WinRT Intellisense Desktop - Other Languages,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{1495FD11-8AEB-75CA-4447-1C1CE340C630},registry
+WinRT Intellisense IoT - en-us,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{4FB9BC8B-7686-D7EF-36C3-CAC0D97B5C9B},registry
+WinRT Intellisense IoT - en-us,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{C33A7DAA-9B59-467D-2C7C-08527F7B93D5},registry
+WinRT Intellisense IoT - Other Languages,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{C35E2C10-133A-BA91-B44E-890B88561421},registry
+WinRT Intellisense IoT - Other Languages,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{1EA346E3-BEBF-94FA-B36C-FD6AD9B187CC},registry
+WinRT Intellisense Mobile - en-us,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{D2BB0F30-BAED-4B44-5DBA-4D34B6068C51},registry
+WinRT Intellisense Mobile - en-us,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{00CD7BFC-A0C3-FBB2-2FA6-0BA72E4B6EE2},registry
+WinRT Intellisense PPI - en-us,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{55D6DA01-BE83-67C7-346E-043EA81DC932},registry
+WinRT Intellisense PPI - en-us,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{D141A569-DA59-20E2-EE50-A78544B46042},registry
+WinRT Intellisense PPI - Other Languages,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{00406D62-A9D1-3A17-5808-B92632721F1C},registry
+WinRT Intellisense PPI - Other Languages,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{A11709BB-020F-9FD8-58B9-D61FB8F7A0BB},registry
+WinRT Intellisense UAP - en-us,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{398A9EE2-B2AF-DC5B-19D0-B6093A861C5A},registry
+WinRT Intellisense UAP - en-us,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{5C6BB60F-A809-2673-25D3-7E868F59D219},registry
+WinRT Intellisense UAP - Other Languages,10.1.22621.5040,Microsoft Corporation,,MsiExec.exe /I{D4B99AF4-7C7B-6638-CBB0-88259288C0E1},registry
+WinRT Intellisense UAP - Other Languages,10.1.26100.7175,Microsoft Corporation,,MsiExec.exe /I{3F2B7565-3751-D3E4-24C5-B3C9FF4CC22B},registry
+Wireshark 4.6.5 x64,4.6.5,"The Wireshark developer community, https://www.wireshark.org",C:\Program Files\Wireshark,"""C:\Program Files\Wireshark\uninstall-wireshark.exe"" /S",registry
+wkhtmltox 0.12.6-1,,,,"""C:\Program Files\wkhtmltopdf\uninstall.exe""",registry
+WPT Redistributables,10.1.26100.7175,Microsoft,,MsiExec.exe /I{FFE2BDF2-2A4B-8166-B121-F5FFADBA0144},registry
+WPTx64 (DesktopEditions),10.1.26100.7175,Microsoft,,MsiExec.exe /I{A0506B2C-67FD-766E-B170-98BF4AE7349A},registry
+WPTx64 (OnecoreUAP),10.1.26100.7175,Microsoft,,MsiExec.exe /I{84A1B407-9CE0-47CC-54DA-9C556EE171B7},registry
+XAMPP,8.2.12-0,Apache Friends,C:\xampp,"""C:\xampp\uninstall.exe""",registry
+xDB Replication Server 6.2.19,6.2.19-1,EnterpriseDB,C:\Program Files (x86)\PostgreSQL\EnterpriseDB-xDBReplicationServer,"""C:\Program Files (x86)\PostgreSQL\EnterpriseDB-xDBReplicationServer\uninstall-xdbreplicationserver.exe""",registry
+xDB Replication Server 7.7.0,7.7.0-1,EnterpriseDB,C:\Program Files\edb\EnterpriseDB-xDBReplicationServer,"""C:\Program Files\edb\EnterpriseDB-xDBReplicationServer\uninstall-xdbreplicationserver.exe""",registry
+Zotero,9.0.3,Corporation for Digital Scholarship,C:\Program Files\Zotero,C:\Program Files\Zotero\uninstall\helper.exe,registry

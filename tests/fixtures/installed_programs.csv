@@ -1,0 +1,5 @@
+name,version,publisher,install_location,uninstall_string,source
+Python 3.11,3.11.7,Python Software Foundation,C:\Python311,python-uninstall.exe,registry
+Docker Desktop,4.54.0,Docker Inc.,C:\Program Files\Docker\Docker,docker-uninstall.exe,registry
+Microsoft Visual C++ 2015-2022 Redistributable,14.40,Microsoft Corporation,C:\Program Files\Microsoft Visual Studio\VC,vc_redist.exe,registry
+Mystery Tool,1.0,Unknown Publisher,C:\Tools\MysteryTool,mystery-uninstall.exe,registry

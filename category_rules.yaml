@@ -1,0 +1,104 @@
+# Category and protection rules for recommendation engine.
+- category: "Runtime/System"
+  protection_reason: "microsoft_runtime_or_sdk"
+  patterns:
+    - "microsoft visual c++"
+    - ".net runtime"
+    - ".net sdk"
+    - "windows sdk"
+    - "windows desktop runtime"
+    - "asp.net"
+    - "redistributable"
+    - "runtime"
+
+- category: "Runtime/System"
+  protection_reason: "gpu_or_chipset_driver"
+  patterns:
+    - "nvidia"
+    - "geforce"
+    - "amd software"
+    - "radeon"
+    - "intel graphics"
+    - "chipset"
+    - "realtek"
+    - "audio driver"
+    - "driver"
+
+- category: "AI/ML"
+  patterns:
+    - "anaconda"
+    - "jupyter"
+    - "tensorflow"
+    - "pytorch"
+    - "cuda"
+
+- category: "Computer Vision"
+  patterns:
+    - "opencv"
+    - "imagej"
+    - "labelimg"
+
+- category: "Backend"
+  patterns:
+    - "python"
+    - "java"
+    - "jdk"
+    - "docker"
+    - "postman"
+    - "insomnia"
+    - "spring"
+    - "fastapi"
+    - "django"
+    - "flask"
+
+- category: "Frontend"
+  patterns:
+    - "node.js"
+    - "nodejs"
+    - "npm"
+    - "yarn"
+    - "react"
+    - "vue"
+    - "angular"
+
+- category: "Network"
+  patterns:
+    - "wireshark"
+    - "npcap"
+    - "cisco packet tracer"
+    - "fiddler"
+
+- category: "Database"
+  patterns:
+    - "postgresql"
+    - "pgadmin"
+    - "mysql"
+    - "sql server"
+    - "sqlite"
+    - "mongodb"
+    - "dbeaver"
+
+- category: "Virtualization"
+  patterns:
+    - "docker"
+    - "virtualbox"
+    - "vmware"
+    - "wsl"
+    - "hyper-v"
+
+- category: "Game Development"
+  patterns:
+    - "unity"
+    - "unreal"
+    - "godot"
+    - "android studio"
+    - "blender"
+    - "cmake"
+
+- category: "Office"
+  patterns:
+    - "microsoft office"
+    - "onenote"
+    - "outlook"
+    - "teams"
+    - "adobe acrobat"

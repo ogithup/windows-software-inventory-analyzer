@@ -1,0 +1,3 @@
+software_name,category,matched_projects,project_count,evidence,confidence_score
+Python 3.11,language_runtime,vision-app,1,"Python 3.11: vision-app (tech=python; deps=opencv-python)",0.95
+Docker Desktop,containerization,vision-app,1,"Docker Desktop: vision-app (tech=docker)",0.90

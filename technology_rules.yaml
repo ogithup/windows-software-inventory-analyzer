@@ -1,0 +1,127 @@
+# Simple rule format parsed by the local mapper.
+- technology: "python"
+  category: "language_runtime"
+  base_confidence: 0.70
+  tech_keywords:
+    - "python"
+  dependency_keywords:
+    - "opencv-python"
+    - "django"
+    - "flask"
+    - "fastapi"
+    - "jupyter"
+  software_patterns:
+    - "python"
+    - "anaconda"
+    - "jupyter"
+
+- technology: "nodejs"
+  category: "javascript_runtime"
+  base_confidence: 0.70
+  tech_keywords:
+    - "nodejs"
+    - "react"
+    - "nextjs"
+    - "vue"
+    - "angular"
+    - "express"
+    - "nestjs"
+  dependency_keywords:
+    - "react"
+    - "next"
+    - "vue"
+    - "angular"
+    - "express"
+    - "nestjs"
+  software_patterns:
+    - "node.js"
+    - "nodejs"
+    - "npm"
+
+- technology: "docker"
+  category: "containerization"
+  base_confidence: 0.75
+  tech_keywords:
+    - "docker"
+    - "docker-compose"
+  dependency_keywords:
+    - "docker"
+    - "postgres"
+    - "mysql"
+  software_patterns:
+    - "docker desktop"
+    - "docker"
+
+- technology: "java"
+  category: "language_runtime"
+  base_confidence: 0.68
+  tech_keywords:
+    - "java-maven"
+    - "java-gradle"
+    - "kotlin"
+    - "android"
+    - "spring"
+  dependency_keywords:
+    - "spring"
+    - "maven"
+    - "gradle"
+  software_patterns:
+    - "java"
+    - "jdk"
+    - "jre"
+    - "openjdk"
+
+- technology: "postgresql"
+  category: "database"
+  base_confidence: 0.72
+  tech_keywords:
+    - "postgresql"
+  dependency_keywords:
+    - "postgres"
+    - "psycopg"
+    - "postgresql"
+  software_patterns:
+    - "postgresql"
+    - "pgadmin"
+    - "postgres"
+
+- technology: "mysql"
+  category: "database"
+  base_confidence: 0.72
+  tech_keywords:
+    - "mysql"
+  dependency_keywords:
+    - "mysql"
+    - "mysqlclient"
+    - "mysql-connector"
+  software_patterns:
+    - "mysql"
+    - "workbench"
+
+- technology: "wireshark"
+  category: "network_analysis"
+  base_confidence: 0.60
+  tech_keywords:
+    - "network"
+  dependency_keywords:
+    - "pcap"
+    - "scapy"
+    - "wireshark"
+  software_patterns:
+    - "wireshark"
+    - "npcap"
+
+- technology: "android_studio"
+  category: "mobile_development"
+  base_confidence: 0.78
+  tech_keywords:
+    - "android"
+    - "java-gradle"
+    - "kotlin"
+  dependency_keywords:
+    - "androidx"
+    - "gradle"
+    - "kotlin"
+  software_patterns:
+    - "android studio"
+    - "android"

@@ -1,0 +1,4 @@
+project_name,repo_name,project_path,file_path,file_name,detected_technology,dependencies_summary,matched_keywords,last_modified,searchable_text
+vision-app,vision-app,D:\Projects\vision-app,D:\Projects\vision-app\requirements.txt,requirements.txt,python,"opencv-python; fastapi","opencv,fastapi",2026-06-10T10:00:00+00:00,"requirements.txt python opencv-python fastapi opencv"
+vision-app,vision-app,D:\Projects\vision-app,D:\Projects\vision-app\Dockerfile,Dockerfile,docker,"python:3.11",docker,2026-06-10T10:00:00+00:00,"dockerfile docker python:3.11 docker"
+frontend-app,frontend-app,D:\Projects\frontend-app,D:\Projects\frontend-app\package.json,package.json,"nodejs,react","react; next","react,next",2026-06-12T11:00:00+00:00,"package.json nodejs react next"

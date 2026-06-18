@@ -1,0 +1,5 @@
+path,scan_root,depth,size_bytes,size_human,category,risk
+C:\Python311,C:\Python311,0,157286400,150.00 MB,directory,review
+C:\Program Files\Docker\Docker,C:\Program Files\Docker\Docker,0,2147483648,2.00 GB,directory,manual_review
+C:\Program Files\Microsoft Visual Studio\VC,C:\Program Files\Microsoft Visual Studio\VC,0,52428800,50.00 MB,directory,manual_review
+C:\Tools\MysteryTool,C:\Tools\MysteryTool,0,1610612736,1.50 GB,directory,review

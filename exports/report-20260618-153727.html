@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Windows Software Inventory Analyzer</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --panel: #fffdf8;
+      --ink: #22201c;
+      --muted: #6c665d;
+      --accent: #0f766e;
+      --accent-soft: #d8f0ec;
+      --border: #d9d1c5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #f8f4ec 0%, #f1ede5 100%);
+      color: var(--ink);
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    p.lead { margin: 0 0 24px; color: var(--muted); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .card, section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(34, 32, 28, 0.05);
+    }
+    .card {
+      padding: 16px 18px;
+    }
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .card strong {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    section {
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--accent-soft);
+      color: #11423e;
+      position: sticky;
+      top: 0;
+    }
+    .footer {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Windows Software Inventory Analyzer</h1>
+    <p class="lead">Kurulu yazilimlar, proje eslesmeleri, buyuk klasorler ve karar onerileri icin statik HTML ozeti.</p>
+    <div class="cards"><div class='card'><span>Toplam Program</span><strong>1158</strong></div><div class='card'><span>Eslestirilen Program</span><strong>34</strong></div><div class='card'><span>Buyuk Klasor</span><strong>745</strong></div><div class='card'><span>Taranan Proje</span><strong>1</strong></div></div>
+    <section><h2>Program ve Proje Eslestirmeleri</h2><div class='table-wrap'><table><thead><tr><th>software_name</th><th>category</th><th>decision</th><th>matched_projects</th><th>technologies</th></tr></thead><tbody><tr><td>Anaconda3 2025.12-2 (Python 3.13.9</td><td>AI/ML</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Anaconda3 2025.12-2 (Python 3.13.9 64-bit)</td><td>AI/ML</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Anaconda3 2025.12-2 (Python 3.13.9 64-b…</td><td>AI/ML</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Add to Path (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Core Interpreter (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Development Libraries (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Documentation (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Executables (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 pip Bootstrap (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Standard Library (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Tcl/Tk Support (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr><tr><td>Python 3.10.6 Test Suite (64-bit)</td><td>Backend</td><td>KEEP</td><td>Seng321_Project</td><td>python</td></tr></tbody></table></div></section>
+    <section><h2>En Cok Yer Kaplayabilecek Programlar</h2><div class='table-wrap'><table><thead><tr><th>software_name</th><th>category</th><th>decision</th><th>estimated_size</th><th>matched_projects</th></tr></thead><tbody><tr><td>1001 TVs</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>Antigravity IDE (User)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>Cursor (User)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>Discord</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>GitHub Desktop</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>Microsoft Visual Studio Code (User)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>Pandoc 3.8.3</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>62.46 GB</td><td></td></tr><tr><td>HP Connection Optimizer</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>22.93 GB</td><td></td></tr><tr><td>Visual Studio Community 2022</td><td>Game Development</td><td>UNSURE</td><td>6.13 GB</td><td></td></tr><tr><td>Visual Studio Derleme Araçları 2022 (2)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>3.40 GB</td><td></td></tr><tr><td>Docker Desktop</td><td>Backend</td><td>UNSURE</td><td>3.09 GB</td><td></td></tr><tr><td>IntelliJ IDEA Community Edition 2023.1.4</td><td>Game Development</td><td>UNSURE</td><td>2.85 GB</td><td></td></tr><tr><td>Need for Speed - Most Wanted</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>2.82 GB</td><td></td></tr><tr><td>Microsoft Edge</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>1.66 GB</td><td></td></tr><tr><td>SQL Server Management Studio 22</td><td>Database</td><td>UNSURE</td><td>1.65 GB</td><td></td></tr></tbody></table></div></section>
+    <section><h2>En Belirsiz Programlar</h2><div class='table-wrap'><table><thead><tr><th>software_name</th><th>category</th><th>decision</th><th>confidence_score</th><th>explanation</th></tr></thead><tbody><tr><td>1001 TVs</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>1001 TVs icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>1001 TVs</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>1001 TVs icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>7-Zip 24.08 (x64)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>7-Zip 24.08 (x64) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>7-Zip 24.08 (x64)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>7-Zip 24.08 (x64) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Anki</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Anki icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Antigravity 2.0.6</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Antigravity 2.0.6 icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Antigravity 2.0.6</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Antigravity 2.0.6 icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Antigravity IDE (User)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Antigravity IDE (User) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Antigravity IDE (User)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Antigravity IDE (User) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>App</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>App icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>App Installer</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>App Installer icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Application Verifier x64 External Package (DesktopEditions)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Application Verifier x64 External Package (DesktopEditions) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Application Verifier x64 External Package (DesktopEditions)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Application Verifier x64 External Package (DesktopEditions) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Application Verifier x64 External Package (OnecoreUAP)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Application Verifier x64 External Package (OnecoreUAP) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr><tr><td>Application Verifier x64 External Package (OnecoreUAP)</td><td>Unknown</td><td>MANUAL_REVIEW</td><td>0.55</td><td>Application Verifier x64 External Package (OnecoreUAP) icin guvenilir bir kategori veya proje eslesmesi bulunamadi. Bu nedenle Unknown olarak isaretlenip manuel incelemeye birakildi.</td></tr></tbody></table></div></section>
+    <section><h2>En Buyuk Klasorler</h2><div class='table-wrap'><table><thead><tr><th>path</th><th>size_human</th><th>category</th><th>risk</th></tr></thead><tbody><tr><td>C:\Program Files</td><td>168.11 GB</td><td>installed_programs</td><td>manual_review</td></tr><tr><td>C:\Users\oğuz</td><td>123.19 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Program Files\Epic Games</td><td>120.15 GB</td><td>directory</td><td>manual_review</td></tr><tr><td>C:\Program Files\Epic Games\GTAV</td><td>119.15 GB</td><td>directory</td><td>manual_review</td></tr><tr><td>C:\Users\oğuz\AppData</td><td>69.77 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Users\oğuz\AppData\Local</td><td>62.46 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Users\oğuz\.android</td><td>28.65 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Users\oğuz\.android\avd</td><td>28.64 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Program Files (x86)</td><td>22.93 GB</td><td>installed_programs</td><td>manual_review</td></tr><tr><td>C:\Users\oğuz\Documents</td><td>8.77 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Program Files\dotnet</td><td>8.25 GB</td><td>directory</td><td>manual_review</td></tr><tr><td>C:\Users\oğuz\AppData\Roaming</td><td>7.13 GB</td><td>user_data</td><td>review</td></tr><tr><td>C:\Program Files\Microsoft Visual Studio\2022</td><td>6.13 GB</td><td>directory</td><td>manual_review</td></tr><tr><td>C:\Program Files\Microsoft Visual Studio</td><td>6.13 GB</td><td>directory</td><td>manual_review</td></tr><tr><td>C:\Program Files (x86)\Microsoft</td><td>6.12 GB</td><td>directory</td><td>manual_review</td></tr></tbody></table></div></section>
+    <p class="footer">Rapor olusturma zamani: 2026-06-18T15:37:27.216295+00:00</p>
+  </main>
+</body>
+</html>
