@@ -131,6 +131,22 @@ class RecommendationEntry:
     last_related_project_activity: str
     confidence_score: float
     explanation: str
+    last_used_at: str = ""
+    usage_signal_count: int = 0
+    usage_sources: str = ""
+    usage_status: str = ""
+    review_status: str = ""
+    review_notes: str = ""
+
+
+@dataclass(slots=True)
+class ProgramUsageSignalEntry:
+    software_name: str
+    last_used_at: str
+    usage_signal_count: int
+    usage_sources: str
+    matched_executables: str
+    usage_status: str
 
 
 @dataclass(slots=True)
@@ -145,3 +161,18 @@ class DotnetSdkDecisionEntry:
     global_json_matches: str
     csproj_signals: str
     recommendation: str
+
+
+@dataclass(slots=True)
+class DotnetSdkValidationEntry:
+    project_name: str
+    target_path: str
+    target_type: str
+    selected_sdk: str
+    selected_feature_band: str
+    global_json_version: str
+    required_frameworks: str
+    build_status: str
+    build_exit_code: int
+    validation_mode: str
+    notes: str

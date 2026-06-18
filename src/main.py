@@ -8,11 +8,13 @@ from src.windows_software_inventory_analyzer.pipeline import (
     prepare_config,
     run_analyze_dotnet_sdk,
     run_collect_programs,
+    run_collect_usage_signals,
     run_full_pipeline,
     run_map_software,
     run_recommend,
     run_scan_disk,
     run_scan_projects,
+    run_validate_dotnet_sdks,
 )
 
 
@@ -23,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--verbose", action="store_true", help="Detayli log ac")
 
     subparsers = parser.add_subparsers(dest="command", required=False)
-    for command in ("collect-programs", "scan-disk", "scan-projects", "map-software", "recommend", "analyze-dotnet-sdk", "full-run", "refresh-all"):
+    for command in ("collect-programs", "collect-usage", "scan-disk", "scan-projects", "map-software", "recommend", "analyze-dotnet-sdk", "validate-dotnet-sdks", "full-run", "refresh-all"):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, default=None, help=argparse.SUPPRESS)
         subparser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)
@@ -42,6 +44,8 @@ def main() -> int:
 
     if command == "collect-programs":
         run_collect_programs(config, dry_run=args.dry_run)
+    elif command == "collect-usage":
+        run_collect_usage_signals(config, dry_run=args.dry_run)
     elif command == "scan-disk":
         run_scan_disk(config, dry_run=args.dry_run)
     elif command == "scan-projects":
@@ -52,6 +56,8 @@ def main() -> int:
         run_recommend(config, dry_run=args.dry_run)
     elif command == "analyze-dotnet-sdk":
         run_analyze_dotnet_sdk(config, dry_run=args.dry_run)
+    elif command == "validate-dotnet-sdks":
+        run_validate_dotnet_sdks(config, dry_run=args.dry_run)
     else:
         run_full_pipeline(config, dry_run=args.dry_run)
 

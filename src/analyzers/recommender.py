@@ -8,10 +8,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
+from src.analyzers.manual_review import apply_manual_review_override, load_manual_review_overrides
 from src.windows_software_inventory_analyzer.models import RecommendationEntry
 
 
 LOGGER = logging.getLogger("windows_software_inventory_analyzer.analyzers.recommender")
+MANUAL_REVIEW_OVERRIDES_PATH = Path("manual_review_overrides.csv")
 
 RECOMMENDATION_HEADERS = (
     "software_name",
@@ -24,8 +26,14 @@ RECOMMENDATION_HEADERS = (
     "install_location",
     "estimated_size",
     "last_related_project_activity",
+    "last_used_at",
+    "usage_signal_count",
+    "usage_sources",
+    "usage_status",
     "confidence_score",
     "explanation",
+    "review_status",
+    "review_notes",
 )
 
 
@@ -106,9 +114,13 @@ def build_recommendations(
     mapping_rows: list[dict[str, str]],
     category_rules: list[dict[str, object]],
     project_rows: list[dict[str, str]] | None = None,
+    usage_rows: list[dict[str, str]] | None = None,
+    manual_review_overrides: dict[str, dict[str, str]] | None = None,
 ) -> list[RecommendationEntry]:
     mapping_by_name = {row.get("software_name", "").casefold(): row for row in mapping_rows}
     project_index = build_project_index(project_rows or [])
+    usage_index = {row.get("software_name", "").strip().casefold(): row for row in (usage_rows or []) if row.get("software_name", "").strip()}
+    overrides = manual_review_overrides if manual_review_overrides is not None else load_manual_review_overrides(MANUAL_REVIEW_OVERRIDES_PATH)
 
     recommendations: list[RecommendationEntry] = []
     for program in installed_programs:
@@ -117,11 +129,16 @@ def build_recommendations(
             continue
 
         mapping = mapping_by_name.get(software_name.casefold())
+        usage = usage_index.get(software_name.casefold(), {})
         matched_projects = mapping.get("matched_projects", "") if mapping else ""
         project_links = mapping.get("matched_project_links", "") if mapping else ""
         project_context = mapping.get("project_context", "") if mapping else ""
         project_count = safe_int(mapping.get("project_count", "0") if mapping else "0")
         mapping_confidence = safe_float(mapping.get("confidence_score", "0") if mapping else "0")
+        last_used_at = usage.get("last_used_at", "")
+        usage_signal_count = safe_int(usage.get("usage_signal_count", "0"))
+        usage_sources = usage.get("usage_sources", "")
+        usage_status = usage.get("usage_status", "unknown_usage") or "unknown_usage"
 
         category, protection_reason = categorize_program(program, mapping, category_rules)
         install_location = program.get("install_location", "").strip()
@@ -138,6 +155,20 @@ def build_recommendations(
             mapping_confidence=mapping_confidence,
             estimated_size=estimated_size,
             last_related_project_activity=last_related_project_activity,
+            last_used_at=last_used_at,
+            usage_signal_count=usage_signal_count,
+            usage_sources=usage_sources,
+            usage_status=usage_status,
+        )
+        review_status = ""
+        review_notes = ""
+        override = overrides.get(software_name.casefold())
+        decision, explanation, review_status, review_notes = apply_manual_review_override(
+            decision=decision,
+            explanation=explanation,
+            review_status=review_status,
+            review_notes=review_notes,
+            override=override,
         )
 
         recommendations.append(
@@ -152,8 +183,14 @@ def build_recommendations(
                 install_location=install_location,
                 estimated_size=estimated_size,
                 last_related_project_activity=last_related_project_activity,
+                last_used_at=last_used_at,
+                usage_signal_count=usage_signal_count,
+                usage_sources=usage_sources,
+                usage_status=usage_status,
                 confidence_score=round(confidence_score, 2),
                 explanation=explanation,
+                review_status=review_status,
+                review_notes=review_notes,
             )
         )
 
@@ -256,6 +293,10 @@ def decide_recommendation(
     mapping_confidence: float,
     estimated_size: str,
     last_related_project_activity: str,
+    last_used_at: str,
+    usage_signal_count: int,
+    usage_sources: str,
+    usage_status: str,
 ) -> tuple[str, float, str]:
     software_name = program.get("name", "").strip()
     publisher = program.get("publisher", "").strip()
@@ -280,6 +321,8 @@ def decide_recommendation(
             f"{software_name} {project_count} projeyle iliskili bulundu. "
             f"Eslestirme guveni {mapping_confidence:.2f} seviyesinde."
         )
+        if last_used_at:
+            explanation += f" Son kullanim izi {last_used_at} tarihinde goruldu."
         if last_related_project_activity:
             explanation += f" Ilgili proje aktivitesi en son {last_related_project_activity} tarihinde goruluyor."
         if project_context:
@@ -294,6 +337,8 @@ def decide_recommendation(
                 f"{software_name} {category} kategorisinde ama aktif proje eslesmesi bulunamadi. "
                 f"Tahmini boyutu {estimated_size} oldugu icin silmeden once emin olmak gerekir."
             )
+            if last_used_at:
+                explanation += f" Son kullanim izi {last_used_at} tarihinde goruldu."
             if project_context:
                 explanation += f" Kayitli proje notu/aciklamasi: {shorten_context(project_context)}."
             return "UNSURE", 0.66, explanation
@@ -302,6 +347,8 @@ def decide_recommendation(
             f"{software_name} {category} kategorisinde, ancak aktif proje iliskisi tespit edilmedi. "
             "Daha once gecici kullandiysan kaldirilabilir olabilir ama otomatik guven dusuk."
         )
+        if usage_status == "usage_detected" and last_used_at:
+            explanation += f" Sistem son kullanim izini {last_used_at} tarihinde gordu."
         if project_context:
             explanation += f" Kayitli proje notu/aciklamasi: {shorten_context(project_context)}."
         return "UNSURE", 0.60, explanation
@@ -317,6 +364,8 @@ def decide_recommendation(
         f"{software_name} icin proje iliskisi bulunamadi ve koruma listesinde yer almiyor. "
         "Eger artik kullanmiyorsan kaldirilabilir olabilir."
     )
+    if usage_status == "usage_detected" and last_used_at:
+        explanation += f" Ancak sistem son kullanim izini {last_used_at} tarihinde gordu."
     if estimated_size:
         explanation += f" Tahmini boyutu {estimated_size}."
     return "CAN_REMOVE", 0.58, explanation

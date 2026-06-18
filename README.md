@@ -104,11 +104,13 @@ Onerilen komutlar:
 
 ```powershell
 python -m src.main collect-programs --config config.yaml
+python -m src.main collect-usage --config config.yaml
 python -m src.main scan-disk --config config.yaml
 python -m src.main scan-projects --config config.yaml
 python -m src.main map-software --config config.yaml
 python -m src.main recommend --config config.yaml
 python -m src.main analyze-dotnet-sdk --config config.yaml
+python -m src.main validate-dotnet-sdks --config config.yaml
 ```
 
 Dry-run:
@@ -138,6 +140,8 @@ python dashboard.py
 ```
 
 Dashboard icinde `Verileri Yenile` butonu vardir. Bu buton `refresh-all` komutunu arka planda calistirir ve tum CSV raporlarini gunceller.
+
+`MANUAL_REVIEW` veya `UNSURE` durumundaki programlar icin dashboard icinde `Manual Review Wizard` bulunur. Burada verdigin cevaplar `manual_review_overrides.csv` dosyasina yazilir ve sonraki analizlerde recommendation kararini override eder.
 
 Alternatif:
 
@@ -174,6 +178,7 @@ Testler su senaryolari kapsar:
 
 - `installed_programs.csv`
 - `installed_programs.json`
+- `program_usage_signals.csv`
 - `disk_usage.csv`
 - `developer_caches.csv`
 - `project_tech_stack.csv`
@@ -181,6 +186,7 @@ Testler su senaryolari kapsar:
 - `software_project_mapping.csv`
 - `recommendations.csv`
 - `dotnet_sdk_decision_report.csv`
+- `sdk_validation_report.csv`
 
 Ek raporlar:
 

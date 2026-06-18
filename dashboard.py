@@ -9,6 +9,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from src.analyzers.manual_review import evaluate_manual_review, load_manual_review_overrides, save_manual_review_override
 from src.analyzers.runtime_advisor import build_runtime_inventory
 
 
@@ -18,6 +19,7 @@ EXPORTS_DIR = BASE_DIR / "exports"
 REPORT_HTML_PATH = BASE_DIR / "report.html"
 STREAMLIT_LAUNCH_FLAG = "WSIA_STREAMLIT_LAUNCHED"
 DEFAULT_CONFIG_PATH = BASE_DIR / "config.yaml"
+MANUAL_REVIEW_OVERRIDES_PATH = BASE_DIR / "manual_review_overrides.csv"
 
 
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -81,6 +83,13 @@ def build_search_index(
                 "project_links": recommendation.get("project_links", "") or ",".join(project_links),
                 "project_context": recommendation.get("project_context", "") or " | ".join(project_contexts),
                 "project_count": recommendation.get("project_count", ""),
+                "estimated_size": recommendation.get("estimated_size", ""),
+                "last_used_at": recommendation.get("last_used_at", ""),
+                "usage_signal_count": recommendation.get("usage_signal_count", ""),
+                "usage_sources": recommendation.get("usage_sources", ""),
+                "usage_status": recommendation.get("usage_status", ""),
+                "review_status": recommendation.get("review_status", ""),
+                "review_notes": recommendation.get("review_notes", ""),
                 "confidence_score": recommendation.get("confidence_score", "") or mapping.get("confidence_score", ""),
                 "explanation": recommendation.get("explanation", ""),
                 "evidence": mapping.get("evidence", ""),
@@ -95,6 +104,8 @@ def build_search_index(
                         recommendation.get("explanation", ""),
                         mapping.get("evidence", ""),
                         recommendation.get("project_links", ""),
+                        recommendation.get("last_used_at", ""),
+                        recommendation.get("usage_sources", ""),
                         ",".join(technologies),
                     ]
                 ).casefold(),
@@ -357,6 +368,26 @@ def find_program_by_name(rows: list[dict[str, str]], software_name: str) -> dict
     return {}
 
 
+def apply_dashboard_manual_review_overrides(
+    recommendations: list[dict[str, str]],
+    overrides: dict[str, dict[str, str]],
+) -> list[dict[str, str]]:
+    updated_rows: list[dict[str, str]] = []
+    for row in recommendations:
+        software_name = row.get("software_name", "").strip()
+        override = overrides.get(software_name.casefold())
+        if not override:
+            updated_rows.append(row)
+            continue
+        updated = dict(row)
+        updated["decision"] = override.get("reviewed_decision", updated.get("decision", ""))
+        updated["review_status"] = f"USER_REVIEWED {override.get('last_reviewed_at', '').strip()}".strip()
+        updated["review_notes"] = override.get("review_notes", "")
+        updated["explanation"] = override.get("reviewed_explanation", updated.get("explanation", ""))
+        updated_rows.append(updated)
+    return updated_rows
+
+
 def runtime_family_key_from_label(label: str) -> str:
     lookup = {
         ".NET SDK": "dotnet_sdk",
@@ -372,6 +403,235 @@ def runtime_family_key_from_label(label: str) -> str:
 
 def normalize_windows_path(value: str) -> str:
     return value.replace("/", "\\").rstrip("\\").casefold()
+
+
+def parse_iso_datetime(value: str) -> datetime | None:
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def classify_program_family(software_name: str, category: str) -> str:
+    lowered_name = software_name.casefold()
+    lowered_category = category.casefold()
+    if ".net sdk" in lowered_name:
+        return "dotnet_sdk"
+    if ".net runtime" in lowered_name or "asp.net" in lowered_name:
+        return "dotnet_runtime"
+    if "visual studio" in lowered_name:
+        return "visual_studio"
+    if "windows sdk" in lowered_name:
+        return "windows_sdk"
+    if "visual c++" in lowered_name or "redistributable" in lowered_name:
+        return "visual_cpp"
+    if "nvidia" in lowered_name or "driver" in lowered_name or "chipset" in lowered_name:
+        return "driver"
+    if lowered_category == "runtime/system":
+        return "runtime_system"
+    return "general"
+
+
+def summarize_last_used(last_used_at: str) -> tuple[str, str]:
+    parsed = parse_iso_datetime(last_used_at)
+    if parsed is None:
+        return "Bilinmiyor", "Sistem bu program icin otomatik son kullanim izi bulamadi."
+    now = datetime.now(timezone.utc)
+    days = max(0, int((now - parsed).total_seconds() // 86400))
+    if days <= 30:
+        return parsed.date().isoformat(), "Son kullanim izi yakin zamanda goruldu."
+    if days <= 180:
+        return parsed.date().isoformat(), "Son kullanim izi son 6 ay icinde goruldu."
+    if days <= 365:
+        return parsed.date().isoformat(), "Son kullanim izi 6-12 ay araliginda goruldu."
+    return parsed.date().isoformat(), "Son kullanim izi 12 aydan daha eski gorunuyor."
+
+
+def build_removal_scenario(
+    selected_program: dict[str, str],
+    recommendations: list[dict[str, str]],
+    dotnet_sdk_report: list[dict[str, str]],
+    sdk_validation_report: list[dict[str, str]],
+) -> dict[str, object]:
+    software_name = selected_program.get("software_name", "").strip()
+    category = selected_program.get("category", "").strip()
+    family = classify_program_family(software_name, category)
+    project_names = [item.strip() for item in selected_program.get("matched_projects", "").split(",") if item.strip()]
+    project_count = len(project_names)
+    estimated_size = selected_program.get("estimated_size", "").strip() or "Bilinmiyor"
+    last_used_label, usage_summary = summarize_last_used(selected_program.get("last_used_at", ""))
+    usage_status = selected_program.get("usage_status", "").strip() or "unknown_usage"
+    decision = selected_program.get("decision", "").strip()
+
+    family_rows = [
+        row
+        for row in recommendations
+        if classify_program_family(row.get("software_name", ""), row.get("category", "")) == family
+    ]
+    family_rows = sorted(
+        family_rows,
+        key=lambda item: (
+            item.get("software_name", "").casefold(),
+            item.get("last_used_at", ""),
+        ),
+    )
+
+    risk_flags: list[str] = []
+    steps: list[dict[str, str]] = []
+    final_label = "MANUAL_REVIEW"
+    final_reason = "Bu program icin kaldirma karari once proje, kullanim ve bagimlilik sinyalleriyle birlikte okunmali."
+
+    steps.append(
+        {
+            "step": "1. Program baglamini oku",
+            "status": "info",
+            "detail": (
+                f"Kategori: {category or 'Yok'} | Oneri: {decision or 'Yok'} | Tahmini boyut: {estimated_size} | "
+                f"Son kullanim: {last_used_label}"
+            ),
+        }
+    )
+
+    if project_count > 0:
+        risk_flags.append("project_linked")
+        steps.append(
+            {
+                "step": "2. Proje baglantisini kontrol et",
+                "status": "warn",
+                "detail": f"Bu program {project_count} projeyle eslesiyor: {', '.join(project_names[:6])}",
+            }
+        )
+    else:
+        steps.append(
+            {
+                "step": "2. Proje baglantisini kontrol et",
+                "status": "ok",
+                "detail": "Eslesen proje bulunmadi. Bu durum tek basina silinebilir demek degil ama risk daha dusuk olabilir.",
+            }
+        )
+
+    if usage_status == "usage_detected":
+        status = "warn" if "yakin zamanda" in usage_summary or "6 ay" in usage_summary else "info"
+        steps.append(
+            {
+                "step": "3. Son kullanim izini kontrol et",
+                "status": status,
+                "detail": f"{usage_summary} Kaynaklar: {selected_program.get('usage_sources', '') or 'Yok'}",
+            }
+        )
+        if status == "warn":
+            risk_flags.append("recent_usage")
+    else:
+        steps.append(
+            {
+                "step": "3. Son kullanim izini kontrol et",
+                "status": "ok",
+                "detail": "Otomatik kullanim izi bulunamadi. Bu durum programin gereksiz oldugunu kanitlamaz ama kaldirma adayi olmasini guclendirir.",
+            }
+        )
+
+    if family in {"runtime_system", "dotnet_runtime", "windows_sdk", "visual_cpp", "driver", "visual_studio"}:
+        risk_flags.append("protected_family")
+        steps.append(
+            {
+                "step": "4. Sistem veya toolchain riskini kontrol et",
+                "status": "warn",
+                "detail": "Bu program runtime, SDK, driver veya IDE ailesinde gorunuyor. Otomatik silme yerine bagimlilik testi yapilmasi gerekir.",
+            }
+        )
+    else:
+        steps.append(
+            {
+                "step": "4. Sistem veya toolchain riskini kontrol et",
+                "status": "ok",
+                "detail": "Program korumali runtime/system ailesinde gorunmuyor.",
+            }
+        )
+
+    related_sdk_rows: list[dict[str, str]] = []
+    related_validation_rows: list[dict[str, str]] = []
+    if family == "dotnet_sdk":
+        related_sdk_rows = [row for row in dotnet_sdk_report if row.get("sdk_version", "") and row.get("sdk_version", "") in software_name]
+        if related_sdk_rows:
+            sdk_status = related_sdk_rows[0].get("status", "")
+            sdk_recommendation = related_sdk_rows[0].get("recommendation", "")
+            status = "warn" if sdk_status in {"IDE_DEPENDENT", "MANUAL_REVIEW", "DO_NOT_REMOVE"} else "ok"
+            steps.append(
+                {
+                    "step": "5. .NET SDK bagimliligini kontrol et",
+                    "status": status,
+                    "detail": f"SDK raporu durumu: {sdk_status or 'Yok'} | {sdk_recommendation or 'Ek not yok.'}",
+                }
+            )
+            if status == "warn":
+                risk_flags.append("sdk_dependent")
+        else:
+            steps.append(
+                {
+                    "step": "5. .NET SDK bagimliligini kontrol et",
+                    "status": "info",
+                    "detail": "Bu SDK icin karar raporunda dogrudan satir bulunamadi. Once genel .NET SDK raporunu ve build testini kontrol et.",
+                }
+            )
+
+        related_validation_rows = [
+            row
+            for row in sdk_validation_report
+            if row.get("selected_sdk", "").strip() and row.get("selected_sdk", "").strip() in software_name
+        ]
+        if related_validation_rows:
+            validation_statuses = {row.get("build_status", "") for row in related_validation_rows}
+            steps.append(
+                {
+                    "step": "6. Gercek build dogrulamasini kontrol et",
+                    "status": "warn" if "BUILD_FAILED" in validation_statuses or "VALIDATION_FAILED" in validation_statuses else "ok",
+                    "detail": f"Bu SDK ile eslesen {len(related_validation_rows)} build kaydi bulundu. Durumlar: {', '.join(sorted(validation_statuses))}",
+                }
+            )
+            if "BUILD_FAILED" in validation_statuses or "VALIDATION_FAILED" in validation_statuses:
+                risk_flags.append("build_not_clean")
+        else:
+            steps.append(
+                {
+                    "step": "6. Gercek build dogrulamasini kontrol et",
+                    "status": "info",
+                    "detail": "Bu SDK icin proje bazli build kaydi bulunmadi. Kaldirmadan once '.NET SDK Build Testi' butonunu kullan.",
+                }
+            )
+
+    if "protected_family" not in risk_flags and "project_linked" not in risk_flags and "recent_usage" not in risk_flags:
+        final_label = "LOWER_RISK_CANDIDATE"
+        final_reason = "Su anki verilere gore proje bagi yok, yakin kullanim izi yok ve korumali runtime/system ailesinde degil."
+    elif family == "dotnet_sdk" and not related_validation_rows and any(row.get("status", "") == "MANUAL_REVIEW" for row in related_sdk_rows):
+        final_label = "TEST_FIRST"
+        final_reason = "Bu SDK ayni bandin eski patch surumu olabilir; once build testi yap, sonra kaldirmayi dusun."
+    elif "protected_family" in risk_flags or "sdk_dependent" in risk_flags:
+        final_label = "DO_NOT_REMOVE_YET"
+        final_reason = "Program system/runtime/SDK/IDE ailesinde oldugu icin once bagimlilik testi veya IDE dogrulamasi gerekli."
+    elif "project_linked" in risk_flags or "recent_usage" in risk_flags:
+        final_label = "VERIFY_USAGE_FIRST"
+        final_reason = "Program aktif proje veya kullanim sinyali gosteriyor. Kaldirmadan once bu eslesmenin gercekten sana ait olup olmadigini kontrol et."
+
+    return {
+        "family": family,
+        "estimated_size": estimated_size,
+        "project_names": project_names,
+        "project_count": str(project_count),
+        "last_used_label": last_used_label,
+        "steps": steps,
+        "risk_flags": risk_flags,
+        "final_label": final_label,
+        "final_reason": final_reason,
+        "family_rows": family_rows[:12],
+        "related_sdk_rows": related_sdk_rows,
+        "related_validation_rows": related_validation_rows[:12],
+    }
 
 
 def build_project_hierarchy(projects: list[dict[str, str]]) -> tuple[list[dict[str, str]], dict[str, list[dict[str, str]]]]:
@@ -474,6 +734,30 @@ def refresh_analysis_data() -> tuple[bool, str]:
     return True, output or "Veriler basariyla yenilendi."
 
 
+def run_dotnet_sdk_validation() -> tuple[bool, str]:
+    command = [sys.executable, "-m", "src.main", "validate-dotnet-sdks"]
+    if DEFAULT_CONFIG_PATH.exists():
+        command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=BASE_DIR,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+        )
+    except OSError as error:
+        return False, f".NET SDK validation baslatilamadi: {error}"
+
+    output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip()).strip()
+    if completed.returncode != 0:
+        return False, output or ".NET SDK validation basarisiz oldu."
+    return True, output or ".NET SDK validation tamamlandi."
+
+
 def launch_streamlit() -> int:
     env = os.environ.copy()
     env[STREAMLIT_LAUNCH_FLAG] = "1"
@@ -495,12 +779,17 @@ def render_streamlit() -> None:
         layout="wide",
     )
 
-    recommendations = load_csv_rows(OUTPUT_DIR / "recommendations.csv")
+    manual_review_overrides = load_manual_review_overrides(MANUAL_REVIEW_OVERRIDES_PATH)
+    recommendations = apply_dashboard_manual_review_overrides(
+        load_csv_rows(OUTPUT_DIR / "recommendations.csv"),
+        manual_review_overrides,
+    )
     installed_programs = load_csv_rows(OUTPUT_DIR / "installed_programs.csv")
     mappings = load_csv_rows(OUTPUT_DIR / "software_project_mapping.csv")
     disk_usage = load_csv_rows(OUTPUT_DIR / "disk_usage.csv")
     projects = load_csv_rows(OUTPUT_DIR / "project_tech_stack.csv")
     dotnet_sdk_report = load_csv_rows(OUTPUT_DIR / "dotnet_sdk_decision_report.csv")
+    sdk_validation_report = load_csv_rows(OUTPUT_DIR / "sdk_validation_report.csv")
     search_rows = build_search_index(recommendations, mappings, projects)
     project_tools_index = build_project_tools_index(search_rows)
     root_projects, child_projects_index = build_project_hierarchy(projects)
@@ -532,6 +821,26 @@ def render_streamlit() -> None:
     with info_col:
         config_hint = str(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else "Varsayilan config bulunamadi"
         st.caption(f"Yenileme butonu tum analizleri `refresh-all` ile calistirir. Config: {config_hint}")
+
+    validation_col, validation_info_col = st.columns([1, 2.5])
+    with validation_col:
+        if st.button(".NET SDK Build Testi", use_container_width=True):
+            with st.spinner(".NET projeleri icin dotnet --version ve dotnet build calistiriliyor..."):
+                success, message = run_dotnet_sdk_validation()
+            if success:
+                st.success(".NET SDK build dogrulamasi tamamlandi.")
+                if message:
+                    st.caption(message[-500:] if len(message) > 500 else message)
+                st.rerun()
+            else:
+                st.error(".NET SDK build dogrulamasi tamamlanamadi.")
+                if message:
+                    st.code(message[-2000:] if len(message) > 2000 else message, language="text")
+    with validation_info_col:
+        st.caption(
+            "Bu buton her .sln/.csproj icin secilen SDK'yi denetler ve build sonucu `sdk_validation_report.csv` icine yazar. "
+            "Build ciktilari proje klasorlerine degil, `data/output/sdk_validation_artifacts/` altina yonlendirilir."
+        )
 
     categories = sorted({row.get("category", "") for row in recommendations if row.get("category", "")}, key=str.casefold)
     decisions = sorted({row.get("decision", "") for row in recommendations if row.get("decision", "")}, key=str.casefold)
@@ -599,12 +908,17 @@ def render_streamlit() -> None:
                 st.markdown(f"**Kategori:** {selected_program.get('category', '')}")
                 st.markdown(f"**Karar:** {selected_program.get('decision', '')}")
                 st.markdown(f"**Guven:** {selected_program.get('confidence_score', '')}")
+                st.markdown(f"**Tahmini Boyut:** {selected_program.get('estimated_size', '') or 'Bilinmiyor'}")
                 st.markdown(f"**Projeler:** {selected_program.get('matched_projects', '') or 'Yok'}")
+                st.markdown(f"**Son Kullanim:** {selected_program.get('last_used_at', '') or 'Bilinmiyor'}")
+                st.markdown(f"**Kullanim Sinyali:** {selected_program.get('usage_status', '') or 'unknown_usage'}")
             with detail_right:
                 st.markdown("**Neden Bu Karar Verildi?**")
                 st.write(selected_program.get("explanation", "") or "Acilama yok.")
                 st.markdown("**Eslestirme Kaniti**")
                 st.write(selected_program.get("evidence", "") or "Kanıt yok.")
+                st.markdown("**Kullanim Kaynaklari**")
+                st.write(selected_program.get("usage_sources", "") or "Kullanim sinyali bulunamadi.")
                 st.markdown("**GitHub Linkleri**")
                 project_links = [item.strip() for item in selected_program.get("project_links", "").split(",") if item.strip()]
                 if project_links:
@@ -612,6 +926,152 @@ def render_streamlit() -> None:
                         st.markdown(f"- [GitHub Repo]({link})")
                 else:
                     st.write("Bagli GitHub linki bulunamadi.")
+
+        scenario = build_removal_scenario(selected_program, recommendations, dotnet_sdk_report, sdk_validation_report)
+        st.subheader("Kaldirma Oncesi Senaryo Wizard")
+        st.caption(
+            "Bu panel secili program icin terminalde elle yaptigin kontrol akisini UI tarafinda toplar. "
+            "Programin proje bagi, son kullanim izi, toolchain riski ve gerekiyorsa build testine gore ilerler."
+        )
+        with st.container(border=True):
+            st.markdown(f"**Genel Sonuc:** {scenario.get('final_label', '')}")
+            st.write(scenario.get("final_reason", ""))
+
+            for step in scenario.get("steps", []):
+                status = step.get("status", "info")
+                prefix = {
+                    "ok": "DUSUK RISK",
+                    "warn": "DIKKAT",
+                    "info": "BILGI",
+                }.get(status, "BILGI")
+                st.markdown(f"**{prefix} | {step.get('step', '')}**")
+                st.write(step.get("detail", ""))
+
+            project_names = scenario.get("project_names", [])
+            if project_names:
+                st.markdown("**Bagli projeler**")
+                for project_name in project_names[:8]:
+                    st.markdown(f"- {project_name}")
+
+            family_rows = scenario.get("family_rows", [])
+            if family_rows:
+                st.markdown("**Ayni ailede bulunan benzer programlar**")
+                family_preview = [
+                    {
+                        "software_name": row.get("software_name", ""),
+                        "decision": row.get("decision", ""),
+                        "estimated_size": row.get("estimated_size", ""),
+                        "last_used_at": row.get("last_used_at", ""),
+                    }
+                    for row in family_rows
+                ]
+                st.dataframe(family_preview, use_container_width=True, hide_index=True)
+
+            related_sdk_rows = scenario.get("related_sdk_rows", [])
+            if related_sdk_rows:
+                st.markdown("**Bu program icin .NET SDK karar kayitlari**")
+                st.dataframe(related_sdk_rows, use_container_width=True, hide_index=True)
+
+            related_validation_rows = scenario.get("related_validation_rows", [])
+            if related_validation_rows:
+                st.markdown("**Bu programla ilgili build dogrulama kayitlari**")
+                st.dataframe(related_validation_rows, use_container_width=True, hide_index=True)
+
+            scenario_family = scenario.get("family", "")
+            if scenario_family == "dotnet_sdk":
+                st.info(
+                    "Bu program .NET SDK olarak gorunuyor. Once '.NET SDK Build Testi' butonunu calistir, sonra ayni feature "
+                    "bandde kalan en yeni patch'i tutup daha eski patch'leri kademeli degerlendir."
+                )
+            elif scenario_family in {"visual_studio", "windows_sdk", "visual_cpp", "driver", "runtime_system", "dotnet_runtime"}:
+                st.info(
+                    "Bu program toolchain/runtime ailesinde. Kaldirma karari vermeden once projelerin acilip acilmadigini, "
+                    "IDE'nin sorunsuz calisip calismadigini ve gerekirse build/test akisini elle kontrol et."
+                )
+            else:
+                st.info(
+                    "Bu program normal uygulama gibi gorunuyor. Proje bagi yoksa, son kullanim izi eskiyse ve sen de ne ise "
+                    "yaradigini bilmiyorsan kaldirma adayi olabilir."
+                )
+
+    if selected_program and selected_program.get("decision", "") in {"MANUAL_REVIEW", "UNSURE"}:
+        st.subheader("Manual Review Wizard")
+        st.caption(
+            "Bu sihirbaz programi tanidigin, kullanip kullanmadigin ve daha yeni alternatif olup olmadigi gibi bilgileri "
+            "toplar. Kaydettigin sonuc sonraki analizlerde recommendation sonucunu override eder."
+        )
+        existing_override = manual_review_overrides.get(selected_program.get("software_name", "").casefold(), {})
+        detected_last_used = selected_program.get("last_used_at", "").strip()
+        if detected_last_used:
+            st.info(f"Sistem bu program icin son kullanim izini {detected_last_used} tarihinde gordu. Bu bilgi sorularda referans olarak kullanilabilir.")
+        else:
+            st.info("Bu program icin otomatik son kullanim izi bulunamadi. Kullanim sorusunu hatirladigin kadariyla cevapla.")
+
+        review_columns = st.columns(3)
+        with review_columns[0]:
+            user_knows_program = st.selectbox(
+                "Bu programi taniyor musun?",
+                options=["unknown", "yes", "no"],
+                index=["unknown", "yes", "no"].index(existing_override.get("user_knows_program", "unknown")),
+                key=f"review_knows_{selected_program.get('software_name', '')}",
+            )
+            used_recently = st.selectbox(
+                "Sistem son kullanim bilgisini dikkate alinca son 6-12 ayda kullandigini dusunuyor musun?",
+                options=["unknown", "yes", "no"],
+                index=["unknown", "yes", "no"].index(existing_override.get("used_recently", "unknown")),
+                key=f"review_recent_{selected_program.get('software_name', '')}",
+            )
+        with review_columns[1]:
+            project_required = st.selectbox(
+                "Herhangi bir proje icin gerekli mi?",
+                options=["unknown", "yes", "no"],
+                index=["unknown", "yes", "no"].index(existing_override.get("project_required", "unknown")),
+                key=f"review_project_{selected_program.get('software_name', '')}",
+            )
+            has_newer_alternative = st.selectbox(
+                "Ayni islevi goren daha yeni bir surum/alternatif var mi?",
+                options=["unknown", "yes", "no"],
+                index=["unknown", "yes", "no"].index(existing_override.get("has_newer_alternative", "unknown")),
+                key=f"review_newer_{selected_program.get('software_name', '')}",
+            )
+        with review_columns[2]:
+            is_system_component = st.selectbox(
+                "Bu bir runtime/system/driver bileseni mi?",
+                options=["unknown", "yes", "no"],
+                index=["unknown", "yes", "no"].index(existing_override.get("is_system_component", "unknown")),
+                key=f"review_system_{selected_program.get('software_name', '')}",
+            )
+            review_notes = st.text_area(
+                "Kisa not",
+                value=existing_override.get("review_notes", ""),
+                height=120,
+                key=f"review_notes_{selected_program.get('software_name', '')}",
+            )
+
+        review_result = evaluate_manual_review(
+            software_name=selected_program.get("software_name", ""),
+            category=selected_program.get("category", ""),
+            original_decision=selected_program.get("decision", ""),
+            user_knows_program=user_knows_program,
+            used_recently=used_recently,
+            project_required=project_required,
+            has_newer_alternative=has_newer_alternative,
+            is_system_component=is_system_component,
+            review_notes=review_notes,
+        )
+
+        with st.container(border=True):
+            st.markdown(f"**Onerilen ikinci karar:** {review_result.get('reviewed_decision', '')}")
+            st.write(review_result.get("reviewed_explanation", ""))
+
+        save_columns = st.columns([1, 1.8])
+        with save_columns[0]:
+            if st.button("Review Sonucunu Kaydet", use_container_width=True):
+                save_manual_review_override(MANUAL_REVIEW_OVERRIDES_PATH, review_result)
+                st.success("Manual review sonucu kaydedildi.")
+                st.rerun()
+        with save_columns[1]:
+            st.caption("Kaydettikten sonra `Verileri Yenile` butonu ile bu karar `recommendations.csv` tarafina da islenir.")
 
     show_runtime_helper = (
         selected_program.get("category", "") == "Runtime/System"
@@ -671,6 +1131,26 @@ def render_streamlit() -> None:
             st.markdown("`KEEP_LATEST`: ayni feature band icindeki en yeni patch.")
             st.markdown("`SAFE_OLDER_PATCH`: ayni bandda daha yeni patch var ve net proje kaniti yok.")
             st.markdown("`MANUAL_REVIEW`: karar icin build testi veya IDE kontrolu gerekli.")
+
+    if sdk_validation_report:
+        st.subheader(".NET SDK Build Validation")
+        st.caption(
+            "Bu tablo proje bazli `dotnet --version` ve `dotnet build` sonucunu gosterir. "
+            "Gercek build dogrulamasi yaptigi icin karar kalitesi, sadece statik analizden daha yuksektir."
+        )
+        status_order = ["BUILD_PASSED", "BUILD_FAILED", "DISCOVERED_ONLY", "VALIDATION_FAILED"]
+        present_statuses = [status for status in status_order if any(row.get("build_status", "") == status for row in sdk_validation_report)]
+        selected_build_statuses = set(st.multiselect(".NET Build Durum Filtresi", present_statuses, default=present_statuses))
+        filtered_validation_rows = [
+            row for row in sdk_validation_report if not selected_build_statuses or row.get("build_status", "") in selected_build_statuses
+        ]
+        st.dataframe(filtered_validation_rows, use_container_width=True, hide_index=True)
+        with st.container(border=True):
+            st.markdown("**Build sonucu nasil yorumlanir?**")
+            st.markdown("`BUILD_PASSED`: Bu hedef secilen SDK ile gercekten derlendi. Ayni feature band icindeki daha eski patch'ler daha guvenli aday olur.")
+            st.markdown("`BUILD_FAILED`: Build denemesi basarisiz oldu. Hata notunu incelemeden eski SDK silme.")
+            st.markdown("`DISCOVERED_ONLY`: Dry-run veya sadece tespit modu; build dogrulamasi yapilmadi.")
+            st.markdown("`VALIDATION_FAILED`: Komut calismadi veya timeout oldu; elle inceleme gerekli.")
 
     st.subheader("Proje Detay Paneli")
     project_label_map = {

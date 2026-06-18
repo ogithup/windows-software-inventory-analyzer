@@ -1,0 +1,4 @@
+software_name,last_used_at,usage_signal_count,usage_sources,matched_executables,usage_status
+Visual Studio Code,2026-06-10T20:14:00+00:00,5,"recent,start_menu_user,prefetch","Code.exe,Visual Studio Code.lnk",usage_detected
+Docker Desktop,2026-05-28T08:32:11+00:00,2,"start_menu_common,prefetch","Docker Desktop.exe",usage_detected
+Wireshark,,0,,,unknown_usage
