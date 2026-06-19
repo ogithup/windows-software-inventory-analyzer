@@ -188,13 +188,29 @@ def find_projects_for_rule(
         if not project_name:
             continue
 
-        project_technologies = split_csv_like_field(project.get("detected_technologies", ""))
+        project_technologies = split_csv_like_field(
+            ",".join(
+                [
+                    project.get("detected_technologies", ""),
+                    project.get("detected_libraries", ""),
+                    project.get("framework_signals", ""),
+                ]
+            )
+        )
         project_dependencies = split_dependency_summary(project.get("dependencies_summary", ""))
+        project_evidence = " ".join(
+            [
+                project.get("code_evidence", ""),
+                project.get("repo_description", ""),
+                project.get("user_notes", ""),
+            ]
+        ).casefold()
 
         tech_matches = [tech for tech in technologies if tech in project_technologies]
         dependency_matches = [dep for dep in dependency_keywords if contains_token(project_dependencies, dep)]
+        evidence_matches = [keyword for keyword in dependency_keywords if keyword in project_evidence]
 
-        if not tech_matches and not dependency_matches:
+        if not tech_matches and not dependency_matches and not evidence_matches:
             continue
 
         matched_projects.add(project_name)
@@ -209,6 +225,8 @@ def find_projects_for_rule(
             evidence.append(f"tech={','.join(sorted(tech_matches))}")
         if dependency_matches:
             evidence.append(f"deps={','.join(sorted(dependency_matches))}")
+        if evidence_matches:
+            evidence.append(f"code={','.join(sorted(evidence_matches))}")
         evidence_parts.append(f"{project_name} ({'; '.join(evidence)})")
 
         confidence = base_confidence
@@ -216,7 +234,9 @@ def find_projects_for_rule(
             confidence += 0.2
         if dependency_matches:
             confidence += 0.2
-        if len(tech_matches) + len(dependency_matches) > 1:
+        if evidence_matches:
+            confidence += 0.15
+        if len(tech_matches) + len(dependency_matches) + len(evidence_matches) > 1:
             confidence += 0.1
         best_confidence = max(best_confidence, min(confidence, 0.99))
 

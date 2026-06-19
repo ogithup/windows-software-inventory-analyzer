@@ -83,6 +83,9 @@ class ProjectTechStackEntry:
     user_notes: str
     detected_technologies: str
     dependencies_summary: str
+    detected_libraries: str
+    framework_signals: str
+    code_evidence: str
     last_modified: str
     file_count: int
     important_files: str
@@ -103,6 +106,19 @@ class ProjectFileIndexEntry:
     matched_keywords: str
     last_modified: str
     searchable_text: str
+
+
+@dataclass(slots=True)
+class ProjectCodeSignalEntry:
+    project_name: str
+    repo_name: str
+    project_path: str
+    github_url: str
+    detected_libraries: str
+    framework_signals: str
+    code_evidence: str
+    source_files_scanned: int
+    last_modified: str
 
 
 @dataclass(slots=True)
@@ -129,8 +145,14 @@ class RecommendationEntry:
     install_location: str
     estimated_size: str
     last_related_project_activity: str
+    risk_score: float
+    cleanup_priority_score: float
     confidence_score: float
     explanation: str
+    purpose: str = ""
+    typical_usage: str = ""
+    related_technologies: str = ""
+    removal_risk_summary: str = ""
     last_used_at: str = ""
     usage_signal_count: int = 0
     usage_sources: str = ""
@@ -147,6 +169,22 @@ class ProgramUsageSignalEntry:
     usage_sources: str
     matched_executables: str
     usage_status: str
+
+
+@dataclass(slots=True)
+class ProgramRiskScoreEntry:
+    software_name: str
+    category: str
+    publisher: str
+    decision: str
+    estimated_size: str
+    project_count: int
+    last_used_at: str
+    risk_score: float
+    cleanup_priority_score: float
+    hard_protection: str
+    score_breakdown: str
+    rationale: str
 
 
 @dataclass(slots=True)
@@ -176,3 +214,70 @@ class DotnetSdkValidationEntry:
     build_exit_code: int
     validation_mode: str
     notes: str
+
+
+@dataclass(slots=True)
+class ProgramVersionCandidate:
+    software_name: str
+    normalized_family: str
+    version: str
+    category: str
+    estimated_size: str = ""
+    last_used_at: str = ""
+    project_count: int = 0
+    decision: str = ""
+
+
+@dataclass(slots=True)
+class ProgramDecisionContext:
+    software_name: str
+    normalized_family: str
+    family_type: str
+    category: str
+    publisher: str
+    installed_version: str
+    install_location: str
+    estimated_size: str
+    project_count: int
+    matched_projects: str
+    project_context: str
+    last_used_at: str
+    usage_signal_count: int
+    usage_sources: str
+    usage_status: str
+    risk_score: float
+    cleanup_priority_score: float
+    confidence_score: float
+    existing_decision: str
+    existing_explanation: str
+    hard_protection: bool
+    duplicate_versions: list[ProgramVersionCandidate] = field(default_factory=list)
+    dotnet_sdk_rows: list[dict[str, str]] = field(default_factory=list)
+    sdk_validation_rows: list[dict[str, str]] = field(default_factory=list)
+    runtime_family_rows: list[dict[str, str]] = field(default_factory=list)
+    project_signals: list[str] = field(default_factory=list)
+    ide_signals: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
+class RemovalDecisionEntry:
+    software_name: str
+    normalized_family: str
+    family_type: str
+    category: str
+    publisher: str
+    installed_version: str
+    decision_label: str
+    removal_risk_score: float
+    cleanup_value_score: float
+    recommended_next_action: str
+    plain_language_explanation: str
+    technical_explanation: str
+    evidence: str
+    matched_projects: str
+    project_count: int
+    last_used_at: str
+    usage_signal_count: int
+    estimated_size: str
+    duplicate_summary: str
+    test_summary: str

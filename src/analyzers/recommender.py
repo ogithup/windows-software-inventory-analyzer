@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Iterable
 
 from src.analyzers.manual_review import apply_manual_review_override, load_manual_review_overrides
+from src.analyzers.software_explainer import explain_software, load_software_catalog
 from src.windows_software_inventory_analyzer.models import RecommendationEntry
 
 
@@ -26,12 +27,18 @@ RECOMMENDATION_HEADERS = (
     "install_location",
     "estimated_size",
     "last_related_project_activity",
+    "risk_score",
+    "cleanup_priority_score",
     "last_used_at",
     "usage_signal_count",
     "usage_sources",
     "usage_status",
     "confidence_score",
     "explanation",
+    "purpose",
+    "typical_usage",
+    "related_technologies",
+    "removal_risk_summary",
     "review_status",
     "review_notes",
 )
@@ -183,12 +190,18 @@ def build_recommendations(
                 install_location=install_location,
                 estimated_size=estimated_size,
                 last_related_project_activity=last_related_project_activity,
+                risk_score=0.0,
+                cleanup_priority_score=0.0,
                 last_used_at=last_used_at,
                 usage_signal_count=usage_signal_count,
                 usage_sources=usage_sources,
                 usage_status=usage_status,
                 confidence_score=round(confidence_score, 2),
                 explanation=explanation,
+                purpose="",
+                typical_usage="",
+                related_technologies="",
+                removal_risk_summary="",
                 review_status=review_status,
                 review_notes=review_notes,
             )
@@ -202,6 +215,62 @@ def build_recommendations(
         )
     )
     return recommendations
+
+
+def enrich_recommendations(
+    entries: list[RecommendationEntry],
+    risk_rows: list[dict[str, str]] | None = None,
+    catalog: dict[str, dict[str, str]] | None = None,
+) -> list[RecommendationEntry]:
+    risk_index = {row.get("software_name", "").strip().casefold(): row for row in (risk_rows or []) if row.get("software_name", "").strip()}
+    catalog = catalog or load_software_catalog()
+    enriched_entries: list[RecommendationEntry] = []
+
+    for entry in entries:
+        risk_row = risk_index.get(entry.software_name.casefold(), {})
+        description = explain_software(entry.software_name, entry.category, entry.matched_projects, catalog)
+        risk_score = safe_float(risk_row.get("risk_score", "0"))
+        cleanup_priority = safe_float(risk_row.get("cleanup_priority_score", "0"))
+        rationale = risk_row.get("rationale", "").strip()
+        explanation = entry.explanation
+        if risk_row:
+            explanation = (
+                f"{entry.explanation} Removal risk skoru {risk_score:.0f}/100, "
+                f"temizlik onceligi {cleanup_priority:.0f}/100."
+            )
+            if rationale:
+                explanation += f" Risk notu: {rationale}"
+
+        enriched_entries.append(
+            RecommendationEntry(
+                software_name=entry.software_name,
+                category=entry.category,
+                decision=entry.decision,
+                matched_projects=entry.matched_projects,
+                project_links=entry.project_links,
+                project_context=entry.project_context,
+                project_count=entry.project_count,
+                install_location=entry.install_location,
+                estimated_size=entry.estimated_size,
+                last_related_project_activity=entry.last_related_project_activity,
+                risk_score=round(risk_score, 2),
+                cleanup_priority_score=round(cleanup_priority, 2),
+                last_used_at=entry.last_used_at,
+                usage_signal_count=entry.usage_signal_count,
+                usage_sources=entry.usage_sources,
+                usage_status=entry.usage_status,
+                confidence_score=entry.confidence_score,
+                explanation=explanation,
+                purpose=description.get("purpose", ""),
+                typical_usage=description.get("typical_usage", ""),
+                related_technologies=description.get("related_technologies", ""),
+                removal_risk_summary=description.get("removal_risk_summary", ""),
+                review_status=entry.review_status,
+                review_notes=entry.review_notes,
+            )
+        )
+
+    return enriched_entries
 
 
 def categorize_program(
@@ -434,6 +503,8 @@ def write_recommendations(entries: list[RecommendationEntry], output_dir: Path) 
         writer.writeheader()
         for entry in entries:
             row = asdict(entry)
+            row["risk_score"] = f"{entry.risk_score:.2f}"
+            row["cleanup_priority_score"] = f"{entry.cleanup_priority_score:.2f}"
             row["confidence_score"] = f"{entry.confidence_score:.2f}"
             writer.writerow(row)
     return recommendations_path

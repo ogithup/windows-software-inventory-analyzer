@@ -7,6 +7,7 @@ from src.windows_software_inventory_analyzer.pipeline import (
     enforce_read_only,
     prepare_config,
     run_analyze_dotnet_sdk,
+    run_build_removal_decisions,
     run_collect_programs,
     run_collect_usage_signals,
     run_full_pipeline,
@@ -14,6 +15,7 @@ from src.windows_software_inventory_analyzer.pipeline import (
     run_recommend,
     run_scan_disk,
     run_scan_projects,
+    run_score_risk,
     run_validate_dotnet_sdks,
 )
 
@@ -25,7 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--verbose", action="store_true", help="Detayli log ac")
 
     subparsers = parser.add_subparsers(dest="command", required=False)
-    for command in ("collect-programs", "collect-usage", "scan-disk", "scan-projects", "map-software", "recommend", "analyze-dotnet-sdk", "validate-dotnet-sdks", "full-run", "refresh-all"):
+    for command in ("collect-programs", "collect-usage", "scan-disk", "scan-projects", "map-software", "score-risk", "recommend", "analyze-dotnet-sdk", "validate-dotnet-sdks", "build-removal-decisions", "full-run", "refresh-all"):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, default=None, help=argparse.SUPPRESS)
         subparser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)
@@ -52,12 +54,16 @@ def main() -> int:
         run_scan_projects(config, dry_run=args.dry_run)
     elif command == "map-software":
         run_map_software(config, dry_run=args.dry_run)
+    elif command == "score-risk":
+        run_score_risk(config, dry_run=args.dry_run)
     elif command == "recommend":
         run_recommend(config, dry_run=args.dry_run)
     elif command == "analyze-dotnet-sdk":
         run_analyze_dotnet_sdk(config, dry_run=args.dry_run)
     elif command == "validate-dotnet-sdks":
         run_validate_dotnet_sdks(config, dry_run=args.dry_run)
+    elif command == "build-removal-decisions":
+        run_build_removal_decisions(config, dry_run=args.dry_run)
     else:
         run_full_pipeline(config, dry_run=args.dry_run)
 

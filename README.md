@@ -108,6 +108,7 @@ python -m src.main collect-usage --config config.yaml
 python -m src.main scan-disk --config config.yaml
 python -m src.main scan-projects --config config.yaml
 python -m src.main map-software --config config.yaml
+python -m src.main score-risk --config config.yaml
 python -m src.main recommend --config config.yaml
 python -m src.main analyze-dotnet-sdk --config config.yaml
 python -m src.main validate-dotnet-sdks --config config.yaml
@@ -139,9 +140,29 @@ Dashboard acmak icin:
 python dashboard.py
 ```
 
+Masaustu GUI acmak icin:
+
+```powershell
+python desktop_gui.py
+```
+
 Dashboard icinde `Verileri Yenile` butonu vardir. Bu buton `refresh-all` komutunu arka planda calistirir ve tum CSV raporlarini gunceller.
 
+Hem Streamlit dashboard hem masaustu GUI su yeni gorunumleri sunar:
+
+- renkli disk doluluk bolmeleri
+- en buyuk alan bloklari
+- risk ve temizlik onceligi alanlari
+- program detay/aciklama panelleri
+
 `MANUAL_REVIEW` veya `UNSURE` durumundaki programlar icin dashboard icinde `Manual Review Wizard` bulunur. Burada verdigin cevaplar `manual_review_overrides.csv` dosyasina yazilir ve sonraki analizlerde recommendation kararini override eder.
+
+Program detay panelinde artik su alanlar da gosterilir:
+
+- `risk_score`
+- `cleanup_priority_score`
+- "Bu Program Ne Ise Yarar?"
+- kaldirma oncesi senaryo wizard
 
 Alternatif:
 
@@ -182,9 +203,12 @@ Testler su senaryolari kapsar:
 - `disk_usage.csv`
 - `developer_caches.csv`
 - `project_tech_stack.csv`
+- `project_code_signals.csv`
 - `project_files_index.csv`
 - `software_project_mapping.csv`
+- `program_risk_scores.csv`
 - `recommendations.csv`
+- `software_descriptions.json`
 - `dotnet_sdk_decision_report.csv`
 - `sdk_validation_report.csv`
 

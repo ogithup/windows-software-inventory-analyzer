@@ -1,0 +1,51 @@
+{
+  "wireshark": {
+    "category": "Network",
+    "purpose": "Ag paketlerini izlemek ve analiz etmek icin kullanilir.",
+    "typical_usage": "Network troubleshooting, ders laboratuvarlari, packet inspection",
+    "related_technologies": "pcap, tcp/ip, packet analysis",
+    "removal_risk_summary": "Aktif ag analizi veya ders/lab kullanimlarin yoksa removal riski genelde dusuktur."
+  },
+  "cuda": {
+    "category": "AI/ML",
+    "purpose": "NVIDIA GPU uzerinde hizlandirilmis hesaplama ve derleme araclarini saglar.",
+    "typical_usage": "PyTorch, TensorFlow, computer vision, GPU destekli uygulamalar",
+    "related_technologies": "nvidia, pytorch, tensorflow, opencv",
+    "removal_risk_summary": "GPU destekli projeler veya CUDA ile derlenen kutuphaneler varsa removal riski yuksektir."
+  },
+  "python": {
+    "category": "Backend",
+    "purpose": "Python calistiricisi ve gelistirme araclarini saglar.",
+    "typical_usage": "Backend servisler, scriptler, veri analizi, AI/ML projeleri",
+    "related_technologies": "flask, django, fastapi, opencv, pytorch",
+    "removal_risk_summary": "Aktif Python projeleri varsa removal riski yuksektir; surum fazlaligi varsa once proje baglarini kontrol et."
+  },
+  "docker": {
+    "category": "Virtualization",
+    "purpose": "Container tabanli uygulama gelistirme ve calistirma ortamı saglar.",
+    "typical_usage": "Yerel servisler, veritabani containerlari, CI benzeri ortamlari taklit etme",
+    "related_technologies": "dockerfile, docker-compose, containers, kubernetes",
+    "removal_risk_summary": "Projelerde Dockerfile veya compose kullaniyorsan removal riski orta-yuksektir."
+  },
+  "android studio": {
+    "category": "Game Development",
+    "purpose": "Android uygulama gelistirme IDE'sidir.",
+    "typical_usage": "Android, Kotlin, Java, Flutter veya React Native gelistirme",
+    "related_technologies": "android, gradle, kotlin, java",
+    "removal_risk_summary": "Mobil projelerin varsa removal riski yuksektir; sadece eski denemelerse alan kazanimi buyuk olabilir."
+  },
+  "postgresql": {
+    "category": "Database",
+    "purpose": "Yerel veya sunucu tabanli iliskisel veritabani saglar.",
+    "typical_usage": "Backend servisleri, test veritabanlari, veri modelleme",
+    "related_technologies": "sql, orm, database, backend",
+    "removal_risk_summary": "Yerel veritabani kullanan projeler varsa removal riski yuksektir; aksi halde servis ve data klasorleri ayrica incelenmeli."
+  },
+  "visual studio": {
+    "category": "Runtime/System",
+    "purpose": "C++, .NET ve diger Microsoft gelistirme is yuku ortamlarini saglar.",
+    "typical_usage": "C++, .NET, Windows desktop, MAUI, SDK/workload yonetimi",
+    "related_technologies": "msbuild, windows sdk, dotnet, vcxproj",
+    "removal_risk_summary": "C++ veya .NET projelerin varsa removal riski yuksektir; once workload bagimliliklarini kontrol et."
+  }
+}

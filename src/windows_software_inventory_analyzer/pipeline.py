@@ -18,12 +18,22 @@ from src.analyzers.dotnet_sdk_validator import (
     validate_dotnet_sdks,
     write_dotnet_sdk_validation_report,
 )
+from src.analyzers.repo_deep_scanner import (
+    merge_code_signals_into_projects,
+    scan_project_code_signals,
+    write_project_code_signals,
+)
 from src.analyzers.project_scanner import scan_projects, write_project_reports
+from src.analyzers.removal_engine import build_removal_decisions, write_removal_decisions
+from src.analyzers.risk_engine import build_program_risk_scores, write_program_risk_scores
 from src.analyzers.recommender import (
     build_recommendations,
+    enrich_recommendations,
     load_category_rules,
     write_recommendations,
 )
+from src.analyzers.runtime_advisor import build_runtime_inventory
+from src.analyzers.software_explainer import load_software_catalog, write_software_descriptions
 from src.collectors.disk_usage import collect_disk_usage, write_disk_usage_reports
 from src.collectors.installed_apps import (
     collect_installed_applications,
@@ -109,23 +119,36 @@ def run_scan_projects(config: AppConfig, dry_run: bool = False) -> dict[str, obj
         project_roots=config.scan.project_roots,
         exclude_paths=config.scan.exclude_paths,
     )
+    code_signal_entries = scan_project_code_signals(project_entries)
+    merged_project_entries = merge_code_signals_into_projects(project_entries, code_signal_entries)
     if dry_run:
         LOGGER.info(
-            "Dry-run: proje raporlari yazilmadi. projects=%s indexed_files=%s",
-            len(project_entries),
+            "Dry-run: proje raporlari yazilmadi. projects=%s indexed_files=%s code_signals=%s",
+            len(merged_project_entries),
             len(file_index_entries),
+            len(code_signal_entries),
         )
-        return {"project_entries": project_entries, "file_index_entries": file_index_entries, "project_stack_path": None, "project_index_path": None}
+        return {
+            "project_entries": merged_project_entries,
+            "file_index_entries": file_index_entries,
+            "code_signal_entries": code_signal_entries,
+            "project_stack_path": None,
+            "project_index_path": None,
+            "project_code_signals_path": None,
+        }
     project_stack_path, project_index_path = write_project_reports(
-        project_entries,
+        merged_project_entries,
         file_index_entries,
         config.report.output_dir,
     )
+    project_code_signals_path = write_project_code_signals(code_signal_entries, config.report.output_dir)
     return {
-        "project_entries": project_entries,
+        "project_entries": merged_project_entries,
         "file_index_entries": file_index_entries,
+        "code_signal_entries": code_signal_entries,
         "project_stack_path": project_stack_path,
         "project_index_path": project_index_path,
+        "project_code_signals_path": project_code_signals_path,
     }
 
 
@@ -159,11 +182,81 @@ def run_recommend(config: AppConfig, dry_run: bool = False) -> dict[str, object]
         project_rows=load_mapping_csv_rows(project_result["project_stack_path"]),
         usage_rows=load_mapping_csv_rows(usage_result["usage_signal_report_path"]),
     )
+    risk_entries = build_program_risk_scores(
+        installed_programs=load_mapping_csv_rows(collect_result["csv_path"]),
+        mapping_rows=load_mapping_csv_rows(mapping_result["mapping_path"]),
+        recommendation_rows=[asdict(entry) for entry in recommendation_entries],
+        usage_rows=load_mapping_csv_rows(usage_result["usage_signal_report_path"]),
+    )
+    risk_report_path = None
+    if not dry_run:
+        risk_report_path = write_program_risk_scores(risk_entries, config.report.output_dir)
+    risk_rows = [asdict(entry) for entry in risk_entries]
+    recommendation_entries = enrich_recommendations(
+        recommendation_entries,
+        risk_rows=risk_rows,
+        catalog=load_software_catalog(),
+    )
+    software_descriptions_path = None
+    if not dry_run:
+        software_descriptions_path = write_software_descriptions(
+            [
+                {
+                    "software_name": entry.software_name,
+                    "category": entry.category,
+                    "purpose": entry.purpose,
+                    "typical_usage": entry.typical_usage,
+                    "related_technologies": entry.related_technologies,
+                    "removal_risk_summary": entry.removal_risk_summary,
+                }
+                for entry in recommendation_entries
+            ],
+            config.report.output_dir,
+        )
     if dry_run:
         LOGGER.info("Dry-run: recommendations raporu yazilmadi. recommendations=%s", len(recommendation_entries))
-        return {"recommendation_entries": recommendation_entries, "recommendations_path": None}
+        return {
+            "recommendation_entries": recommendation_entries,
+            "recommendations_path": None,
+            "risk_entries": risk_entries,
+            "risk_report_path": None,
+            "software_descriptions_path": None,
+        }
     recommendations_path = write_recommendations(recommendation_entries, config.report.output_dir)
-    return {"recommendation_entries": recommendation_entries, "recommendations_path": recommendations_path}
+    return {
+        "recommendation_entries": recommendation_entries,
+        "recommendations_path": recommendations_path,
+        "risk_entries": risk_entries,
+        "risk_report_path": risk_report_path,
+        "software_descriptions_path": software_descriptions_path,
+    }
+
+
+def run_score_risk(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
+    collect_result = run_collect_programs(config, dry_run=False)
+    usage_result = run_collect_usage_signals(config, dry_run=False)
+    disk_result = run_scan_disk(config, dry_run=False)
+    project_result = run_scan_projects(config, dry_run=False)
+    mapping_result = run_map_software(config, dry_run=False)
+    recommendation_entries = build_recommendations(
+        installed_programs=load_mapping_csv_rows(collect_result["csv_path"]),
+        disk_usage_rows=load_mapping_csv_rows(disk_result["disk_usage_path"]),
+        mapping_rows=load_mapping_csv_rows(mapping_result["mapping_path"]),
+        category_rules=load_category_rules(Path("category_rules.yaml")),
+        project_rows=load_mapping_csv_rows(project_result["project_stack_path"]),
+        usage_rows=load_mapping_csv_rows(usage_result["usage_signal_report_path"]),
+    )
+    risk_entries = build_program_risk_scores(
+        installed_programs=load_mapping_csv_rows(collect_result["csv_path"]),
+        mapping_rows=load_mapping_csv_rows(mapping_result["mapping_path"]),
+        recommendation_rows=[asdict(entry) for entry in recommendation_entries],
+        usage_rows=load_mapping_csv_rows(usage_result["usage_signal_report_path"]),
+    )
+    if dry_run:
+        LOGGER.info("Dry-run: risk report yazilmadi. entries=%s", len(risk_entries))
+        return {"risk_entries": risk_entries, "risk_report_path": None}
+    risk_report_path = write_program_risk_scores(risk_entries, config.report.output_dir)
+    return {"risk_entries": risk_entries, "risk_report_path": risk_report_path}
 
 
 def run_analyze_dotnet_sdk(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
@@ -191,6 +284,42 @@ def run_validate_dotnet_sdks(config: AppConfig, dry_run: bool = False) -> dict[s
         return {"dotnet_sdk_validation_entries": entries, "sdk_validation_report_path": None}
     report_path = write_dotnet_sdk_validation_report(entries, config.report.output_dir)
     return {"dotnet_sdk_validation_entries": entries, "sdk_validation_report_path": report_path}
+
+
+def run_build_removal_decisions(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
+    collect_result = run_collect_programs(config, dry_run=False)
+    usage_result = run_collect_usage_signals(config, dry_run=False)
+    project_result = run_scan_projects(config, dry_run=False)
+    mapping_result = run_map_software(config, dry_run=False)
+    recommendation_result = run_recommend(config, dry_run=False)
+    dotnet_result = run_analyze_dotnet_sdk(config, dry_run=False)
+    dotnet_validation_result = run_validate_dotnet_sdks(config, dry_run=False)
+
+    installed_rows = load_mapping_csv_rows(collect_result["csv_path"])
+    recommendation_rows = load_mapping_csv_rows(recommendation_result["recommendations_path"])
+    mapping_rows = load_mapping_csv_rows(mapping_result["mapping_path"])
+    usage_rows = load_mapping_csv_rows(usage_result["usage_signal_report_path"])
+    risk_rows = load_mapping_csv_rows(recommendation_result["risk_report_path"]) if recommendation_result.get("risk_report_path") else []
+    project_rows = load_mapping_csv_rows(project_result["project_stack_path"])
+    dotnet_sdk_rows = load_mapping_csv_rows(dotnet_result["dotnet_sdk_report_path"]) if dotnet_result.get("dotnet_sdk_report_path") else []
+    sdk_validation_rows = load_mapping_csv_rows(dotnet_validation_result["sdk_validation_report_path"]) if dotnet_validation_result.get("sdk_validation_report_path") else []
+    _, runtime_family_details = build_runtime_inventory(recommendation_rows, installed_rows, project_rows)
+
+    entries = build_removal_decisions(
+        installed_programs=installed_rows,
+        recommendation_rows=recommendation_rows,
+        mapping_rows=mapping_rows,
+        usage_rows=usage_rows,
+        risk_rows=risk_rows,
+        dotnet_sdk_rows=dotnet_sdk_rows,
+        sdk_validation_rows=sdk_validation_rows,
+        runtime_family_rows=runtime_family_details,
+    )
+    if dry_run:
+        LOGGER.info("Dry-run: removal decisions report yazilmadi. entries=%s", len(entries))
+        return {"removal_decision_entries": entries, "removal_decisions_path": None}
+    report_path = write_removal_decisions(entries, config.report.output_dir)
+    return {"removal_decision_entries": entries, "removal_decisions_path": report_path}
 
 
 def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
@@ -228,6 +357,7 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
 
     mapping_result = run_map_software(config, dry_run=False)
     recommendation_result = run_recommend(config, dry_run=False)
+    removal_decision_result = run_build_removal_decisions(config, dry_run=False)
     return {
         **collect_result,
         **usage_result,
@@ -237,4 +367,5 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
         **dotnet_validation_result,
         **mapping_result,
         **recommendation_result,
+        **removal_decision_result,
     }

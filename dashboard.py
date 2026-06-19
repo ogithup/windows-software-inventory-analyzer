@@ -4,6 +4,8 @@ import csv
 import html
 import io
 import os
+import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -84,6 +86,8 @@ def build_search_index(
                 "project_context": recommendation.get("project_context", "") or " | ".join(project_contexts),
                 "project_count": recommendation.get("project_count", ""),
                 "estimated_size": recommendation.get("estimated_size", ""),
+                "risk_score": recommendation.get("risk_score", ""),
+                "cleanup_priority_score": recommendation.get("cleanup_priority_score", ""),
                 "last_used_at": recommendation.get("last_used_at", ""),
                 "usage_signal_count": recommendation.get("usage_signal_count", ""),
                 "usage_sources": recommendation.get("usage_sources", ""),
@@ -92,6 +96,10 @@ def build_search_index(
                 "review_notes": recommendation.get("review_notes", ""),
                 "confidence_score": recommendation.get("confidence_score", "") or mapping.get("confidence_score", ""),
                 "explanation": recommendation.get("explanation", ""),
+                "purpose": recommendation.get("purpose", ""),
+                "typical_usage": recommendation.get("typical_usage", ""),
+                "related_technologies": recommendation.get("related_technologies", ""),
+                "removal_risk_summary": recommendation.get("removal_risk_summary", ""),
                 "evidence": mapping.get("evidence", ""),
                 "technologies": ",".join(sorted({item for item in technologies if item}, key=str.casefold)),
                 "search_text": " ".join(
@@ -106,6 +114,9 @@ def build_search_index(
                         recommendation.get("project_links", ""),
                         recommendation.get("last_used_at", ""),
                         recommendation.get("usage_sources", ""),
+                        recommendation.get("purpose", ""),
+                        recommendation.get("typical_usage", ""),
+                        recommendation.get("related_technologies", ""),
                         ",".join(technologies),
                     ]
                 ).casefold(),
@@ -401,8 +412,252 @@ def runtime_family_key_from_label(label: str) -> str:
     return lookup.get(label, "")
 
 
+def runtime_family_label_from_key(key: str) -> str:
+    reverse_lookup = {
+        "dotnet_sdk": ".NET SDK",
+        "dotnet_runtime": ".NET Runtime",
+        "aspnet_runtime": "ASP.NET Runtime",
+        "windows_sdk": "Windows SDK",
+        "visual_cpp": "Visual C++ Redistributable",
+        "gpu_driver": "GPU / Driver",
+        "dotnet_native": ".NET Native Runtime",
+    }
+    return reverse_lookup.get(key, key)
+
+
+def build_runtime_family_test_steps(family_key: str) -> list[tuple[str, str]]:
+    if family_key in {"dotnet_sdk", "dotnet_runtime", "aspnet_runtime", "windows_sdk"}:
+        return [
+            ("scan-projects", "Proje baglari tekrar okunuyor"),
+            ("analyze-dotnet-sdk", "SDK ve runtime raporu tazeleniyor"),
+            ("validate-dotnet-sdks", "Build testi calisiyor"),
+            ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+        ]
+    if family_key == "visual_cpp":
+        return [
+            ("collect-programs", "Kurulu yardimci paketler tekrar okunuyor"),
+            ("scan-projects", "Proje baglari tekrar okunuyor"),
+            ("recommend", "Karar metinleri tazeleniyor"),
+            ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+        ]
+    if family_key in {"gpu_driver", "dotnet_native"}:
+        return [
+            ("collect-usage", "Son kullanim izleri tekrar okunuyor"),
+            ("score-risk", "Risk puani tekrar hesaplaniyor"),
+            ("recommend", "Karar metinleri tazeleniyor"),
+            ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+        ]
+    return [
+        ("recommend", "Karar metinleri tazeleniyor"),
+        ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+    ]
+
+
+def build_runtime_family_report(
+    family_key: str,
+    runtime_family_details: dict[str, list[dict[str, str]]],
+    dotnet_sdk_report: list[dict[str, str]],
+    sdk_validation_report: list[dict[str, str]],
+) -> dict[str, object]:
+    detail_rows = runtime_family_details.get(family_key, [])
+    report_rows: list[dict[str, str]] = []
+    notes: list[str] = []
+
+    if family_key == "dotnet_sdk":
+        report_rows = [
+            {
+                "kind": "SDK Karari",
+                "item": row.get("sdk_version", ""),
+                "group": row.get("feature_band", ""),
+                "suggestion": row.get("status", ""),
+                "result": row.get("recommendation", ""),
+            }
+            for row in dotnet_sdk_report
+        ]
+        report_rows.extend(
+            {
+                "kind": "Build Testi",
+                "item": row.get("project_name", ""),
+                "group": row.get("selected_sdk", ""),
+                "suggestion": row.get("build_status", ""),
+                "result": row.get("notes", ""),
+            }
+            for row in sdk_validation_report
+        )
+        validation_states = sorted({row.get("build_status", "") for row in sdk_validation_report if row.get("build_status", "")})
+        if validation_states:
+            notes.append(f"Build kayitlari: {', '.join(validation_states)}")
+        else:
+            notes.append("Build kaydi yok; kaldirmadan once test calistir.")
+        notes.append("Muhur gibi kural: global.json gecen surum tutulur, ayni feature band icinde daha eski patch'ler ise testten sonra aday olur.")
+        notes.append("Proje build geciyorsa eski patch'leri kademeli azalt; hepsini tek seferde temizleme.")
+    elif family_key in {"dotnet_runtime", "aspnet_runtime", "windows_sdk", "visual_cpp", "gpu_driver", "dotnet_native"}:
+        for row in detail_rows:
+            suggestion = row.get("suggestion", "")
+            if suggestion == "KEEP_CANDIDATE":
+                result = "Simdilik kalsin"
+            elif suggestion == "OLDER_VERSION":
+                result = "Ayni ailede daha yeni bir surum gorunuyor"
+            else:
+                result = "Elle kontrol et"
+            report_rows.append(
+                {
+                    "kind": "Aile Kontrolu",
+                    "item": row.get("software_name", ""),
+                    "group": row.get("version", "") or row.get("arch", ""),
+                    "suggestion": suggestion,
+                    "result": result,
+                }
+            )
+        if family_key in {"dotnet_runtime", "aspnet_runtime"}:
+            notes.append("Ayni major.minor hattinda en yeni patch once tutulur.")
+            notes.append("Farkli major.minor serilerini birbiri yerine sayma; eski görünse bile uygulama bunu isteyebilir.")
+        elif family_key == "windows_sdk":
+            notes.append("Windows SDK tarafinda eski surumleri silmeden once Visual Studio ve build akisini kontrol et.")
+            notes.append("Bilgisayar muhendisi mantigi: C++ veya Windows hedefli proje varsa en az bir acilis veya build denemesi almadan temizleme yapma.")
+        elif family_key == "visual_cpp":
+            notes.append("Visual C++ paketleri farkli uygulamalar tarafindan birlikte istenebilir; toplu kaldirma yapma.")
+            notes.append("Bu ailede otomatik sil yerine koruma odakli kal; sadece cok net duplicate ve kontrollu senaryolarda elle karar ver.")
+        elif family_key == "gpu_driver":
+            notes.append("Suruculerde kaldirma yerine resmi surucu araci ile guncelleme veya temiz kurulum dusun.")
+            notes.append("CUDA, oyun motoru, video isleme veya AI proje izi varsa surucu ailesini kaldirma adayi gibi dusunme.")
+        elif family_key == "dotnet_native":
+            notes.append("Store/MSIX uygulamalari bu aileye bagli olabilir.")
+            notes.append("Dogrudan build yerine kullanim izi ve sistem koruma mantigi kullan.")
+
+    if not report_rows:
+        notes.append("Bu aile icin gosterilecek test satiri bulunamadi.")
+
+    return {
+        "family_label": runtime_family_label_from_key(family_key),
+        "rows": report_rows,
+        "notes": notes,
+    }
+
+
 def normalize_windows_path(value: str) -> str:
     return value.replace("/", "\\").rstrip("\\").casefold()
+
+
+def bytes_to_human(size_bytes: int) -> str:
+    value = float(size_bytes)
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if value < 1024 or unit == "TB":
+            return f"{value:.2f} {unit}"
+        value /= 1024
+    return f"{size_bytes} B"
+
+
+def safe_int_from_any(value: str | int | float) -> int:
+    try:
+        return int(float(str(value)))
+    except (TypeError, ValueError):
+        return 0
+
+
+def infer_drive_from_path(path_text: str) -> str:
+    normalized = path_text.strip().replace("/", "\\")
+    if len(normalized) >= 2 and normalized[1] == ":":
+        return normalized[:2].upper()
+    return normalized
+
+
+def build_drive_usage_cards(disk_usage: list[dict[str, str]]) -> list[dict[str, str]]:
+    totals_by_drive: dict[str, int] = {}
+    roots_by_drive: dict[str, set[str]] = {}
+
+    for row in disk_usage:
+        scan_root = row.get("scan_root", "").strip() or row.get("path", "").strip()
+        drive = infer_drive_from_path(scan_root)
+        if not drive or ":" not in drive:
+            continue
+        depth = safe_int(row.get("depth", "0"))
+        if depth != 0:
+            continue
+        totals_by_drive[drive] = totals_by_drive.get(drive, 0) + safe_int_from_any(row.get("size_bytes", "0"))
+        roots_by_drive.setdefault(drive, set()).add(scan_root)
+
+    cards: list[dict[str, str]] = []
+    for drive, analyzed_bytes in sorted(totals_by_drive.items()):
+        try:
+            usage = shutil.disk_usage(f"{drive}\\")
+        except OSError:
+            continue
+        used_pct = (usage.used / usage.total * 100) if usage.total else 0
+        analyzed_pct = (analyzed_bytes / usage.total * 100) if usage.total else 0
+        cards.append(
+            {
+                "drive": drive,
+                "used_pct": f"{used_pct:.1f}",
+                "analyzed_pct": f"{analyzed_pct:.1f}",
+                "used_human": bytes_to_human(usage.used),
+                "free_human": bytes_to_human(usage.free),
+                "total_human": bytes_to_human(usage.total),
+                "analyzed_human": bytes_to_human(analyzed_bytes),
+                "roots": ", ".join(sorted(roots_by_drive.get(drive, set()))),
+            }
+        )
+    return cards
+
+
+def render_drive_usage_blocks(cards: list[dict[str, str]]) -> str:
+    if not cards:
+        return "<div style='padding:12px;border:1px solid #d9d1c5;border-radius:16px;background:#fffdf8;'>Disk ozeti bulunamadi.</div>"
+
+    block_parts: list[str] = []
+    for card in cards:
+        used_pct = safe_float(card.get("used_pct", "0"))
+        analyzed_pct = min(used_pct, safe_float(card.get("analyzed_pct", "0")))
+        usage_color = "#c2410c" if used_pct >= 85 else "#d97706" if used_pct >= 70 else "#0f766e"
+        analyze_color = "#1d4ed8"
+        block_parts.append(
+            f"""
+            <div style="background:#fffdf8;border:1px solid #d9d1c5;border-radius:18px;padding:14px;min-width:250px;">
+              <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;">
+                <strong style="font-size:1.05rem;">{html.escape(card.get("drive", ""))} Diski</strong>
+                <span style="color:#6c665d;">{html.escape(card.get("used_pct", "0"))}% dolu</span>
+              </div>
+              <div style="margin-top:10px;background:#ece7de;border-radius:999px;height:18px;overflow:hidden;position:relative;">
+                <div style="width:{used_pct:.1f}%;background:{usage_color};height:100%;"></div>
+                <div style="width:{analyzed_pct:.1f}%;background:{analyze_color};height:100%;position:absolute;left:0;top:0;opacity:0.65;"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:0.9rem;">
+                <span>Kullanilan: {html.escape(card.get("used_human", ""))}</span>
+                <span>Bos: {html.escape(card.get("free_human", ""))}</span>
+              </div>
+              <div style="margin-top:6px;font-size:0.9rem;">Analiz edilen kokler: {html.escape(card.get("roots", ""))}</div>
+              <div style="margin-top:4px;font-size:0.9rem;">Analiz edilen alan: {html.escape(card.get("analyzed_human", ""))} / {html.escape(card.get("total_human", ""))}</div>
+            </div>
+            """
+        )
+    return "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;'>" + "".join(block_parts) + "</div>"
+
+
+def build_disk_treemap_rows(disk_usage: list[dict[str, str]], limit: int = 12) -> list[dict[str, str]]:
+    rows = [row for row in disk_usage if safe_int(row.get("depth", "0")) <= 1 and row.get("path", "").strip()]
+    rows.sort(key=lambda item: safe_int_from_any(item.get("size_bytes", "0")), reverse=True)
+    return rows[:limit]
+
+
+def render_disk_treemap(rows: list[dict[str, str]]) -> str:
+    if not rows:
+        return "<div style='padding:12px;border:1px solid #d9d1c5;border-radius:16px;background:#fffdf8;'>Buyuk klasor verisi bulunamadi.</div>"
+
+    max_size = max(safe_int_from_any(row.get("size_bytes", "0")) for row in rows) or 1
+    colors = ["#0f766e", "#2563eb", "#d97706", "#b45309", "#7c3aed", "#0f766e", "#be123c", "#15803d"]
+    parts: list[str] = []
+    for index, row in enumerate(rows):
+        size_bytes = safe_int_from_any(row.get("size_bytes", "0"))
+        width = max(18, int((size_bytes / max_size) * 100))
+        parts.append(
+            f"""
+            <div style="flex:{width} 1 0;background:{colors[index % len(colors)]};min-height:110px;border-radius:18px;padding:12px;color:white;display:flex;flex-direction:column;justify-content:space-between;">
+              <div style="font-weight:600;font-size:0.95rem;">{html.escape(row.get("path", ""))}</div>
+              <div style="font-size:0.85rem;">{html.escape(row.get("size_human", ""))}</div>
+            </div>
+            """
+        )
+    return "<div style='display:flex;gap:10px;align-items:stretch;'>" + "".join(parts) + "</div>"
 
 
 def parse_iso_datetime(value: str) -> datetime | None:
@@ -451,6 +706,135 @@ def summarize_last_used(last_used_at: str) -> tuple[str, str]:
     if days <= 365:
         return parsed.date().isoformat(), "Son kullanim izi 6-12 ay araliginda goruldu."
     return parsed.date().isoformat(), "Son kullanim izi 12 aydan daha eski gorunuyor."
+
+
+def parse_version_parts(version_text: str) -> tuple[int, ...]:
+    parts = [part for part in re.split(r"[^0-9]+", version_text.strip()) if part]
+    return tuple(int(part) for part in parts)
+
+
+def normalize_software_family_name(software_name: str) -> str:
+    normalized = software_name.casefold()
+    normalized = re.sub(r"\((x64|x86)\)", " ", normalized)
+    normalized = re.sub(r"\b(64-bit|32-bit|x64|x86)\b", " ", normalized)
+    normalized = re.sub(r"\b\d+(?:\.\d+){1,4}\b", " ", normalized)
+    normalized = re.sub(r"\b(19|20)\d{2}\b", " ", normalized)
+    normalized = re.sub(r"[-_]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip(" -_.")
+    return normalized
+
+
+def build_version_family_summary(
+    selected_program: dict[str, str],
+    recommendations: list[dict[str, str]],
+    dotnet_sdk_report: list[dict[str, str]],
+    sdk_validation_report: list[dict[str, str]],
+) -> dict[str, object]:
+    software_name = selected_program.get("software_name", "").strip()
+    category = selected_program.get("category", "").strip()
+    family_type = classify_program_family(software_name, category)
+    normalized_family = normalize_software_family_name(software_name)
+
+    family_members = [
+        row for row in recommendations if normalize_software_family_name(row.get("software_name", "")) == normalized_family
+    ]
+    family_members = sorted(
+        family_members,
+        key=lambda row: parse_version_parts(row.get("display_version", "") or row.get("software_name", "")),
+        reverse=True,
+    )
+
+    keepers: list[dict[str, str]] = []
+    candidates: list[dict[str, str]] = []
+    notes: list[str] = []
+
+    if family_type == "dotnet_sdk" and dotnet_sdk_report:
+        for report_row in dotnet_sdk_report:
+            sdk_version = report_row.get("sdk_version", "").strip()
+            if not sdk_version:
+                continue
+            matched = next((row for row in family_members if sdk_version in row.get("software_name", "")), None)
+            member = matched or {
+                "software_name": f"Microsoft .NET SDK {sdk_version}",
+                "display_version": sdk_version,
+                "decision": "",
+                "last_used_at": "",
+                "estimated_size": "",
+            }
+            member = dict(member)
+            member["sdk_status"] = report_row.get("status", "")
+            member["sdk_recommendation"] = report_row.get("recommendation", "")
+            member["feature_band"] = report_row.get("feature_band", "")
+
+            status = report_row.get("status", "")
+            if status in {"DO_NOT_REMOVE", "IDE_DEPENDENT", "KEEP_LATEST"}:
+                keepers.append(member)
+            elif status in {"SAFE_OLDER_PATCH", "MANUAL_REVIEW"}:
+                candidates.append(member)
+            else:
+                keepers.append(member)
+
+        validation_statuses = {row.get("build_status", "") for row in sdk_validation_report}
+        if "BUILD_PASSED" in validation_statuses:
+            notes.append("Build testi gecen .NET projeleri bulundu; ayni banddeki eski patch surumler daha guvenli aday olur.")
+        elif validation_statuses:
+            notes.append("Build testi kayitlari var ama temiz gecmeyen projeler de goruluyor; toplu kaldirma yapma.")
+        else:
+            notes.append("Build testi kaydi yok; aday gorunen surumleri kaldirmadan once test calistir.")
+    else:
+        if len(family_members) <= 1:
+            notes.append("Bu ailede tek surum gorunuyor.")
+        latest_member = family_members[0] if family_members else {}
+        for member in family_members:
+            member_name = member.get("software_name", "")
+            project_count = safe_int(member.get("project_count", "0"))
+            risk_score = safe_float(member.get("risk_score", "0"))
+            cleanup_score = safe_float(member.get("cleanup_priority_score", "0"))
+            usage_status = member.get("usage_status", "")
+            usage_date = parse_iso_datetime(member.get("last_used_at", ""))
+
+            should_keep = (
+                member == latest_member
+                or project_count > 0
+                or risk_score >= 70
+                or classify_program_family(member_name, member.get("category", "")) != "general"
+            )
+            if usage_status == "usage_detected" and usage_date is not None:
+                age_days = max(0, int((datetime.now(timezone.utc) - usage_date).total_seconds() // 86400))
+                if age_days <= 180:
+                    should_keep = True
+
+            if should_keep:
+                keepers.append(member)
+            elif cleanup_score >= 45 or len(family_members) > 1:
+                candidates.append(member)
+            else:
+                keepers.append(member)
+
+        if len(family_members) > 1:
+            notes.append("Ayni uygulamanin birden fazla surumu gorunuyor; en yeni ve aktif kullanilan surum once tutulur.")
+        if any(safe_int(row.get("project_count", "0")) > 0 for row in family_members):
+            notes.append("Bu ailede proje bagina sahip surumler var; kaldirmadan once proje acilisini kontrol et.")
+
+    if not candidates and len(family_members) > 1:
+        notes.append("Su anki sinyallerle net kaldirma adayi cikmadi.")
+
+    if candidates:
+        summary_message = "Bu ailede once aday surumleri dene, koru denilenleri yerinde birak."
+    elif len(family_members) > 1:
+        summary_message = "Bu ailede birden fazla surum olsa da su an hepsi icin ek dikkat gerekiyor."
+    else:
+        summary_message = "Bu program ailesinde tek kayit gorunuyor; surum temizligi yerine kullanim ihtiyacina bak."
+
+    return {
+        "family_name": normalized_family or software_name.casefold(),
+        "family_type": family_type,
+        "members": family_members,
+        "keepers": keepers,
+        "candidates": candidates,
+        "summary_message": summary_message,
+        "notes": notes,
+    }
 
 
 def build_removal_scenario(
@@ -711,31 +1095,11 @@ def write_static_exports() -> tuple[Path, Path]:
 
 
 def refresh_analysis_data() -> tuple[bool, str]:
-    command = [sys.executable, "-m", "src.main", "refresh-all"]
-    if DEFAULT_CONFIG_PATH.exists():
-        command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
-
-    try:
-        completed = subprocess.run(
-            command,
-            cwd=BASE_DIR,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            check=False,
-        )
-    except OSError as error:
-        return False, f"Veri yenileme komutu baslatilamadi: {error}"
-
-    output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip()).strip()
-    if completed.returncode != 0:
-        return False, output or "Veri yenileme basarisiz oldu."
-    return True, output or "Veriler basariyla yenilendi."
+    return run_cli_command("refresh-all")
 
 
-def run_dotnet_sdk_validation() -> tuple[bool, str]:
-    command = [sys.executable, "-m", "src.main", "validate-dotnet-sdks"]
+def run_cli_command(command_name: str) -> tuple[bool, str]:
+    command = [sys.executable, "-m", "src.main", command_name]
     if DEFAULT_CONFIG_PATH.exists():
         command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
 
@@ -754,8 +1118,29 @@ def run_dotnet_sdk_validation() -> tuple[bool, str]:
 
     output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip()).strip()
     if completed.returncode != 0:
-        return False, output or ".NET SDK validation basarisiz oldu."
-    return True, output or ".NET SDK validation tamamlandi."
+        return False, output or f"{command_name} basarisiz oldu."
+    return True, output or f"{command_name} tamamlandi."
+
+
+def run_stepwise_commands(steps: list[tuple[str, str]], progress_bar, status_box, log_box) -> tuple[bool, str]:
+    collected_logs: list[str] = []
+    total_steps = max(len(steps), 1)
+
+    for index, (command_name, label) in enumerate(steps, start=1):
+        progress_value = int(((index - 1) / total_steps) * 100)
+        progress_bar.progress(progress_value)
+        status_box.info(f"Adim {index}/{total_steps}: {label}")
+        success, message = run_cli_command(command_name)
+        collected_logs.append(f"[{command_name}] {message}")
+        log_box.code("\n\n".join(collected_logs)[-4000:], language="text")
+        if not success:
+            progress_bar.progress(progress_value)
+            status_box.error(f"Durdu: {label}")
+            return False, "\n\n".join(collected_logs)
+
+    progress_bar.progress(100)
+    status_box.success("Tum adimlar tamamlandi.")
+    return True, "\n\n".join(collected_logs)
 
 
 def launch_streamlit() -> int:
@@ -768,6 +1153,7 @@ def launch_streamlit() -> int:
 def render_streamlit() -> None:
     try:
         import streamlit as st
+        import streamlit.components.v1 as components
     except ModuleNotFoundError as error:
         raise SystemExit(
             "Streamlit kurulu degil. Once `pip install -r requirements.txt` calistir, sonra `python dashboard.py` ile ac."
@@ -784,12 +1170,14 @@ def render_streamlit() -> None:
         load_csv_rows(OUTPUT_DIR / "recommendations.csv"),
         manual_review_overrides,
     )
+    risk_scores = load_csv_rows(OUTPUT_DIR / "program_risk_scores.csv")
     installed_programs = load_csv_rows(OUTPUT_DIR / "installed_programs.csv")
     mappings = load_csv_rows(OUTPUT_DIR / "software_project_mapping.csv")
     disk_usage = load_csv_rows(OUTPUT_DIR / "disk_usage.csv")
     projects = load_csv_rows(OUTPUT_DIR / "project_tech_stack.csv")
     dotnet_sdk_report = load_csv_rows(OUTPUT_DIR / "dotnet_sdk_decision_report.csv")
     sdk_validation_report = load_csv_rows(OUTPUT_DIR / "sdk_validation_report.csv")
+    removal_decisions = load_csv_rows(OUTPUT_DIR / "removal_decisions.csv")
     search_rows = build_search_index(recommendations, mappings, projects)
     project_tools_index = build_project_tools_index(search_rows)
     root_projects, child_projects_index = build_project_hierarchy(projects)
@@ -807,8 +1195,21 @@ def render_streamlit() -> None:
     refresh_col, info_col = st.columns([1, 2.5])
     with refresh_col:
         if st.button("Verileri Yenile", use_container_width=True):
-            with st.spinner("Analizler yeniden calistiriliyor..."):
-                success, message = refresh_analysis_data()
+            progress_bar = st.progress(0)
+            status_box = st.empty()
+            log_box = st.empty()
+            refresh_steps = [
+                ("collect-programs", "Kurulu programlar okunuyor"),
+                ("collect-usage", "Son kullanim izleri toplanıyor"),
+                ("scan-disk", "Disk ve buyuk klasorler taraniyor"),
+                ("scan-projects", "Projeler ve teknoloji dosyalari taraniyor"),
+                ("map-software", "Programlar projelerle eslestiriliyor"),
+                ("score-risk", "Risk ve temizlik onceligi hesaplanıyor"),
+                ("recommend", "Son oneriler ve aciklamalar yaziliyor"),
+                ("analyze-dotnet-sdk", ".NET SDK bagimlilik raporu hazirlaniyor"),
+                ("build-removal-decisions", "Kaldirma senaryosu kararlari uretiliyor"),
+            ]
+            success, message = run_stepwise_commands(refresh_steps, progress_bar, status_box, log_box)
             if success:
                 st.success("Veriler yenilendi. Ekran tekrar yukleniyor.")
                 if message:
@@ -822,26 +1223,6 @@ def render_streamlit() -> None:
         config_hint = str(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else "Varsayilan config bulunamadi"
         st.caption(f"Yenileme butonu tum analizleri `refresh-all` ile calistirir. Config: {config_hint}")
 
-    validation_col, validation_info_col = st.columns([1, 2.5])
-    with validation_col:
-        if st.button(".NET SDK Build Testi", use_container_width=True):
-            with st.spinner(".NET projeleri icin dotnet --version ve dotnet build calistiriliyor..."):
-                success, message = run_dotnet_sdk_validation()
-            if success:
-                st.success(".NET SDK build dogrulamasi tamamlandi.")
-                if message:
-                    st.caption(message[-500:] if len(message) > 500 else message)
-                st.rerun()
-            else:
-                st.error(".NET SDK build dogrulamasi tamamlanamadi.")
-                if message:
-                    st.code(message[-2000:] if len(message) > 2000 else message, language="text")
-    with validation_info_col:
-        st.caption(
-            "Bu buton her .sln/.csproj icin secilen SDK'yi denetler ve build sonucu `sdk_validation_report.csv` icine yazar. "
-            "Build ciktilari proje klasorlerine degil, `data/output/sdk_validation_artifacts/` altina yonlendirilir."
-        )
-
     categories = sorted({row.get("category", "") for row in recommendations if row.get("category", "")}, key=str.casefold)
     decisions = sorted({row.get("decision", "") for row in recommendations if row.get("decision", "")}, key=str.casefold)
 
@@ -853,16 +1234,34 @@ def render_streamlit() -> None:
     with col3:
         selected_decisions = set(st.multiselect("Karar Filtresi", decisions))
 
+    with st.expander("Kategori Rehberi"):
+        st.markdown("`AI/ML`: yapay zeka, model egitimi, veri analizi")
+        st.markdown("`Backend`: sunucu tarafli araclar, Python, API, servis gelistirme")
+        st.markdown("`Frontend`: web arayuzu ve JavaScript araclari")
+        st.markdown("`Database`: veritabani motorlari ve yonetim araclari")
+        st.markdown("`Network`: ag analizi, paket inceleme, haberlesme araclari")
+        st.markdown("`Virtualization`: Docker gibi izole calisma ortamlari")
+        st.markdown("`Runtime/System`: sistemin veya baska yazilimlarin calismasi icin gereken bilesenler")
+        st.markdown("`Unknown`: amaci net cikarilamayan araclar")
+
     filtered_search_rows = filter_search_rows(search_rows, query, selected_categories, selected_decisions)
     uncertain_rows = [row for row in recommendations if row.get("decision") in {"UNSURE", "MANUAL_REVIEW"}]
     uncertain_rows = sorted(uncertain_rows, key=lambda item: safe_float(item.get("confidence_score", "0")))[:20]
     largest_folders = sorted(disk_usage, key=lambda item: size_to_bytes(item.get("size_human", "")), reverse=True)[:20]
+    drive_usage_cards = build_drive_usage_cards(disk_usage)
+    disk_treemap_rows = build_disk_treemap_rows(disk_usage)
 
     metrics = st.columns(4)
     metrics[0].metric("Toplam Program", len(recommendations))
     metrics[1].metric("Eslestirme Kaydi", len(mappings))
     metrics[2].metric("Buyuk Klasor", len(disk_usage))
     metrics[3].metric("Taranan Proje", len(root_projects))
+
+    st.subheader("Disk Doluluk Gorunumu")
+    st.caption("Mavi katman analiz edilen kokleri, renkli katman toplam disk dolulugunu gosterir.")
+    components.html(render_drive_usage_blocks(drive_usage_cards), height=max(180, 120 + len(drive_usage_cards) * 30), scrolling=False)
+    st.markdown("**En Buyuk Alan Bloklari**")
+    components.html(render_disk_treemap(disk_treemap_rows), height=180, scrolling=False)
 
     st.subheader("Program ve Proje Eslestirmeleri")
     table_rows = filtered_search_rows
@@ -876,6 +1275,8 @@ def render_streamlit() -> None:
             selection_mode="single-row",
             column_config={
                 "project_links": st.column_config.LinkColumn("GitHub Linkleri", display_text="GitHub"),
+                "risk_score": st.column_config.ProgressColumn("Risk", min_value=0, max_value=100),
+                "cleanup_priority_score": st.column_config.ProgressColumn("Temizlik Onceligi", min_value=0, max_value=100),
             },
         )
         selected_rows = selection_event.selection.rows if selection_event else []
@@ -888,6 +1289,8 @@ def render_streamlit() -> None:
             hide_index=True,
             column_config={
                 "project_links": st.column_config.LinkColumn("GitHub Linkleri", display_text="GitHub"),
+                "risk_score": st.column_config.ProgressColumn("Risk", min_value=0, max_value=100),
+                "cleanup_priority_score": st.column_config.ProgressColumn("Temizlik Onceligi", min_value=0, max_value=100),
             },
         )
 
@@ -901,6 +1304,7 @@ def render_streamlit() -> None:
         selected_program = find_program_by_name(table_rows, fallback_program_name)
 
     if selected_program:
+        removal_row = next((row for row in removal_decisions if row.get("software_name", "") == selected_program.get("software_name", "")), {})
         with st.container(border=True):
             detail_left, detail_right = st.columns([1.1, 1.9])
             with detail_left:
@@ -909,12 +1313,22 @@ def render_streamlit() -> None:
                 st.markdown(f"**Karar:** {selected_program.get('decision', '')}")
                 st.markdown(f"**Guven:** {selected_program.get('confidence_score', '')}")
                 st.markdown(f"**Tahmini Boyut:** {selected_program.get('estimated_size', '') or 'Bilinmiyor'}")
+                st.markdown(f"**Risk Skoru:** {selected_program.get('risk_score', '') or '0'} / 100")
+                st.markdown(f"**Temizlik Onceligi:** {selected_program.get('cleanup_priority_score', '') or '0'} / 100")
                 st.markdown(f"**Projeler:** {selected_program.get('matched_projects', '') or 'Yok'}")
                 st.markdown(f"**Son Kullanim:** {selected_program.get('last_used_at', '') or 'Bilinmiyor'}")
                 st.markdown(f"**Kullanim Sinyali:** {selected_program.get('usage_status', '') or 'unknown_usage'}")
             with detail_right:
                 st.markdown("**Neden Bu Karar Verildi?**")
                 st.write(selected_program.get("explanation", "") or "Acilama yok.")
+                st.markdown("**Bu Program Ne Ise Yarar?**")
+                st.write(selected_program.get("purpose", "") or "Aciklama bulunamadi.")
+                st.markdown("**Tipik Kullanim**")
+                st.write(selected_program.get("typical_usage", "") or "Tipik kullanim bilgisi bulunamadi.")
+                st.markdown("**Ilgili Teknolojiler**")
+                st.write(selected_program.get("related_technologies", "") or "Ilgili teknoloji bilgisi bulunamadi.")
+                st.markdown("**Removal Risk Ozeti**")
+                st.write(selected_program.get("removal_risk_summary", "") or "Risk ozeti bulunamadi.")
                 st.markdown("**Eslestirme Kaniti**")
                 st.write(selected_program.get("evidence", "") or "Kanıt yok.")
                 st.markdown("**Kullanim Kaynaklari**")
@@ -926,8 +1340,22 @@ def render_streamlit() -> None:
                         st.markdown(f"- [GitHub Repo]({link})")
                 else:
                     st.write("Bagli GitHub linki bulunamadi.")
+                if removal_row:
+                    st.markdown("**Yeni Kaldirma Motoru**")
+                    st.write(removal_row.get("plain_language_explanation", "") or "Ek karar yok.")
+                    st.caption(
+                        f"Etiket: {removal_row.get('decision_label', '')} | "
+                        f"Silme riski: {removal_row.get('removal_risk_score', '')} | "
+                        f"Alan kazanma degeri: {removal_row.get('cleanup_value_score', '')}"
+                    )
 
         scenario = build_removal_scenario(selected_program, recommendations, dotnet_sdk_report, sdk_validation_report)
+        family_summary = build_version_family_summary(
+            selected_program,
+            recommendations,
+            dotnet_sdk_report,
+            sdk_validation_report,
+        )
         st.subheader("Kaldirma Oncesi Senaryo Wizard")
         st.caption(
             "Bu panel secili program icin terminalde elle yaptigin kontrol akisini UI tarafinda toplar. "
@@ -993,6 +1421,74 @@ def render_streamlit() -> None:
                     "Bu program normal uygulama gibi gorunuyor. Proje bagi yoksa, son kullanim izi eskiyse ve sen de ne ise "
                     "yaradigini bilmiyorsan kaldirma adayi olabilir."
                 )
+
+        st.markdown("**Ayni uygulamanin diger surumleri**")
+        st.write(str(family_summary.get("summary_message", "")))
+        family_candidates = family_summary.get("candidates", [])
+        family_keepers = family_summary.get("keepers", [])
+        if family_keepers:
+            st.markdown("**Kalmasi daha guvenli gorunenler**")
+            st.dataframe(
+                [
+                    {
+                        "program": row.get("software_name", ""),
+                        "boyut": row.get("estimated_size", ""),
+                        "son_kullanim": row.get("last_used_at", "") or "Bilinmiyor",
+                    }
+                    for row in family_keepers[:8]
+                ],
+                use_container_width=True,
+                hide_index=True,
+            )
+        if family_candidates:
+            st.markdown("**Ilk kaldirma adaylari**")
+            st.dataframe(
+                [
+                    {
+                        "program": row.get("software_name", ""),
+                        "boyut": row.get("estimated_size", ""),
+                        "son_kullanim": row.get("last_used_at", "") or "Bilinmiyor",
+                    }
+                    for row in family_candidates[:8]
+                ],
+                use_container_width=True,
+                hide_index=True,
+            )
+        for note in family_summary.get("notes", [])[:4]:
+            st.caption(note)
+
+        st.markdown("**Bu arac icin tek tik test**")
+        if st.button("Secili Araci Test Et", use_container_width=True):
+            progress_bar = st.progress(0)
+            status_box = st.empty()
+            log_box = st.empty()
+            test_steps = [("scan-projects", "Projeler tekrar okunuyor")]
+            if any(token in f"{selected_program.get('software_name', '')} {selected_program.get('category', '')}".casefold() for token in (".net", "sdk", "visual studio", "windows sdk")):
+                test_steps.extend(
+                    [
+                        ("validate-dotnet-sdks", "Bu araca bagli build testleri calisiyor"),
+                        ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                    ]
+                )
+            else:
+                test_steps.extend(
+                    [
+                        ("collect-usage", "Son kullanim izleri tekrar okunuyor"),
+                        ("score-risk", "Risk puani tekrar hesaplaniyor"),
+                        ("recommend", "Karar ekrani guncelleniyor"),
+                        ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                    ]
+                )
+            success, message = run_stepwise_commands(test_steps, progress_bar, status_box, log_box)
+            if success:
+                st.success("Test tamamlandi. Sonuclar yenileniyor.")
+                if message:
+                    st.caption(message[-500:] if len(message) > 500 else message)
+                st.rerun()
+            else:
+                st.error("Test yarida kaldi.")
+                if message:
+                    st.code(message[-2000:] if len(message) > 2000 else message, language="text")
 
     if selected_program and selected_program.get("decision", "") in {"MANUAL_REVIEW", "UNSURE"}:
         st.subheader("Manual Review Wizard")
@@ -1077,80 +1573,85 @@ def render_streamlit() -> None:
         selected_program.get("category", "") == "Runtime/System"
         or "Runtime/System" in selected_categories
         or any(row.get("category", "") == "Runtime/System" for row in table_rows)
+        or bool(dotnet_sdk_report)
     )
     if show_runtime_helper and runtime_family_summaries:
-        st.subheader("Runtime / System Karar Yardimcisi")
+        st.subheader("Sistem Araclari Raporu")
         st.caption(
-            "Bu bolum .NET SDK, .NET Runtime, Visual C++ Redistributable, Windows SDK ve surucu paketleri gibi "
-            "bilesenlerde hangi surumu once tutman gerektigini basitce aciklar."
+            "Bu bolum sistem ailelerini tek yerde toplar. Ayni kurali herkese uygulamaz; aileye gore proje, build, kullanim "
+            "ve surum hatti mantigi kullanir."
         )
         with st.container(border=True):
-            st.markdown("**Basit karar akisi**")
-            st.markdown("1. Ayni urunun winget ve registry kaydini ayri program sanma; once duplicate kayitlari ayikla.")
-            st.markdown("2. `.NET SDK` icin ayni feature band icinde en yuksek patch surumu once koru.")
-            st.markdown("3. `.NET Runtime` ve `ASP.NET Runtime` icin farkli major.minor serilerini ayni surum gibi degerlendirme.")
-            st.markdown("4. `Visual C++ Redistributable` paketlerini topluca silme; farkli hatlar ayri programlar ister.")
-            st.markdown("5. `Windows SDK` veya driver paketlerinde kaldirma kararini build testi yapmadan verme.")
+            st.markdown("**Bilgisayar muhendisi mantigi**")
+            st.markdown("1. `.NET SDK`: once `.sln`, `.csproj`, `global.json`, `dotnet restore`, `dotnet build` bak.")
+            st.markdown("2. `.NET Runtime` ve `ASP.NET Runtime`: build kadar surum hatti uyumuna bak; ayni `major.minor` icinde en yeni patch once tutulur.")
+            st.markdown("3. `Windows SDK`: Visual Studio veya C++/Windows hedefli proje varsa test almadan kaldirma.")
+            st.markdown("4. `Visual C++`: farkli uygulamalar ayni anda farkli paket isteyebilir; toplu temizleme yapma.")
+            st.markdown("5. `GPU / Driver`: kaldirma testi degil bagimlilik testi yap; CUDA, AI, oyun motoru, video araci var mi kontrol et.")
+            st.markdown("6. `.NET Native Runtime`: Store/MSIX etkisi yuzunden korumaci davran.")
 
         st.markdown("**Aile Bazli Ozet**")
         st.dataframe(runtime_family_summaries, use_container_width=True, hide_index=True)
 
         runtime_family_names = [row.get("family", "") for row in runtime_family_summaries if row.get("family", "")]
         selected_runtime_family = st.selectbox(
-            "Runtime Ailesi Sec",
+            "Sistem Araci Ailesi Sec",
             options=runtime_family_names,
             index=0 if runtime_family_names else None,
         )
         runtime_family_key = runtime_family_key_from_label(selected_runtime_family) if selected_runtime_family else ""
         selected_runtime_rows = runtime_family_details.get(runtime_family_key, [])
+        if runtime_family_key:
+            st.markdown("**Bu aile icin test dugmesi**")
+            if st.button(f"{selected_runtime_family} Icin Test Et", key=f"runtime-test-{runtime_family_key}", use_container_width=True):
+                progress_bar = st.progress(0)
+                status_box = st.empty()
+                log_box = st.empty()
+                success, message = run_stepwise_commands(
+                    build_runtime_family_test_steps(runtime_family_key),
+                    progress_bar,
+                    status_box,
+                    log_box,
+                )
+                if success:
+                    st.success(f"{selected_runtime_family} testi tamamlandi. Sonuclar yenileniyor.")
+                    if message:
+                        st.caption(message[-500:] if len(message) > 500 else message)
+                    st.rerun()
+                else:
+                    st.error(f"{selected_runtime_family} testi yarida kaldi.")
+                    if message:
+                        st.code(message[-2000:] if len(message) > 2000 else message, language="text")
         if selected_runtime_rows:
             st.markdown("**Bu ailede bulunan surumler**")
             st.dataframe(selected_runtime_rows, use_container_width=True, hide_index=True)
-            st.info(
-                "KEEP_CANDIDATE = once tutulacak surum. OLDER_VERSION = ayni ailede daha eski kalan surum. "
-                "MANUAL_REVIEW = otomatik silme degil; once proje ve uygulama testi gerekli."
-            )
-
-    if dotnet_sdk_report:
-        st.subheader(".NET SDK Decision Report")
-        st.caption(
-            "Bu rapor `dotnet --list-sdks`, `dotnet workload list`, `vswhere`, `global.json`, `.sln` ve `.csproj` sinyallerini "
-            "birlikte degerlendirir."
-        )
-        status_order = ["DO_NOT_REMOVE", "IDE_DEPENDENT", "KEEP_LATEST", "MANUAL_REVIEW", "SAFE_OLDER_PATCH"]
-        present_statuses = [status for status in status_order if any(row.get("status", "") == status for row in dotnet_sdk_report)]
-        selected_sdk_statuses = set(st.multiselect(".NET SDK Durum Filtresi", present_statuses, default=present_statuses))
-        filtered_sdk_report = [
-            row for row in dotnet_sdk_report if not selected_sdk_statuses or row.get("status", "") in selected_sdk_statuses
-        ]
-        st.dataframe(filtered_sdk_report, use_container_width=True, hide_index=True)
-        with st.container(border=True):
-            st.markdown("**Status anlami**")
-            st.markdown("`DO_NOT_REMOVE`: global.json veya aktif proje bagimi var; once silme.")
-            st.markdown("`IDE_DEPENDENT`: Visual Studio/workload/proje baglami nedeniyle IDE tarafinda kullaniliyor olabilir.")
-            st.markdown("`KEEP_LATEST`: ayni feature band icindeki en yeni patch.")
-            st.markdown("`SAFE_OLDER_PATCH`: ayni bandda daha yeni patch var ve net proje kaniti yok.")
-            st.markdown("`MANUAL_REVIEW`: karar icin build testi veya IDE kontrolu gerekli.")
-
-    if sdk_validation_report:
-        st.subheader(".NET SDK Build Validation")
-        st.caption(
-            "Bu tablo proje bazli `dotnet --version` ve `dotnet build` sonucunu gosterir. "
-            "Gercek build dogrulamasi yaptigi icin karar kalitesi, sadece statik analizden daha yuksektir."
-        )
-        status_order = ["BUILD_PASSED", "BUILD_FAILED", "DISCOVERED_ONLY", "VALIDATION_FAILED"]
-        present_statuses = [status for status in status_order if any(row.get("build_status", "") == status for row in sdk_validation_report)]
-        selected_build_statuses = set(st.multiselect(".NET Build Durum Filtresi", present_statuses, default=present_statuses))
-        filtered_validation_rows = [
-            row for row in sdk_validation_report if not selected_build_statuses or row.get("build_status", "") in selected_build_statuses
-        ]
-        st.dataframe(filtered_validation_rows, use_container_width=True, hide_index=True)
-        with st.container(border=True):
-            st.markdown("**Build sonucu nasil yorumlanir?**")
-            st.markdown("`BUILD_PASSED`: Bu hedef secilen SDK ile gercekten derlendi. Ayni feature band icindeki daha eski patch'ler daha guvenli aday olur.")
-            st.markdown("`BUILD_FAILED`: Build denemesi basarisiz oldu. Hata notunu incelemeden eski SDK silme.")
-            st.markdown("`DISCOVERED_ONLY`: Dry-run veya sadece tespit modu; build dogrulamasi yapilmadi.")
-            st.markdown("`VALIDATION_FAILED`: Komut calismadi veya timeout oldu; elle inceleme gerekli.")
+        runtime_family_report = build_runtime_family_report(
+            runtime_family_key,
+            runtime_family_details,
+            dotnet_sdk_report,
+            sdk_validation_report,
+        ) if runtime_family_key else {"rows": [], "notes": []}
+        if runtime_family_report.get("rows"):
+            report_rows = runtime_family_report.get("rows", [])
+            kinds = sorted({row.get("kind", "") for row in report_rows if row.get("kind", "")}, key=str.casefold)
+            suggestions = sorted({row.get("suggestion", "") for row in report_rows if row.get("suggestion", "")}, key=str.casefold)
+            filter_left, filter_right = st.columns(2)
+            with filter_left:
+                selected_kinds = set(st.multiselect("Kayit Turu Filtresi", kinds, default=kinds, key=f"runtime-kind-{runtime_family_key}"))
+            with filter_right:
+                selected_suggestions = set(st.multiselect("Durum Filtresi", suggestions, default=suggestions, key=f"runtime-suggestion-{runtime_family_key}"))
+            filtered_runtime_rows = [
+                row for row in report_rows
+                if (not selected_kinds or row.get("kind", "") in selected_kinds)
+                and (not selected_suggestions or row.get("suggestion", "") in selected_suggestions)
+            ]
+            st.markdown("**Bu aile icin test sonucu ozeti**")
+            st.dataframe(filtered_runtime_rows, use_container_width=True, hide_index=True)
+            if runtime_family_key == "dotnet_sdk" and sdk_validation_report:
+                st.markdown("**Proje bazli build sonucu**")
+                st.dataframe(sdk_validation_report, use_container_width=True, hide_index=True)
+        for note in runtime_family_report.get("notes", [])[:4]:
+            st.caption(note)
 
     st.subheader("Proje Detay Paneli")
     project_label_map = {
@@ -1177,6 +1678,12 @@ def render_streamlit() -> None:
             st.write(selected_project.get("repo_description", "") or "Aciklama bulunamadi.")
             st.markdown("**Kullanici Notlari**")
             st.write(selected_project.get("user_notes", "") or "Not girilmemis.")
+            st.markdown("**Kod Sinyalleri**")
+            st.write(selected_project.get("detected_libraries", "") or "Kod seviyesi kutuphane sinyali bulunamadi.")
+            st.markdown("**Framework Sinyalleri**")
+            st.write(selected_project.get("framework_signals", "") or "Framework sinyali bulunamadi.")
+            st.markdown("**Kod Kaniti**")
+            st.write(selected_project.get("code_evidence", "") or "Kod kaniti bulunamadi.")
             st.markdown("**Onemli Dosyalar**")
             st.write(selected_project.get("important_files", "") or "Yok")
         if child_projects:
@@ -1211,6 +1718,19 @@ def render_streamlit() -> None:
     with right:
         st.subheader("En Belirsiz Programlar")
         st.dataframe(uncertain_rows, use_container_width=True, hide_index=True)
+
+    if risk_scores:
+        st.subheader("Yuksek Temizlik Onceligi")
+        cleanup_candidates = sorted(risk_scores, key=lambda row: safe_float(row.get("cleanup_priority_score", "0")), reverse=True)[:20]
+        st.dataframe(
+            cleanup_candidates,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "risk_score": st.column_config.ProgressColumn("Risk", min_value=0, max_value=100),
+                "cleanup_priority_score": st.column_config.ProgressColumn("Temizlik Onceligi", min_value=0, max_value=100),
+            },
+        )
 
     st.subheader("Projeler")
     project_overview_rows = []
