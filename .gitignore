@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 data/output/
 exports/
+refresh_state.json
+manual_review_overrides.csv

@@ -26,8 +26,12 @@ from dashboard import (
     runtime_family_key_from_label,
     safe_float,
 )
+from src.analyzers.cleanup_planner import build_cleanup_simulation, write_cleanup_simulation
+from src.analyzers.refresh_planner import build_refresh_plan, estimate_plan_duration, format_eta
 from src.analyzers.manual_review import evaluate_manual_review, load_manual_review_overrides, save_manual_review_override
 from src.analyzers.runtime_advisor import build_runtime_inventory
+from src.presentation.view_models import build_program_view_rows
+from src.windows_software_inventory_analyzer.config import load_config
 
 
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -60,25 +64,35 @@ class DesktopAnalyzerApp:
         self.status_var = tk.StringVar(value="Hazir")
         self.step_var = tk.StringVar(value="Bekliyor")
         self.progress_var = tk.DoubleVar(value=0)
+        self.refresh_mode_var = tk.StringVar(value="quick")
 
         self.recommendations: list[dict[str, str]] = []
         self.risk_scores: list[dict[str, str]] = []
         self.projects: list[dict[str, str]] = []
         self.disk_usage: list[dict[str, str]] = []
+        self.disk_zone_report: list[dict[str, str]] = []
+        self.disk_cleanup_scenarios: list[dict[str, str]] = []
         self.installed_programs: list[dict[str, str]] = []
         self.mappings: list[dict[str, str]] = []
         self.dotnet_sdk_report: list[dict[str, str]] = []
         self.sdk_validation_report: list[dict[str, str]] = []
+        self.validation_status: list[dict[str, str]] = []
         self.removal_decisions: list[dict[str, str]] = []
+        self.system_tools_report: list[dict[str, str]] = []
+        self.system_tool_impact_report: list[dict[str, str]] = []
+        self.program_view_rows: list[dict[str, str]] = []
         self.search_rows: list[dict[str, str]] = []
         self.project_tools_index: dict[str, list[dict[str, str]]] = {}
         self.root_projects: list[dict[str, str]] = []
         self.child_projects_index: dict[str, list[dict[str, str]]] = {}
+        self.project_size_report: list[dict[str, str]] = []
+        self.project_storage_breakdown: list[dict[str, str]] = []
         self.runtime_family_summaries: list[dict[str, str]] = []
         self.runtime_family_details: dict[str, list[dict[str, str]]] = {}
         self.manual_review_overrides: dict[str, dict[str, str]] = {}
         self.selected_program: dict[str, str] = {}
         self.selected_runtime_family: str = ""
+        self.selected_disk_zone_path: str = ""
 
         self.build_layout()
         self.refresh_views()
@@ -89,6 +103,9 @@ class DesktopAnalyzerApp:
 
         ttk.Button(toolbar, text="Verileri Yenile", command=self.run_refresh_all).pack(side=tk.LEFT, padx=(0, 8))
         ttk.Button(toolbar, text="Ekrani Yenile", command=self.refresh_views).pack(side=tk.LEFT)
+        ttk.Label(toolbar, text="Mod").pack(side=tk.LEFT, padx=(12, 4))
+        ttk.Radiobutton(toolbar, text="Hizli", variable=self.refresh_mode_var, value="quick").pack(side=tk.LEFT)
+        ttk.Radiobutton(toolbar, text="Derin", variable=self.refresh_mode_var, value="full").pack(side=tk.LEFT, padx=(0, 8))
         ttk.Label(toolbar, textvariable=self.status_var).pack(side=tk.RIGHT)
 
         progress_frame = ttk.Frame(self.root, padding=(10, 0, 10, 10))
@@ -135,6 +152,7 @@ class DesktopAnalyzerApp:
         self.drive_cards_frame.pack(fill=tk.X, pady=(0, 10))
         self.disk_canvas = tk.Canvas(self.tabs["overview"], height=200, bg="#f6f3ee", highlightthickness=0)
         self.disk_canvas.pack(fill=tk.X, pady=(0, 10))
+        self.disk_canvas.bind("<Button-1>", self.on_disk_canvas_click)
         self.overview_text = tk.Text(self.tabs["overview"], height=18, wrap="word")
         self.overview_text.pack(fill=tk.BOTH, expand=True)
         self.make_text_readonly(self.overview_text)
@@ -241,8 +259,8 @@ class DesktopAnalyzerApp:
         self.make_text_readonly(self.project_detail_text)
         self.project_submodules_tree = self.build_tree(
             self.tabs["project_detail"],
-            ("project_name", "path", "detected_technologies"),
-            ("Alt Parca", "Yol", "Teknolojiler"),
+            ("project_name", "path", "total_size_human", "detected_technologies"),
+            ("Alt Parca", "Yol", "Boyut", "Teknolojiler"),
         )
         self.project_tools_tree = self.build_tree(
             self.tabs["project_detail"],
@@ -265,16 +283,20 @@ class DesktopAnalyzerApp:
         )
 
     def build_cleanup_tab(self) -> None:
+        actions = ttk.Frame(self.tabs["cleanup"])
+        actions.pack(fill=tk.X, pady=(0, 8))
+        ttk.Button(actions, text="Secili Programlarla Senaryo Hesapla", command=self.run_cleanup_simulation).pack(side=tk.LEFT)
         self.cleanup_tree = self.build_tree(
             self.tabs["cleanup"],
             ("software_name", "cleanup_priority_score", "risk_score", "estimated_size", "decision"),
             ("Program", "Temizlik", "Risk", "Boyut", "Karar"),
+            selectmode="extended",
         )
 
-    def build_tree(self, parent: ttk.Frame, columns: tuple[str, ...], headings: tuple[str, ...], height: int = 12) -> ttk.Treeview:
+    def build_tree(self, parent: ttk.Frame, columns: tuple[str, ...], headings: tuple[str, ...], height: int = 12, selectmode: str = "browse") -> ttk.Treeview:
         frame = ttk.Frame(parent)
         frame.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
-        tree = ttk.Treeview(frame, columns=columns, show="headings", height=height)
+        tree = ttk.Treeview(frame, columns=columns, show="headings", height=height, selectmode=selectmode)
         for column, heading in zip(columns, headings):
             tree.heading(column, text=heading)
             tree.column(column, width=180, stretch=True)
@@ -293,13 +315,21 @@ class DesktopAnalyzerApp:
         self.risk_scores = load_csv_rows(OUTPUT_DIR / "program_risk_scores.csv")
         self.projects = load_csv_rows(OUTPUT_DIR / "project_tech_stack.csv")
         self.disk_usage = load_csv_rows(OUTPUT_DIR / "disk_usage.csv")
+        self.disk_zone_report = load_csv_rows(OUTPUT_DIR / "disk_zone_report.csv")
+        self.disk_cleanup_scenarios = load_csv_rows(OUTPUT_DIR / "disk_cleanup_scenarios.csv")
         self.installed_programs = load_csv_rows(OUTPUT_DIR / "installed_programs.csv")
         self.mappings = load_csv_rows(OUTPUT_DIR / "software_project_mapping.csv")
+        self.project_size_report = load_csv_rows(OUTPUT_DIR / "project_size_report.csv")
+        self.project_storage_breakdown = load_csv_rows(OUTPUT_DIR / "project_storage_breakdown.csv")
         self.dotnet_sdk_report = load_csv_rows(OUTPUT_DIR / "dotnet_sdk_decision_report.csv")
         self.sdk_validation_report = load_csv_rows(OUTPUT_DIR / "sdk_validation_report.csv")
+        self.validation_status = load_csv_rows(OUTPUT_DIR / "validation_status.csv")
         self.removal_decisions = load_csv_rows(OUTPUT_DIR / "removal_decisions.csv")
+        self.system_tools_report = load_csv_rows(OUTPUT_DIR / "system_tools_report.csv")
+        self.system_tool_impact_report = load_csv_rows(OUTPUT_DIR / "system_tool_impact_report.csv")
         self.manual_review_overrides = load_manual_review_overrides(BASE_DIR / "manual_review_overrides.csv")
         self.search_rows = build_search_index(self.recommendations, self.mappings, self.projects)
+        self.program_view_rows = build_program_view_rows(self.search_rows, self.removal_decisions, self.validation_status)
         self.project_tools_index = build_project_tools_index(self.search_rows)
         self.root_projects, self.child_projects_index = build_project_hierarchy(self.projects)
         self.runtime_family_summaries, self.runtime_family_details = build_runtime_inventory(
@@ -348,6 +378,9 @@ class DesktopAnalyzerApp:
 
         self.disk_canvas.delete("all")
         rows = build_disk_treemap_rows(self.disk_usage)
+        zone_index = {normalize_windows_path(row.get("path", "")): row for row in self.disk_zone_report if row.get("path", "").strip()}
+        scenario_index = {normalize_windows_path(row.get("path", "")): row for row in self.disk_cleanup_scenarios if row.get("path", "").strip()}
+        self.disk_canvas_regions: list[tuple[int, int, str]] = []
         total = sum(max(1, safe_int(row.get("size_bytes", "0"))) for row in rows) or 1
         x_offset = 12
         colors = ["#0f766e", "#2563eb", "#d97706", "#7c3aed", "#be123c", "#15803d", "#b45309", "#0ea5e9"]
@@ -357,16 +390,57 @@ class DesktopAnalyzerApp:
             self.disk_canvas.create_rectangle(x_offset, 18, x_offset + block_width, 150, fill=colors[index % len(colors)], outline="")
             self.disk_canvas.create_text(x_offset + 8, 32, text=row.get("path", "")[:38], anchor="w", fill="white", font=("Segoe UI", 9, "bold"))
             self.disk_canvas.create_text(x_offset + 8, 56, text=row.get("size_human", ""), anchor="w", fill="white", font=("Segoe UI", 9))
+            self.disk_canvas_regions.append((x_offset, x_offset + block_width, row.get("path", "")))
             x_offset += block_width + 8
 
-        top_cleanup = sorted(self.risk_scores, key=lambda row: safe_float(row.get("cleanup_priority_score", "0")), reverse=True)[:8]
+        selected_zone = {}
+        selected_scenario = {}
+        if self.selected_disk_zone_path:
+            selected_zone = zone_index.get(normalize_windows_path(self.selected_disk_zone_path), {})
+            selected_scenario = scenario_index.get(normalize_windows_path(self.selected_disk_zone_path), {})
+
         summary_lines = ["Bu ekrandaki basit ozet:", ""]
-        for row in top_cleanup:
-            summary_lines.append(
-                f"- {row.get('software_name', '')}: temizlik onceligi {row.get('cleanup_priority_score', '')}, "
-                f"risk {row.get('risk_score', '')}, boyut {row.get('estimated_size', '')}"
+        if selected_zone:
+            summary_lines.extend(
+                [
+                    f"Secili alan: {selected_zone.get('path', '')}",
+                    f"Boyut: {selected_zone.get('size_human', '')}",
+                    f"Kategori: {selected_zone.get('category', '')}",
+                    f"Risk: {selected_zone.get('risk', '')}",
+                    f"Yaklasik acilacak alan: {selected_zone.get('recoverable_space_human', '')}",
+                    f"Yeniden uretilebilirlik: {selected_zone.get('rebuildability', '')}",
+                    f"Proje ile ilgili: {selected_zone.get('active_project_related', '')}",
+                    "",
+                    "En buyuk alt yollar:",
+                ]
             )
+            subpaths = [item.strip() for item in selected_zone.get("top_subpaths", "").split(",") if item.strip()]
+            for subpath in subpaths[:5]:
+                summary_lines.append(f"- {subpath}")
+            summary_lines.extend(
+                [
+                    "",
+                    "Silme / temizleme senaryosu:",
+                    selected_zone.get("cleanup_summary", "") or selected_scenario.get("explanation", "") or "Senaryo yok.",
+                    "",
+                    f"Onerilen aksiyon: {selected_zone.get('recommended_action', '') or selected_scenario.get('recommended_action', '')}",
+                ]
+            )
+        else:
+            top_cleanup = sorted(self.risk_scores, key=lambda row: safe_float(row.get("cleanup_priority_score", "0")), reverse=True)[:8]
+            for row in top_cleanup:
+                summary_lines.append(
+                    f"- {row.get('software_name', '')}: temizlik onceligi {row.get('cleanup_priority_score', '')}, "
+                    f"risk {row.get('risk_score', '')}, boyut {row.get('estimated_size', '')}"
+                )
         self.set_text(self.overview_text, "\n".join(summary_lines))
+
+    def on_disk_canvas_click(self, event: tk.Event[tk.Misc]) -> None:
+        for start_x, end_x, path in getattr(self, "disk_canvas_regions", []):
+            if start_x <= event.x <= end_x:
+                self.selected_disk_zone_path = path
+                self.render_overview()
+                break
 
     def render_mapping_table(self) -> None:
         query = self.search_var.get().casefold().strip()
@@ -413,6 +487,7 @@ class DesktopAnalyzerApp:
             f"Ne yapalim?: {self.simplify_decision(program.get('decision', ''))}",
             f"Risk puani: {program.get('risk_score', '')} / 100",
             f"Temizlik onceligi: {program.get('cleanup_priority_score', '')} / 100",
+            f"Dogrulama seviyesi: {program.get('validation_level', '') or 'STATIC_ONLY'}",
             f"Kapladigi alan: {program.get('estimated_size', '') or 'Bilinmiyor'}",
             f"Bagli projeler: {program.get('matched_projects', '') or 'Yok'}",
             f"Son kullanim izi: {program.get('last_used_at', '') or 'Bilinmiyor'}",
@@ -442,6 +517,9 @@ class DesktopAnalyzerApp:
                     f"Karar etiketi: {removal_row.get('decision_label', '')}",
                     f"Silme riski: {removal_row.get('removal_risk_score', '')} / 100",
                     f"Alan kazanma degeri: {removal_row.get('cleanup_value_score', '')} / 100",
+                    f"Etki alani: {removal_row.get('impact_scope', '')}",
+                    f"Yaklasik acilacak alan: {removal_row.get('if_removed_frees_space_human', '')}",
+                    f"Yeniden uretilebilirlik: {removal_row.get('recoverability_score', '')} / 100",
                     f"Sonraki adim: {removal_row.get('recommended_next_action', '')}",
                     removal_row.get("plain_language_explanation", ""),
                 ]
@@ -498,6 +576,9 @@ class DesktopAnalyzerApp:
                     f"- Karar etiketi: {removal_row.get('decision_label', '')}",
                     f"- Silme riski: {removal_row.get('removal_risk_score', '')} / 100",
                     f"- Alan kazanma degeri: {removal_row.get('cleanup_value_score', '')} / 100",
+                    f"- Etki alani: {removal_row.get('impact_scope', '')}",
+                    f"- Yaklasik acilacak alan: {removal_row.get('if_removed_frees_space_human', '')}",
+                    f"- Yeniden uretilebilirlik: {removal_row.get('recoverability_score', '')} / 100",
                     f"- Sonraki adim: {removal_row.get('recommended_next_action', '')}",
                     f"- Teknik not: {removal_row.get('technical_explanation', '')}",
                 ]
@@ -546,6 +627,18 @@ class DesktopAnalyzerApp:
                     row.get("installed_count", ""),
                     row.get("keep_versions", ""),
                     row.get("older_versions", ""),
+                    row.get("advice", ""),
+                ),
+            )
+        for row in self.system_tools_report:
+            self.runtime_tree.insert(
+                "",
+                tk.END,
+                values=(
+                    row.get("family_label", row.get("family", "")),
+                    row.get("installed_count", ""),
+                    row.get("keep_versions", ""),
+                    row.get("candidate_versions", ""),
                     row.get("advice", ""),
                 ),
             )
@@ -614,6 +707,21 @@ class DesktopAnalyzerApp:
                     row.get("result", ""),
                 ),
             )
+        if self.system_tool_impact_report:
+            for row in self.system_tool_impact_report:
+                if row.get("family", "") != family_key:
+                    continue
+                self.runtime_report_tree.insert(
+                    "",
+                    tk.END,
+                    values=(
+                        "Etki",
+                        row.get("software_name", ""),
+                        row.get("validation_level", ""),
+                        row.get("decision_label", ""),
+                        row.get("next_action", ""),
+                    ),
+                )
         note_lines = [
             f"Secili aile: {report.get('family_label', '')}",
             "",
@@ -643,6 +751,8 @@ class DesktopAnalyzerApp:
             return
         child_projects = self.child_projects_index.get(normalize_windows_path(project.get("path", "")), [])
         tools = collect_project_tools(project, child_projects, self.project_tools_index)
+        size_row = next((row for row in self.project_size_report if row.get("project_name", "") == project.get("project_name", "")), {})
+        breakdown_rows = [row for row in self.project_storage_breakdown if row.get("project_name", "") == project.get("project_name", "")]
 
         lines = [
             f"Proje: {project.get('project_name', '')}",
@@ -652,20 +762,44 @@ class DesktopAnalyzerApp:
             f"Ek sinyaller: {project.get('framework_signals', '') or 'Yok'}",
             f"Aciklama: {project.get('repo_description', '') or 'Yok'}",
             f"Notlar: {project.get('user_notes', '') or 'Yok'}",
-            "",
-            "Bu projede gozlenen kod ipuclari:",
-            project.get("code_evidence", "") or "Kod ipucu yok.",
         ]
+        if size_row:
+            lines.extend(
+                [
+                    f"Toplam boyut: {size_row.get('total_size_human', '')}",
+                    f"Yeniden uretilebilir alan: {size_row.get('generated_artifact_size_human', '')}",
+                    f"Kaynak cekirdek alani: {size_row.get('source_core_size_human', '')}",
+                    f"Yeniden uretilebilir oran: %{size_row.get('recoverable_ratio', '')}",
+                    f"Buyuk proje riski: {size_row.get('active_project_risk', '')}",
+                ]
+            )
+        lines.extend(
+            [
+                "",
+                "En buyuk proje bolumleri:",
+            ]
+        )
+        for row in breakdown_rows[:8]:
+            lines.append(f"- {row.get('segment_name', '')}: {row.get('size_human', '')} | {row.get('segment_type', '')}")
+        lines.extend(
+            [
+                "",
+                "Bu projede gozlenen kod ipuclari:",
+                project.get("code_evidence", "") or "Kod ipucu yok.",
+            ]
+        )
         self.set_text(self.project_detail_text, "\n".join(lines))
 
         self.clear_tree(self.project_submodules_tree)
         for child in child_projects:
+            child_size = next((row for row in self.project_size_report if row.get("project_name", "") == child.get("project_name", "")), {})
             self.project_submodules_tree.insert(
                 "",
                 tk.END,
                 values=(
                     child.get("project_name", ""),
                     child.get("path", ""),
+                    child_size.get("total_size_human", ""),
                     child.get("detected_technologies", ""),
                 ),
             )
@@ -871,7 +1005,9 @@ class DesktopAnalyzerApp:
             steps.extend(
                 [
                     ("validate-dotnet-sdks", "Secili araca bagli .NET testleri calisiyor"),
+                    ("validate-projects", "Proje dogrulama seviyesi guncelleniyor"),
                     ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                    ("build-system-tools-report", "Sistem araci raporu guncelleniyor"),
                 ]
             )
         else:
@@ -880,23 +1016,31 @@ class DesktopAnalyzerApp:
                     ("collect-usage", "Son kullanim izleri tekrar okunuyor"),
                     ("score-risk", "Risk puani tekrar hesaplaniyor"),
                     ("recommend", "Karar ekrani guncelleniyor"),
+                    ("validate-projects", "Proje dogrulama seviyesi guncelleniyor"),
                     ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                    ("build-system-tools-report", "Sistem araci raporu guncelleniyor"),
                 ]
             )
         self.run_background_steps(steps, completion_callback=self.show_selected_program_test_result)
 
     def run_refresh_all(self) -> None:
-        steps = [
-            ("collect-programs", "Kurulu programlar okunuyor"),
-            ("collect-usage", "Kullanim izleri okunuyor"),
-            ("scan-disk", "Disk doluluk verisi hazirlaniyor"),
-            ("scan-projects", "Projeler taraniyor"),
-            ("map-software", "Programlar projelerle baglaniyor"),
-            ("score-risk", "Risk puanlari hesaplaniyor"),
-            ("recommend", "Oneriler yaziliyor"),
-            ("analyze-dotnet-sdk", ".NET raporu guncelleniyor"),
-            ("build-removal-decisions", "Kaldirma senaryosu kararlari uretiliyor"),
-        ]
+        config = load_config(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else None
+        if config is None:
+            messagebox.showinfo("Bilgi", "Config bulunamadi.")
+            return
+        refresh_mode = self.refresh_mode_var.get() or "quick"
+        plan = build_refresh_plan(config, OUTPUT_DIR, mode=refresh_mode)
+        eta_text = format_eta(estimate_plan_duration(plan))
+        steps = []
+        for step in plan:
+            if not step.should_run:
+                continue
+            extra_args = ["--refresh-mode", refresh_mode] if step.command in {"scan-disk", "scan-projects", "analyze-dotnet-sdk", "validate-dotnet-sdks"} else []
+            steps.append((step.command, step.label, extra_args, step.estimated_seconds))
+        steps.append(("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20))
+        steps.append(("build-system-tools-report", "Sistem araci raporu guncelleniyor", [], 8))
+        mode_label = "Hizli" if refresh_mode == "quick" else "Derin"
+        self.set_text(self.log_text, f"{mode_label} yenileme plani hazir. Tahmini sure: {eta_text}\n")
         self.run_background_steps(steps)
 
     def run_selected_runtime_test(self) -> None:
@@ -906,6 +1050,16 @@ class DesktopAnalyzerApp:
         family_key = runtime_family_key_from_label(self.selected_runtime_family)
         steps = build_runtime_family_test_steps(family_key)
         self.run_background_steps(steps, completion_callback=self.show_selected_runtime_test_result)
+
+    def run_cleanup_simulation(self) -> None:
+        selected_items = self.cleanup_tree.selection()
+        if not selected_items:
+            messagebox.showinfo("Bilgi", "Once bir veya daha fazla program sec.")
+            return
+        selected_names = [self.cleanup_tree.item(item, "values")[0] for item in selected_items]
+        simulation = build_cleanup_simulation(selected_names, self.removal_decisions)
+        write_cleanup_simulation(simulation, OUTPUT_DIR)
+        messagebox.showinfo("Coklu Senaryo Sonucu", simulation.summary)
 
     def show_selected_runtime_test_result(self) -> None:
         if not self.selected_runtime_family:
@@ -932,19 +1086,34 @@ class DesktopAnalyzerApp:
         self.set_text(self.removal_text, combined)
         messagebox.showinfo("Test Sonucu", message)
 
-    def run_background_steps(self, steps: list[tuple[str, str]], completion_callback: object | None = None) -> None:
+    def run_background_steps(self, steps: list[tuple], completion_callback: object | None = None) -> None:
         self.progress_var.set(0)
         self.set_text(self.log_text, "")
 
         def worker() -> None:
             total = max(len(steps), 1)
+            total_estimated = sum(int(step[3]) for step in steps if len(step) >= 4)
+            elapsed_estimated = 0
             logs: list[str] = []
-            for index, (command_name, label) in enumerate(steps, start=1):
-                self.root.after(0, lambda text=label: self.step_var.set(text))
+            for index, step in enumerate(steps, start=1):
+                if len(step) == 2:
+                    command_name, label = step
+                    extra_args: list[str] = []
+                    estimated_seconds = 0
+                elif len(step) == 3:
+                    command_name, label, extra_args = step
+                    estimated_seconds = 0
+                else:
+                    command_name, label, extra_args, estimated_seconds = step
+                remaining = max(0, total_estimated - elapsed_estimated) if total_estimated else 0
+                step_label = f"{label} | Tahmini kalan: {format_eta(remaining)}" if remaining else label
+                self.root.after(0, lambda text=step_label: self.step_var.set(text))
                 self.root.after(0, lambda value=((index - 1) / total) * 100: self.progress_var.set(value))
                 command = [sys.executable, "-m", "src.main", command_name]
                 if DEFAULT_CONFIG_PATH.exists():
                     command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+                if extra_args:
+                    command.extend(extra_args)
                 try:
                     completed = subprocess.run(
                         command,
@@ -967,6 +1136,7 @@ class DesktopAnalyzerApp:
                     self.root.after(0, lambda: messagebox.showerror("Islem Durdu", output or "Komut basarisiz oldu."))
                     self.root.after(0, lambda: self.status_var.set("Islem yarida kaldi"))
                     return
+                elapsed_estimated += int(estimated_seconds or 0)
 
             self.root.after(0, lambda: self.progress_var.set(100))
             self.root.after(0, lambda: self.step_var.set("Tamamlandi"))

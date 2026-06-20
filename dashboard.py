@@ -12,7 +12,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from src.analyzers.manual_review import evaluate_manual_review, load_manual_review_overrides, save_manual_review_override
+from src.analyzers.cleanup_planner import build_cleanup_simulation, write_cleanup_simulation
+from src.analyzers.refresh_planner import build_refresh_plan, estimate_plan_duration, format_eta
 from src.analyzers.runtime_advisor import build_runtime_inventory
+from src.presentation.view_models import build_program_view_rows, filter_program_view_rows
+from src.windows_software_inventory_analyzer.config import load_config
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -368,6 +372,21 @@ def build_project_tools_index(rows: list[dict[str, str]]) -> dict[str, list[dict
     return index
 
 
+def build_project_size_index(rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
+    return {row.get("project_name", "").casefold(): row for row in rows if row.get("project_name", "").strip()}
+
+
+def build_project_breakdown_index(rows: list[dict[str, str]]) -> dict[str, list[dict[str, str]]]:
+    index: dict[str, list[dict[str, str]]] = {}
+    for row in rows:
+        project_name = row.get("project_name", "").strip().casefold()
+        if project_name:
+            index.setdefault(project_name, []).append(row)
+    for key in index:
+        index[key].sort(key=lambda item: safe_int(item.get("size_bytes", "0")), reverse=True)
+    return index
+
+
 def build_program_detail_options(rows: list[dict[str, str]]) -> list[str]:
     return [row.get("software_name", "") for row in rows if row.get("software_name", "")]
 
@@ -431,7 +450,9 @@ def build_runtime_family_test_steps(family_key: str) -> list[tuple[str, str]]:
             ("scan-projects", "Proje baglari tekrar okunuyor"),
             ("analyze-dotnet-sdk", "SDK ve runtime raporu tazeleniyor"),
             ("validate-dotnet-sdks", "Build testi calisiyor"),
+            ("validate-projects", "Proje dogrulama seviyesi guncelleniyor"),
             ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+            ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
         ]
     if family_key == "visual_cpp":
         return [
@@ -439,6 +460,7 @@ def build_runtime_family_test_steps(family_key: str) -> list[tuple[str, str]]:
             ("scan-projects", "Proje baglari tekrar okunuyor"),
             ("recommend", "Karar metinleri tazeleniyor"),
             ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+            ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
         ]
     if family_key in {"gpu_driver", "dotnet_native"}:
         return [
@@ -446,10 +468,12 @@ def build_runtime_family_test_steps(family_key: str) -> list[tuple[str, str]]:
             ("score-risk", "Risk puani tekrar hesaplaniyor"),
             ("recommend", "Karar metinleri tazeleniyor"),
             ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+            ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
         ]
     return [
         ("recommend", "Karar metinleri tazeleniyor"),
         ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+        ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
     ]
 
 
@@ -637,6 +661,14 @@ def build_disk_treemap_rows(disk_usage: list[dict[str, str]], limit: int = 12) -
     rows = [row for row in disk_usage if safe_int(row.get("depth", "0")) <= 1 and row.get("path", "").strip()]
     rows.sort(key=lambda item: safe_int_from_any(item.get("size_bytes", "0")), reverse=True)
     return rows[:limit]
+
+
+def build_disk_zone_index(rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
+    return {normalize_windows_path(row.get("path", "")): row for row in rows if row.get("path", "").strip()}
+
+
+def build_disk_scenario_index(rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
+    return {normalize_windows_path(row.get("path", "")): row for row in rows if row.get("path", "").strip()}
 
 
 def render_disk_treemap(rows: list[dict[str, str]]) -> str:
@@ -1098,10 +1130,12 @@ def refresh_analysis_data() -> tuple[bool, str]:
     return run_cli_command("refresh-all")
 
 
-def run_cli_command(command_name: str) -> tuple[bool, str]:
+def run_cli_command(command_name: str, extra_args: list[str] | None = None) -> tuple[bool, str]:
     command = [sys.executable, "-m", "src.main", command_name]
     if DEFAULT_CONFIG_PATH.exists():
         command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+    if extra_args:
+        command.extend(extra_args)
 
     try:
         completed = subprocess.run(
@@ -1114,7 +1148,7 @@ def run_cli_command(command_name: str) -> tuple[bool, str]:
             check=False,
         )
     except OSError as error:
-        return False, f".NET SDK validation baslatilamadi: {error}"
+        return False, f"Komut baslatilamadi: {error}"
 
     output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip()).strip()
     if completed.returncode != 0:
@@ -1122,25 +1156,64 @@ def run_cli_command(command_name: str) -> tuple[bool, str]:
     return True, output or f"{command_name} tamamlandi."
 
 
-def run_stepwise_commands(steps: list[tuple[str, str]], progress_bar, status_box, log_box) -> tuple[bool, str]:
+def run_stepwise_commands(steps: list[tuple], progress_bar, status_box, log_box) -> tuple[bool, str]:
     collected_logs: list[str] = []
     total_steps = max(len(steps), 1)
+    total_estimated_seconds = sum(int(step[3]) for step in steps if len(step) >= 4) or 0
+    elapsed_estimate = 0
 
-    for index, (command_name, label) in enumerate(steps, start=1):
+    for index, step in enumerate(steps, start=1):
+        if len(step) == 2:
+            command_name, label = step
+            extra_args: list[str] = []
+            estimated_seconds = 0
+        elif len(step) == 3:
+            command_name, label, extra_args = step
+            estimated_seconds = 0
+        else:
+            command_name, label, extra_args, estimated_seconds = step
         progress_value = int(((index - 1) / total_steps) * 100)
         progress_bar.progress(progress_value)
-        status_box.info(f"Adim {index}/{total_steps}: {label}")
-        success, message = run_cli_command(command_name)
+        remaining_seconds = max(0, total_estimated_seconds - elapsed_estimate) if total_estimated_seconds else 0
+        eta_text = f" | Tahmini kalan: {format_eta(remaining_seconds)}" if remaining_seconds else ""
+        status_box.info(f"Adim {index}/{total_steps}: {label}{eta_text}")
+        success, message = run_cli_command(command_name, extra_args=extra_args)
         collected_logs.append(f"[{command_name}] {message}")
         log_box.code("\n\n".join(collected_logs)[-4000:], language="text")
         if not success:
             progress_bar.progress(progress_value)
             status_box.error(f"Durdu: {label}")
             return False, "\n\n".join(collected_logs)
+        elapsed_estimate += int(estimated_seconds or 0)
 
     progress_bar.progress(100)
     status_box.success("Tum adimlar tamamlandi.")
     return True, "\n\n".join(collected_logs)
+
+
+def build_refresh_steps(refresh_mode: str) -> tuple[list[tuple[str, str, list[str], int]], list[dict[str, str]], str]:
+    if DEFAULT_CONFIG_PATH.exists():
+        config = load_config(DEFAULT_CONFIG_PATH)
+    else:
+        return [], [], "Config bulunamadi"
+    plan = build_refresh_plan(config, OUTPUT_DIR, mode=refresh_mode)
+    rows = []
+    steps: list[tuple[str, str, list[str], int]] = []
+    for step in plan:
+        rows.append(
+            {
+                "command": step.command,
+                "state": "RUN" if step.should_run else "SKIP",
+                "reason": step.reason,
+                "eta": format_eta(step.estimated_seconds),
+            }
+        )
+        if step.should_run:
+            extra_args = ["--refresh-mode", refresh_mode] if step.command in {"scan-disk", "scan-projects", "analyze-dotnet-sdk", "validate-dotnet-sdks"} else []
+            steps.append((step.command, step.label, extra_args, step.estimated_seconds))
+    steps.append(("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20))
+    steps.append(("build-system-tools-report", "Sistem araclari raporu guncelleniyor", [], 8))
+    return steps, rows, format_eta(estimate_plan_duration(plan))
 
 
 def launch_streamlit() -> int:
@@ -1174,14 +1247,26 @@ def render_streamlit() -> None:
     installed_programs = load_csv_rows(OUTPUT_DIR / "installed_programs.csv")
     mappings = load_csv_rows(OUTPUT_DIR / "software_project_mapping.csv")
     disk_usage = load_csv_rows(OUTPUT_DIR / "disk_usage.csv")
+    disk_zone_report = load_csv_rows(OUTPUT_DIR / "disk_zone_report.csv")
+    disk_cleanup_scenarios = load_csv_rows(OUTPUT_DIR / "disk_cleanup_scenarios.csv")
     projects = load_csv_rows(OUTPUT_DIR / "project_tech_stack.csv")
+    project_size_report = load_csv_rows(OUTPUT_DIR / "project_size_report.csv")
+    project_storage_breakdown = load_csv_rows(OUTPUT_DIR / "project_storage_breakdown.csv")
     dotnet_sdk_report = load_csv_rows(OUTPUT_DIR / "dotnet_sdk_decision_report.csv")
     sdk_validation_report = load_csv_rows(OUTPUT_DIR / "sdk_validation_report.csv")
+    validation_status = load_csv_rows(OUTPUT_DIR / "validation_status.csv")
     removal_decisions = load_csv_rows(OUTPUT_DIR / "removal_decisions.csv")
+    system_tools_report = load_csv_rows(OUTPUT_DIR / "system_tools_report.csv")
+    system_tool_impact_report = load_csv_rows(OUTPUT_DIR / "system_tool_impact_report.csv")
     search_rows = build_search_index(recommendations, mappings, projects)
+    program_view_rows = build_program_view_rows(search_rows, removal_decisions, validation_status)
     project_tools_index = build_project_tools_index(search_rows)
+    project_size_index = build_project_size_index(project_size_report)
+    project_breakdown_index = build_project_breakdown_index(project_storage_breakdown)
     root_projects, child_projects_index = build_project_hierarchy(projects)
     runtime_family_summaries, runtime_family_details = build_runtime_inventory(recommendations, installed_programs, projects)
+    disk_zone_index = build_disk_zone_index(disk_zone_report)
+    disk_scenario_index = build_disk_scenario_index(disk_cleanup_scenarios)
 
     REPORT_HTML_PATH.write_text(
         generate_report_html(recommendations, mappings, disk_usage, projects),
@@ -1192,23 +1277,22 @@ def render_streamlit() -> None:
     st.title("Windows Software Inventory Analyzer")
     st.caption("Program silme yapmaz. Sadece analiz, kategori ve raporlama sunar.")
 
-    refresh_col, info_col = st.columns([1, 2.5])
+    refresh_col, info_col = st.columns([1.2, 2.3])
     with refresh_col:
+        refresh_mode = st.segmented_control(
+            "Yenileme Modu",
+            options=["quick", "full"],
+            default="quick",
+            format_func=lambda item: "Hizli" if item == "quick" else "Derin",
+        )
+        refresh_steps, refresh_plan_rows, refresh_eta = build_refresh_steps(refresh_mode or "quick")
+        st.caption(f"Tahmini toplam sure: {refresh_eta}")
+        with st.expander("Yenileme plani", expanded=False):
+            st.dataframe(refresh_plan_rows, use_container_width=True, hide_index=True)
         if st.button("Verileri Yenile", use_container_width=True):
             progress_bar = st.progress(0)
             status_box = st.empty()
             log_box = st.empty()
-            refresh_steps = [
-                ("collect-programs", "Kurulu programlar okunuyor"),
-                ("collect-usage", "Son kullanim izleri toplanıyor"),
-                ("scan-disk", "Disk ve buyuk klasorler taraniyor"),
-                ("scan-projects", "Projeler ve teknoloji dosyalari taraniyor"),
-                ("map-software", "Programlar projelerle eslestiriliyor"),
-                ("score-risk", "Risk ve temizlik onceligi hesaplanıyor"),
-                ("recommend", "Son oneriler ve aciklamalar yaziliyor"),
-                ("analyze-dotnet-sdk", ".NET SDK bagimlilik raporu hazirlaniyor"),
-                ("build-removal-decisions", "Kaldirma senaryosu kararlari uretiliyor"),
-            ]
             success, message = run_stepwise_commands(refresh_steps, progress_bar, status_box, log_box)
             if success:
                 st.success("Veriler yenilendi. Ekran tekrar yukleniyor.")
@@ -1221,18 +1305,24 @@ def render_streamlit() -> None:
                     st.code(message[-2000:] if len(message) > 2000 else message, language="text")
     with info_col:
         config_hint = str(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else "Varsayilan config bulunamadi"
-        st.caption(f"Yenileme butonu tum analizleri `refresh-all` ile calistirir. Config: {config_hint}")
+        st.caption(f"Yenileme plani degismeyen adimlari atlar. Config: {config_hint}")
 
-    categories = sorted({row.get("category", "") for row in recommendations if row.get("category", "")}, key=str.casefold)
-    decisions = sorted({row.get("decision", "") for row in recommendations if row.get("decision", "")}, key=str.casefold)
+    categories = sorted({row.get("category", "") for row in program_view_rows if row.get("category", "")}, key=str.casefold)
+    decisions = sorted({row.get("decision", "") for row in program_view_rows if row.get("decision", "")}, key=str.casefold)
+    validation_levels = sorted({row.get("validation_level", "") for row in program_view_rows if row.get("validation_level", "")}, key=str.casefold)
+    family_types = sorted({row.get("family_type", "") for row in program_view_rows if row.get("family_type", "")}, key=str.casefold)
 
-    col1, col2, col3 = st.columns([2.2, 1.2, 1.2])
+    col1, col2, col3, col4, col5 = st.columns([2.0, 1.0, 1.0, 1.0, 1.0])
     with col1:
         query = st.text_input("Arama", placeholder="opencv, docker, youtube, networks, python, android...")
     with col2:
         selected_categories = set(st.multiselect("Kategori Filtresi", categories))
     with col3:
         selected_decisions = set(st.multiselect("Karar Filtresi", decisions))
+    with col4:
+        selected_validation_levels = set(st.multiselect("Dogrulama", validation_levels))
+    with col5:
+        selected_family_types = set(st.multiselect("Aile Tipi", family_types))
 
     with st.expander("Kategori Rehberi"):
         st.markdown("`AI/ML`: yapay zeka, model egitimi, veri analizi")
@@ -1244,7 +1334,14 @@ def render_streamlit() -> None:
         st.markdown("`Runtime/System`: sistemin veya baska yazilimlarin calismasi icin gereken bilesenler")
         st.markdown("`Unknown`: amaci net cikarilamayan araclar")
 
-    filtered_search_rows = filter_search_rows(search_rows, query, selected_categories, selected_decisions)
+    filtered_search_rows = filter_program_view_rows(
+        program_view_rows,
+        query=query,
+        categories=selected_categories,
+        decisions=selected_decisions,
+        validation_levels=selected_validation_levels,
+        family_types=selected_family_types,
+    )
     uncertain_rows = [row for row in recommendations if row.get("decision") in {"UNSURE", "MANUAL_REVIEW"}]
     uncertain_rows = sorted(uncertain_rows, key=lambda item: safe_float(item.get("confidence_score", "0")))[:20]
     largest_folders = sorted(disk_usage, key=lambda item: size_to_bytes(item.get("size_human", "")), reverse=True)[:20]
@@ -1262,6 +1359,33 @@ def render_streamlit() -> None:
     components.html(render_drive_usage_blocks(drive_usage_cards), height=max(180, 120 + len(drive_usage_cards) * 30), scrolling=False)
     st.markdown("**En Buyuk Alan Bloklari**")
     components.html(render_disk_treemap(disk_treemap_rows), height=180, scrolling=False)
+    if disk_zone_report:
+        zone_options = [row.get("path", "") for row in disk_zone_report[:50] if row.get("path", "").strip()]
+        selected_zone_path = st.selectbox("Disk Alani Sec", options=zone_options, index=0 if zone_options else None)
+        selected_zone = disk_zone_index.get(normalize_windows_path(selected_zone_path), {}) if selected_zone_path else {}
+        selected_scenario = disk_scenario_index.get(normalize_windows_path(selected_zone_path), {}) if selected_zone_path else {}
+        if selected_zone:
+            zone_left, zone_right = st.columns([1.1, 1.9])
+            with zone_left:
+                st.markdown(f"**Alan:** {selected_zone.get('path', '')}")
+                st.markdown(f"**Boyut:** {selected_zone.get('size_human', '')}")
+                st.markdown(f"**Kategori:** {selected_zone.get('category', '')}")
+                st.markdown(f"**Risk:** {selected_zone.get('risk', '')}")
+                st.markdown(f"**Yeniden Uretilebilirlik:** {selected_zone.get('rebuildability', '')}")
+                st.markdown(f"**Proje ile Ilgili mi?:** {selected_zone.get('active_project_related', '')}")
+                st.markdown(f"**Yaklasik Acilacak Alan:** {selected_zone.get('recoverable_space_human', '')}")
+            with zone_right:
+                st.markdown("**Bu alan neden buyuk olabilir?**")
+                top_subpaths = [item.strip() for item in selected_zone.get("top_subpaths", "").split(",") if item.strip()]
+                if top_subpaths:
+                    for subpath in top_subpaths[:5]:
+                        st.markdown(f"- {subpath}")
+                else:
+                    st.write("Alt klasor ozeti yok.")
+                st.markdown("**Silme / Temizleme Senaryosu**")
+                st.write(selected_zone.get("cleanup_summary", "") or selected_scenario.get("explanation", "") or "Senaryo uretilemedi.")
+                st.markdown("**Onerilen Aksiyon**")
+                st.write(selected_zone.get("recommended_action", "") or selected_scenario.get("recommended_action", "") or "Elle incele.")
 
     st.subheader("Program ve Proje Eslestirmeleri")
     table_rows = filtered_search_rows
@@ -1348,6 +1472,13 @@ def render_streamlit() -> None:
                         f"Silme riski: {removal_row.get('removal_risk_score', '')} | "
                         f"Alan kazanma degeri: {removal_row.get('cleanup_value_score', '')}"
                     )
+                    st.caption(
+                        f"Etki alani: {removal_row.get('impact_scope', '')} | "
+                        f"Yaklasik acilacak alan: {removal_row.get('if_removed_frees_space_human', '')} | "
+                        f"Yeniden uretilebilirlik: {removal_row.get('recoverability_score', '')}"
+                    )
+                if selected_program.get("validation_level", ""):
+                    st.caption(f"Dogrulama seviyesi: {selected_program.get('validation_level', '')}")
 
         scenario = build_removal_scenario(selected_program, recommendations, dotnet_sdk_report, sdk_validation_report)
         family_summary = build_version_family_summary(
@@ -1467,7 +1598,9 @@ def render_streamlit() -> None:
                 test_steps.extend(
                     [
                         ("validate-dotnet-sdks", "Bu araca bagli build testleri calisiyor"),
+                        ("validate-projects", "Proje dogrulama seviyesi guncelleniyor"),
                         ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                        ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
                     ]
                 )
             else:
@@ -1476,7 +1609,9 @@ def render_streamlit() -> None:
                         ("collect-usage", "Son kullanim izleri tekrar okunuyor"),
                         ("score-risk", "Risk puani tekrar hesaplaniyor"),
                         ("recommend", "Karar ekrani guncelleniyor"),
+                        ("validate-projects", "Proje dogrulama seviyesi guncelleniyor"),
                         ("build-removal-decisions", "Kaldirma karari yeniden hesaplaniyor"),
+                        ("build-system-tools-report", "Sistem araclari raporu guncelleniyor"),
                     ]
                 )
             success, message = run_stepwise_commands(test_steps, progress_bar, status_box, log_box)
@@ -1650,6 +1785,13 @@ def render_streamlit() -> None:
             if runtime_family_key == "dotnet_sdk" and sdk_validation_report:
                 st.markdown("**Proje bazli build sonucu**")
                 st.dataframe(sdk_validation_report, use_container_width=True, hide_index=True)
+        if system_tools_report:
+            st.markdown("**Birlesik Sistem Araclari Raporu**")
+            st.dataframe(system_tools_report, use_container_width=True, hide_index=True)
+        if system_tool_impact_report:
+            st.markdown("**Bu araci kaldirirsan hangi projeler riskte?**")
+            filtered_impacts = [row for row in system_tool_impact_report if not runtime_family_key or row.get("family", "") == runtime_family_key]
+            st.dataframe(filtered_impacts, use_container_width=True, hide_index=True)
         for note in runtime_family_report.get("notes", [])[:4]:
             st.caption(note)
 
@@ -1663,6 +1805,8 @@ def render_streamlit() -> None:
     selected_project = project_label_map.get(selected_project_label, {}) if selected_project_label else {}
     if selected_project:
         child_projects = child_projects_index.get(normalize_windows_path(selected_project.get("path", "")), [])
+        project_size_row = project_size_index.get(selected_project.get("project_name", "").casefold(), {})
+        breakdown_rows = project_breakdown_index.get(selected_project.get("project_name", "").casefold(), [])
         detail_left, detail_right = st.columns([1.2, 1.8])
         with detail_left:
             st.markdown(f"**Proje:** {selected_project.get('project_name', '')}")
@@ -1673,6 +1817,11 @@ def render_streamlit() -> None:
             st.markdown(f"**Teknolojiler:** {selected_project.get('detected_technologies', '')}")
             st.markdown(f"**Son Degisiklik:** {selected_project.get('last_modified', '')}")
             st.markdown(f"**Alt Modul Sayisi:** {len(child_projects)}")
+            if project_size_row:
+                st.markdown(f"**Toplam Boyut:** {project_size_row.get('total_size_human', '')}")
+                st.markdown(f"**Yeniden Uretilebilir Alan:** {project_size_row.get('generated_artifact_size_human', '')}")
+                st.markdown(f"**Kaynak Alan:** {project_size_row.get('source_core_size_human', '')}")
+                st.markdown(f"**Yeniden Uretilebilir Oran:** %{project_size_row.get('recoverable_ratio', '')}")
         with detail_right:
             st.markdown("**Proje Aciklamasi**")
             st.write(selected_project.get("repo_description", "") or "Aciklama bulunamadi.")
@@ -1686,12 +1835,16 @@ def render_streamlit() -> None:
             st.write(selected_project.get("code_evidence", "") or "Kod kaniti bulunamadi.")
             st.markdown("**Onemli Dosyalar**")
             st.write(selected_project.get("important_files", "") or "Yok")
+            if breakdown_rows:
+                st.markdown("**Proje Alan Kirilimi**")
+                st.dataframe(breakdown_rows[:15], use_container_width=True, hide_index=True)
         if child_projects:
             st.markdown("**Alt Moduller**")
             child_rows = [
                 {
                     "project_name": child.get("project_name", ""),
                     "path": child.get("path", ""),
+                    "total_size_human": project_size_index.get(child.get("project_name", "").casefold(), {}).get("total_size_human", ""),
                     "detected_technologies": child.get("detected_technologies", ""),
                     "important_files": child.get("important_files", ""),
                 }
@@ -1731,6 +1884,26 @@ def render_streamlit() -> None:
                 "cleanup_priority_score": st.column_config.ProgressColumn("Temizlik Onceligi", min_value=0, max_value=100),
             },
         )
+    if removal_decisions:
+        st.subheader("Coklu Kaldirma Senaryosu")
+        simulation_options = [row.get("software_name", "") for row in removal_decisions if row.get("software_name", "")]
+        selected_simulation_programs = st.multiselect(
+            "Birlikte degerlendirmek istedigin programlari sec",
+            options=simulation_options,
+            default=simulation_options[:3],
+        )
+        if st.button("Senaryoyu Hesapla", use_container_width=True):
+            simulation_entry = build_cleanup_simulation(selected_simulation_programs, removal_decisions)
+            write_cleanup_simulation(simulation_entry, OUTPUT_DIR)
+            st.success(simulation_entry.summary)
+            st.json(
+                {
+                    "risk_tier": simulation_entry.risk_tier,
+                    "total_reclaim": simulation_entry.total_reclaim_human,
+                    "affected_projects_count": simulation_entry.affected_projects_count,
+                    "affected_system_families": simulation_entry.affected_system_families,
+                }
+            )
 
     st.subheader("Projeler")
     project_overview_rows = []

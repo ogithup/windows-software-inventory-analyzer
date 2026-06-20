@@ -74,6 +74,34 @@ class DeveloperCacheEntry:
 
 
 @dataclass(slots=True)
+class DiskZoneReportEntry:
+    path: str
+    scan_root: str
+    category: str
+    risk: str
+    size_bytes: int
+    size_human: str
+    recoverable_space_bytes: int
+    recoverable_space_human: str
+    rebuildability: str
+    active_project_related: str
+    top_subpaths: str
+    recommended_action: str
+    cleanup_summary: str
+
+
+@dataclass(slots=True)
+class DiskCleanupScenarioEntry:
+    path: str
+    scenario_type: str
+    estimated_reclaim_bytes: int
+    estimated_reclaim_human: str
+    risk_level: str
+    recommended_action: str
+    explanation: str
+
+
+@dataclass(slots=True)
 class ProjectTechStackEntry:
     project_name: str
     repo_name: str
@@ -89,6 +117,31 @@ class ProjectTechStackEntry:
     last_modified: str
     file_count: int
     important_files: str
+
+
+@dataclass(slots=True)
+class ProjectSizeReportEntry:
+    project_name: str
+    path: str
+    total_size_bytes: int
+    total_size_human: str
+    generated_artifact_size_bytes: int
+    generated_artifact_size_human: str
+    source_core_size_bytes: int
+    source_core_size_human: str
+    recoverable_ratio: float
+    active_project_risk: str
+
+
+@dataclass(slots=True)
+class ProjectStorageBreakdownEntry:
+    project_name: str
+    path: str
+    segment_name: str
+    segment_type: str
+    size_bytes: int
+    size_human: str
+    recoverable: str
 
 
 @dataclass(slots=True)
@@ -257,6 +310,11 @@ class ProgramDecisionContext:
     runtime_family_rows: list[dict[str, str]] = field(default_factory=list)
     project_signals: list[str] = field(default_factory=list)
     ide_signals: list[str] = field(default_factory=list)
+    project_total_size_bytes: int = 0
+    project_generated_size_bytes: int = 0
+    project_recoverable_ratio: float = 0.0
+    related_disk_zones: list[dict[str, str]] = field(default_factory=list)
+    related_disk_scenarios: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass(slots=True)
@@ -270,6 +328,12 @@ class RemovalDecisionEntry:
     decision_label: str
     removal_risk_score: float
     cleanup_value_score: float
+    recoverability_score: float
+    impact_scope: str
+    if_removed_frees_space_bytes: int
+    if_removed_frees_space_human: str
+    affected_projects_count: int
+    affected_disk_zones: str
     recommended_next_action: str
     plain_language_explanation: str
     technical_explanation: str
@@ -281,3 +345,59 @@ class RemovalDecisionEntry:
     estimated_size: str
     duplicate_summary: str
     test_summary: str
+
+
+@dataclass(slots=True)
+class ValidationStatusEntry:
+    project_name: str
+    project_path: str
+    technology_family: str
+    validation_level: str
+    validation_status: str
+    command_used: str
+    validation_target: str
+    confidence_boost: float
+    notes: str
+
+
+@dataclass(slots=True)
+class SystemToolReportEntry:
+    family: str
+    family_label: str
+    installed_count: int
+    keep_versions: str
+    candidate_versions: str
+    duplicate_status: str
+    ide_dependency_status: str
+    build_status: str
+    validation_level: str
+    affected_projects: str
+    advice: str
+
+
+@dataclass(slots=True)
+class SystemToolImpactEntry:
+    family: str
+    software_name: str
+    installed_version: str
+    decision_label: str
+    validation_level: str
+    duplicate_summary: str
+    build_status: str
+    ide_dependency_status: str
+    affected_projects: str
+    impact_scope: str
+    next_action: str
+
+
+@dataclass(slots=True)
+class CleanupSimulationEntry:
+    simulation_name: str
+    selected_software: str
+    total_reclaim_bytes: int
+    total_reclaim_human: str
+    affected_projects_count: int
+    affected_projects: str
+    affected_system_families: str
+    risk_tier: str
+    summary: str

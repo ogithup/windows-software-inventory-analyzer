@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from src.windows_software_inventory_analyzer.models import ProgramDecisionContext
 
 
-def evaluate_context(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_context(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     family = context.family_type
     if family == "dotnet_sdk":
         return evaluate_dotnet_sdk(context)
@@ -25,9 +25,10 @@ def evaluate_context(context: ProgramDecisionContext) -> tuple[str, float, float
     return evaluate_general_app(context)
 
 
-def evaluate_general_app(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_general_app(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = base_risk(context)
     cleanup = base_cleanup_value(context)
+    recoverability = base_recoverability(context)
     reasons: list[str] = []
     if context.project_count > 0:
         risk += 25
@@ -41,6 +42,12 @@ def evaluate_general_app(context: ProgramDecisionContext) -> tuple[str, float, f
     if context.duplicate_versions:
         cleanup += 14
         reasons.append("Ayni uygulamanin baska surumleri de gorunuyor.")
+    if context.related_disk_scenarios:
+        cleanup += 8
+        reasons.append("Disk alani senaryosu bu aracla baglantili bir alan kazanimina isaret ediyor.")
+    if context.project_generated_size_bytes > 0:
+        recoverability += 10
+        reasons.append("Bagli projelerde yeniden uretilebilir alan bulundu.")
 
     decision = "MANUAL_REVIEW"
     next_action = "Proje bagini ve son kullanim ihtiyacini gozden gecir."
@@ -50,12 +57,13 @@ def evaluate_general_app(context: ProgramDecisionContext) -> tuple[str, float, f
     if context.hard_protection:
         decision = "KEEP"
         next_action = "Bu aile korumali gorundugu icin kaldirma yerine yerinde birak."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_dotnet_sdk(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_dotnet_sdk(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 70)
     cleanup = base_cleanup_value(context)
+    recoverability = base_recoverability(context)
     reasons: list[str] = []
     has_global_json = any(row.get("global_json_matches", "").strip() for row in context.dotnet_sdk_rows)
     build_statuses = {row.get("build_status", "").strip() for row in context.sdk_validation_rows if row.get("build_status", "").strip()}
@@ -71,9 +79,11 @@ def evaluate_dotnet_sdk(context: ProgramDecisionContext) -> tuple[str, float, fl
     if context.duplicate_versions:
         cleanup += 20
         reasons.append("Ayni SDK ailesinde baska patch surumleri de gorunuyor.")
+        recoverability += 8
     if has_build_pass:
         risk -= 10
         cleanup += 10
+        recoverability += 12
         reasons.append("Build gecen proje kaydi bulundu.")
     if has_build_failure:
         risk += 8
@@ -90,12 +100,13 @@ def evaluate_dotnet_sdk(context: ProgramDecisionContext) -> tuple[str, float, fl
     elif has_build_failure:
         decision = "MANUAL_REVIEW"
         next_action = "Build hatasi cozunmeden SDK temizleme yapma."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_runtime_family(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_runtime_family(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 64)
     cleanup = base_cleanup_value(context)
+    recoverability = base_recoverability(context)
     reasons = ["Runtime tarafinda major.minor hatti korunmali."]
     if context.duplicate_versions:
         cleanup += 12
@@ -111,12 +122,13 @@ def evaluate_runtime_family(context: ProgramDecisionContext) -> tuple[str, float
     if context.duplicate_versions and context.project_count == 0 and not is_recently_used(context.last_used_at):
         decision = "TEST_FIRST"
         next_action = "Ayni hat icindeki daha eski patch surumleri once test ederek degerlendir."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_windows_sdk(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_windows_sdk(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 75)
     cleanup = base_cleanup_value(context) + 8
+    recoverability = base_recoverability(context)
     reasons = ["Windows SDK tarafinda surum karsilastirmasi tek basina yeterli degil."]
     if context.project_count > 0 or context.ide_signals:
         risk += 10
@@ -126,60 +138,80 @@ def evaluate_windows_sdk(context: ProgramDecisionContext) -> tuple[str, float, f
         reasons.append("Birden fazla Windows SDK surumu gorunuyor.")
     decision = "TEST_FIRST"
     next_action = "C++/Windows hedefli proje veya IDE acilisi dogrulanmadan eski SDK kaldirma."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_visual_cpp(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_visual_cpp(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 88)
     cleanup = min(base_cleanup_value(context), 18)
+    recoverability = min(base_recoverability(context), 20)
     reasons = ["Visual C++ paketleri farkli uygulamalar tarafindan birlikte istenebilir."]
     if context.duplicate_versions:
         reasons.append("Benzer adlar gorunse bile farkli major hatlar ayri gereksinim olabilir.")
     decision = "KEEP"
     next_action = "Bu ailede otomatik temizleme yapma; sadece cok net duplicate durumda elle karar ver."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_gpu_driver(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_gpu_driver(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 90)
     cleanup = min(base_cleanup_value(context), 10)
+    recoverability = min(base_recoverability(context), 12)
     reasons = ["Suruculer kaldirma adayi gibi degil, sistem bagimliligi gibi ele alinmali."]
     if context.project_count > 0:
         reasons.append("AI, oyun motoru veya grafik is akislariyla bag olabilir.")
     decision = "KEEP"
     next_action = "Kaldirma yerine resmi surucu araci ile guncelleme veya temiz kurulum dusun."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_dotnet_native(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_dotnet_native(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = max(base_risk(context), 78)
     cleanup = min(base_cleanup_value(context) + 4, 34)
+    recoverability = min(base_recoverability(context), 25)
     reasons = ["Store veya MSIX uygulamalari bu aileye bagli olabilir."]
     decision = "MANUAL_REVIEW"
     next_action = "Dogrudan kaldirma yerine once Store uygulamalari ve kullanim ihtiyacini kontrol et."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
-def evaluate_cache_artifact(context: ProgramDecisionContext) -> tuple[str, float, float, str, list[str], str, str]:
+def evaluate_cache_artifact(context: ProgramDecisionContext) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     risk = min(base_risk(context), 28)
     cleanup = max(base_cleanup_value(context), 70)
+    recoverability = max(base_recoverability(context), 85)
     reasons = ["Bu kayit yeniden uretilebilir cache/artifact ailesine benziyor."]
     decision = "CACHE_CLEAN_ONLY"
     next_action = "Programi degil, olusan cache klasorlerini temizlemeyi dusun."
-    return finalize(decision, risk, cleanup, next_action, reasons, context)
+    return finalize(decision, risk, cleanup, recoverability, next_action, reasons, context)
 
 
 def finalize(
     decision: str,
     risk: float,
     cleanup: float,
+    recoverability: float,
     next_action: str,
     reasons: list[str],
     context: ProgramDecisionContext,
-) -> tuple[str, float, float, str, list[str], str, str]:
+) -> tuple[str, float, float, float, str, int, str, str, list[str], str, str]:
     duplicate_summary = summarize_duplicates(context)
     test_summary = summarize_tests(context)
-    return decision, clamp(risk), clamp(cleanup), next_action, reasons, duplicate_summary, test_summary
+    affected_projects_count = context.project_count
+    affected_disk_zones = ", ".join(row.get("path", "") for row in context.related_disk_zones[:4]) or "-"
+    impact_scope = compute_impact_scope(context, clamp(risk), clamp(cleanup))
+    return (
+        decision,
+        clamp(risk),
+        clamp(cleanup),
+        clamp(recoverability),
+        impact_scope,
+        affected_projects_count,
+        affected_disk_zones,
+        next_action,
+        reasons,
+        duplicate_summary,
+        test_summary,
+    )
 
 
 def summarize_duplicates(context: ProgramDecisionContext) -> str:
@@ -212,6 +244,31 @@ def base_cleanup_value(context: ProgramDecisionContext) -> float:
     if context.estimated_size:
         cleanup += size_bonus(context.estimated_size)
     return cleanup
+
+
+def base_recoverability(context: ProgramDecisionContext) -> float:
+    if context.family_type == "cache_artifact":
+        return 90.0
+    recoverability = 20.0
+    if context.project_recoverable_ratio:
+        recoverability += min(context.project_recoverable_ratio / 2, 35.0)
+    if context.related_disk_scenarios:
+        reclaimable = max(safe_int(row.get("estimated_reclaim_bytes", "0")) for row in context.related_disk_scenarios)
+        if reclaimable >= 10 * 1024**3:
+            recoverability += 25.0
+        elif reclaimable >= 3 * 1024**3:
+            recoverability += 16.0
+        elif reclaimable >= 1 * 1024**3:
+            recoverability += 8.0
+    return recoverability
+
+
+def compute_impact_scope(context: ProgramDecisionContext, risk: float, cleanup: float) -> str:
+    if context.hard_protection or context.project_count >= 3 or risk >= 85:
+        return "HIGH"
+    if context.project_count > 0 or len(context.related_disk_zones) > 1 or cleanup >= 70:
+        return "MEDIUM"
+    return "LOW"
 
 
 def size_bonus(size_human: str) -> float:
@@ -257,3 +314,10 @@ def is_recently_used(last_used_at: str) -> bool:
 
 def clamp(value: float) -> float:
     return max(0.0, min(100.0, round(value, 2)))
+
+
+def safe_int(value: str) -> int:
+    try:
+        return int(float(str(value)))
+    except (TypeError, ValueError):
+        return 0

@@ -54,9 +54,11 @@ def validate_dotnet_sdks(
     project_roots: list[Path],
     exclude_paths: list[Path],
     artifacts_root: Path,
+    project_rows: list[dict[str, str]] | None = None,
+    quick: bool = False,
     dry_run: bool = False,
 ) -> list[DotnetSdkValidationEntry]:
-    targets = discover_dotnet_targets(project_roots, exclude_paths)
+    targets = discover_dotnet_targets(project_roots, exclude_paths, project_rows=project_rows or [], quick=quick)
     if not targets:
         LOGGER.info("No .NET build targets found for validation.")
         return []
@@ -110,7 +112,15 @@ def validate_dotnet_sdks(
     return results
 
 
-def discover_dotnet_targets(project_roots: list[Path], exclude_paths: list[Path]) -> list[Path]:
+def discover_dotnet_targets(
+    project_roots: list[Path],
+    exclude_paths: list[Path],
+    project_rows: list[dict[str, str]] | None = None,
+    quick: bool = False,
+) -> list[Path]:
+    if quick and project_rows:
+        return discover_dotnet_targets_from_project_rows(project_rows)
+
     normalized_excludes = {normalize_path(path) for path in exclude_paths}
     targets: list[Path] = []
     seen: set[str] = set()
@@ -135,6 +145,33 @@ def discover_dotnet_targets(project_roots: list[Path], exclude_paths: list[Path]
                 seen.add(key)
                 targets.append(target)
 
+    targets.sort(key=lambda item: (item.suffix != ".sln", str(item).casefold()))
+    return targets
+
+
+def discover_dotnet_targets_from_project_rows(project_rows: list[dict[str, str]]) -> list[Path]:
+    targets: list[Path] = []
+    seen: set[str] = set()
+    for row in project_rows:
+        technologies = {item.strip().casefold() for item in row.get("detected_technologies", "").split(",") if item.strip()}
+        important_files = [item.strip() for item in row.get("important_files", "").split(",") if item.strip()]
+        if ".net" not in technologies and not any(Path(name).suffix.casefold() in {".sln", ".csproj"} for name in important_files):
+            continue
+        project_path = normalize_path(Path(row.get("path", "")))
+        for name in important_files:
+            candidate = normalize_path(project_path / name)
+            if not candidate.exists() or not candidate.is_file():
+                continue
+            lower_name = candidate.name.casefold()
+            if not (lower_name.endswith(".sln") or lower_name.endswith(".csproj")):
+                continue
+            if lower_name.endswith(".sln") and not solution_contains_managed_project(candidate):
+                continue
+            key = str(candidate).casefold()
+            if key in seen:
+                continue
+            seen.add(key)
+            targets.append(candidate)
     targets.sort(key=lambda item: (item.suffix != ".sln", str(item).casefold()))
     return targets
 

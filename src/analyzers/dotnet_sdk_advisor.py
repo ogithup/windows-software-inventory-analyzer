@@ -31,6 +31,8 @@ DOTNET_SDK_HEADERS = (
 def analyze_dotnet_sdk_dependencies(
     project_roots: list[Path],
     exclude_paths: list[Path],
+    project_rows: list[dict[str, str]] | None = None,
+    quick: bool = False,
 ) -> list[DotnetSdkDecisionEntry]:
     installed_sdks = collect_installed_sdks()
     if not installed_sdks:
@@ -39,7 +41,7 @@ def analyze_dotnet_sdk_dependencies(
 
     ide_context = detect_ide_context()
     workload_context = detect_workload_context()
-    project_signals = scan_dotnet_projects(project_roots, exclude_paths)
+    project_signals = scan_dotnet_projects(project_roots, exclude_paths, project_rows=project_rows or [], quick=quick)
 
     results: list[DotnetSdkDecisionEntry] = []
     versions_by_band = build_versions_by_feature_band(installed_sdks)
@@ -170,7 +172,15 @@ def detect_workload_context() -> dict[str, object]:
     return {"installed_workloads": sorted(set(workloads), key=str.casefold)}
 
 
-def scan_dotnet_projects(project_roots: list[Path], exclude_paths: list[Path]) -> dict[str, object]:
+def scan_dotnet_projects(
+    project_roots: list[Path],
+    exclude_paths: list[Path],
+    project_rows: list[dict[str, str]] | None = None,
+    quick: bool = False,
+) -> dict[str, object]:
+    if quick and project_rows:
+        return scan_dotnet_projects_from_project_rows(project_rows)
+
     normalized_excludes = {normalize_path(path) for path in exclude_paths}
     global_json_signals: list[dict[str, str]] = []
     csproj_signals: list[dict[str, str]] = []
@@ -204,6 +214,55 @@ def scan_dotnet_projects(project_roots: list[Path], exclude_paths: list[Path]) -
                     csproj_signals.append(signal)
             elif lower_name.endswith(".sln"):
                 sln_count += 1
+
+    required_feature_bands = sorted({signal["band"] for signal in csproj_signals if signal.get("band")}, key=str.casefold)
+    return {
+        "global_json_signals": global_json_signals,
+        "csproj_signals": csproj_signals,
+        "required_feature_bands": required_feature_bands,
+        "sln_count": sln_count,
+    }
+
+
+def scan_dotnet_projects_from_project_rows(project_rows: list[dict[str, str]]) -> dict[str, object]:
+    global_json_signals: list[dict[str, str]] = []
+    csproj_signals: list[dict[str, str]] = []
+    sln_count = 0
+
+    for row in project_rows:
+        technologies = {item.strip().casefold() for item in row.get("detected_technologies", "").split(",") if item.strip()}
+        important_files = {item.strip() for item in row.get("important_files", "").split(",") if item.strip()}
+        if ".net" not in technologies and not ({".sln", ".csproj"} & {Path(name).suffix.casefold() for name in important_files}):
+            continue
+        project_path = normalize_path(Path(row.get("path", "")))
+        if not project_path.exists():
+            continue
+        for name in important_files:
+            candidate = project_path / name
+            if not candidate.exists() or not candidate.is_file():
+                continue
+            lower_name = candidate.name.casefold()
+            if lower_name == "global.json":
+                signal = parse_global_json(candidate)
+                if signal:
+                    global_json_signals.append(signal)
+            elif lower_name.endswith(".csproj"):
+                signal = parse_csproj_signal(candidate)
+                if signal:
+                    csproj_signals.append(signal)
+            elif lower_name.endswith(".sln"):
+                sln_count += 1
+        current = project_path
+        for _ in range(3):
+            candidate = current / "global.json"
+            if candidate.exists():
+                signal = parse_global_json(candidate)
+                if signal and not any(existing["path"] == signal["path"] for existing in global_json_signals):
+                    global_json_signals.append(signal)
+                break
+            if current.parent == current:
+                break
+            current = current.parent
 
     required_feature_bands = sorted({signal["band"] for signal in csproj_signals if signal.get("band")}, key=str.casefold)
     return {

@@ -25,11 +25,15 @@ def build_decision_contexts(
     dotnet_sdk_rows: list[dict[str, str]],
     sdk_validation_rows: list[dict[str, str]],
     runtime_family_rows: dict[str, list[dict[str, str]]],
+    project_size_rows: list[dict[str, str]],
+    disk_zone_rows: list[dict[str, str]],
+    disk_scenario_rows: list[dict[str, str]],
 ) -> list[ProgramDecisionContext]:
     recommendation_index = {row.get("software_name", "").strip().casefold(): row for row in recommendation_rows if row.get("software_name", "").strip()}
     mapping_index = {row.get("software_name", "").strip().casefold(): row for row in mapping_rows if row.get("software_name", "").strip()}
     usage_index = {row.get("software_name", "").strip().casefold(): row for row in usage_rows if row.get("software_name", "").strip()}
     risk_index = {row.get("software_name", "").strip().casefold(): row for row in risk_rows if row.get("software_name", "").strip()}
+    project_size_index = {row.get("project_name", "").strip().casefold(): row for row in project_size_rows if row.get("project_name", "").strip()}
 
     family_candidates: dict[str, list[ProgramVersionCandidate]] = {}
     for recommendation in recommendation_rows:
@@ -82,6 +86,22 @@ def build_decision_contexts(
                 if value:
                     ide_signals.append(value)
 
+        related_project_names = [item.strip().casefold() for item in matched_projects.split(",") if item.strip()]
+        project_total_size_bytes = sum(safe_int(project_size_index.get(name, {}).get("total_size_bytes", "0")) for name in related_project_names)
+        project_generated_size_bytes = sum(safe_int(project_size_index.get(name, {}).get("generated_artifact_size_bytes", "0")) for name in related_project_names)
+        project_recoverable_ratios = [
+            safe_float(project_size_index.get(name, {}).get("recoverable_ratio", "0"))
+            for name in related_project_names
+            if name in project_size_index
+        ]
+        related_zones, related_scenarios = find_related_disk_zone_data(
+            install_location=installed.get("install_location", "").strip(),
+            matched_projects=matched_projects,
+            disk_zone_rows=disk_zone_rows,
+            disk_scenario_rows=disk_scenario_rows,
+            project_size_rows=project_size_rows,
+        )
+
         contexts.append(
             ProgramDecisionContext(
                 software_name=software_name,
@@ -111,6 +131,11 @@ def build_decision_contexts(
                 runtime_family_rows=runtime_rows,
                 project_signals=project_signals,
                 ide_signals=ide_signals,
+                project_total_size_bytes=project_total_size_bytes,
+                project_generated_size_bytes=project_generated_size_bytes,
+                project_recoverable_ratio=max(project_recoverable_ratios) if project_recoverable_ratios else 0.0,
+                related_disk_zones=related_zones,
+                related_disk_scenarios=related_scenarios,
             )
         )
 
@@ -129,3 +154,48 @@ def safe_float(value: str) -> float:
         return float(str(value))
     except (TypeError, ValueError):
         return 0.0
+
+
+def find_related_disk_zone_data(
+    install_location: str,
+    matched_projects: str,
+    disk_zone_rows: list[dict[str, str]],
+    disk_scenario_rows: list[dict[str, str]],
+    project_size_rows: list[dict[str, str]],
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    normalized_install = normalize_path_text(install_location)
+    matched_project_keys = {item.strip().casefold() for item in matched_projects.split(",") if item.strip()}
+    project_paths = {
+        normalize_path_text(row.get("path", ""))
+        for row in project_size_rows
+        if row.get("project_name", "").strip().casefold() in matched_project_keys
+    }
+    candidate_zone_rows: list[dict[str, str]] = []
+    for row in disk_zone_rows:
+        zone_path = normalize_path_text(row.get("path", ""))
+        if not zone_path:
+            continue
+        if normalized_install and (normalized_install.startswith(zone_path) or zone_path.startswith(normalized_install)):
+            candidate_zone_rows.append(row)
+            continue
+        if any(project_path and (project_path.startswith(zone_path) or zone_path.startswith(project_path)) for project_path in project_paths):
+            candidate_zone_rows.append(row)
+
+    specific_zone_rows = [row for row in candidate_zone_rows if not is_scan_root_zone(row)]
+    related_zone_rows = specific_zone_rows or candidate_zone_rows
+    related_scenario_rows: list[dict[str, str]] = []
+    zone_keys = {normalize_path_text(row.get("path", "")) for row in specific_zone_rows}
+    for row in disk_scenario_rows:
+        if normalize_path_text(row.get("path", "")) in zone_keys:
+            related_scenario_rows.append(row)
+    related_zone_rows.sort(key=lambda row: safe_int(row.get("size_bytes", "0")), reverse=True)
+    related_scenario_rows.sort(key=lambda row: safe_int(row.get("estimated_reclaim_bytes", "0")), reverse=True)
+    return related_zone_rows[:5], related_scenario_rows[:5]
+
+
+def normalize_path_text(value: str) -> str:
+    return str(value).replace("/", "\\").rstrip("\\").casefold()
+
+
+def is_scan_root_zone(row: dict[str, str]) -> bool:
+    return normalize_path_text(row.get("path", "")) == normalize_path_text(row.get("scan_root", ""))
