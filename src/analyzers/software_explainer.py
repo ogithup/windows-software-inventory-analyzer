@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 
 CATALOG_PATH = Path("software_catalog.json")
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    bundle_path = Path(sys._MEIPASS) / "software_catalog.json"
+    if bundle_path.exists():
+        CATALOG_PATH = bundle_path
 
 
 def load_software_catalog(path: Path = CATALOG_PATH) -> dict[str, dict[str, str]]:

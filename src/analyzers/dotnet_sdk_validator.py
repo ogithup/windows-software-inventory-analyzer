@@ -228,11 +228,17 @@ def infer_required_frameworks(target: Path) -> list[str]:
         solution_dir = target.parent
         try:
             iterator = solution_dir.rglob("*.csproj")
+            while True:
+                try:
+                    csproj_path = next(iterator)
+                except StopIteration:
+                    break
+                except OSError:
+                    continue
+                for framework in parse_csproj_frameworks(csproj_path):
+                    frameworks.add(framework)
         except OSError:
             return []
-        for csproj_path in iterator:
-            for framework in parse_csproj_frameworks(csproj_path):
-                frameworks.add(framework)
         return sorted(frameworks, key=str.casefold)
     return []
 

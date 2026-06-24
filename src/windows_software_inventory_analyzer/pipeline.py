@@ -216,11 +216,18 @@ def run_map_software(config: AppConfig, dry_run: bool = False) -> dict[str, obje
         project_result = run_scan_projects(config, dry_run=False)
         project_stack_path = project_result["project_stack_path"]
         project_index_path = project_result["project_index_path"]
+    import sys
+    tech_rules_path = Path("technology_rules.yaml")
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        bundle_path = Path(sys._MEIPASS) / "technology_rules.yaml"
+        if bundle_path.exists():
+            tech_rules_path = bundle_path
+
     mapping_entries = map_software_to_projects(
         installed_programs=load_mapping_csv_rows(installed_path),
         project_entries=load_mapping_csv_rows(project_stack_path),
         file_index_entries=load_mapping_csv_rows(project_index_path),
-        rules=load_technology_rules(Path("technology_rules.yaml")),
+        rules=load_technology_rules(tech_rules_path),
     )
     if dry_run:
         LOGGER.info("Dry-run: software mapping raporu yazilmadi. mappings=%s", len(mapping_entries))
@@ -247,11 +254,18 @@ def run_recommend(config: AppConfig, dry_run: bool = False) -> dict[str, object]
         project_stack_path = run_scan_projects(config, dry_run=False)["project_stack_path"]
     if not mapping_path.exists():
         mapping_path = run_map_software(config, dry_run=False)["mapping_path"]
+    import sys
+    cat_rules_path = Path("category_rules.yaml")
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        bundle_path = Path(sys._MEIPASS) / "category_rules.yaml"
+        if bundle_path.exists():
+            cat_rules_path = bundle_path
+
     recommendation_entries = build_recommendations(
         installed_programs=load_mapping_csv_rows(installed_path),
         disk_usage_rows=load_mapping_csv_rows(disk_usage_path),
         mapping_rows=load_mapping_csv_rows(mapping_path),
-        category_rules=load_category_rules(Path("category_rules.yaml")),
+        category_rules=load_category_rules(cat_rules_path),
         project_rows=load_mapping_csv_rows(project_stack_path),
         usage_rows=load_mapping_csv_rows(usage_path),
     )

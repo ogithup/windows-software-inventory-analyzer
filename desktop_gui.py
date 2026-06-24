@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+import ctypes
+import sys
+
+def hide_console():
+    if sys.platform == "win32" and getattr(sys, "frozen", False):
+        kernel32 = ctypes.WinDLL("kernel32")
+        user32 = ctypes.WinDLL("user32")
+        hWnd = kernel32.GetConsoleWindow()
+        if hWnd != 0:
+            user32.ShowWindow(hWnd, 0)  # SW_HIDE = 0
+
+hide_console()
+
 import csv
 import subprocess
-import sys
 import threading
 import tkinter as tk
 from pathlib import Path
@@ -32,7 +44,7 @@ from src.analyzers.manual_review import evaluate_manual_review, load_manual_revi
 from src.analyzers.runtime_advisor import build_runtime_inventory
 from src.presentation.view_models import build_program_view_rows
 from src.windows_software_inventory_analyzer.config import load_config
-
+from src.main import main as main_func
 
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
@@ -102,6 +114,7 @@ class DesktopAnalyzerApp:
         toolbar.pack(fill=tk.X)
 
         ttk.Button(toolbar, text="Verileri Yenile", command=self.run_refresh_all).pack(side=tk.LEFT, padx=(0, 8))
+        ttk.Button(toolbar, text="Projeleri Yenile", command=self.run_refresh_projects).pack(side=tk.LEFT, padx=(0, 8))
         ttk.Button(toolbar, text="Ekrani Yenile", command=self.refresh_views).pack(side=tk.LEFT)
         ttk.Label(toolbar, text="Mod").pack(side=tk.LEFT, padx=(12, 4))
         ttk.Radiobutton(toolbar, text="Hizli", variable=self.refresh_mode_var, value="quick").pack(side=tk.LEFT)
@@ -1043,6 +1056,22 @@ class DesktopAnalyzerApp:
         self.set_text(self.log_text, f"{mode_label} yenileme plani hazir. Tahmini sure: {eta_text}\n")
         self.run_background_steps(steps)
 
+    def run_refresh_projects(self) -> None:
+        config = load_config(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else None
+        if config is None:
+            messagebox.showinfo("Bilgi", "Config bulunamadi.")
+            return
+        
+        # Explicitly rescan and re-map projects bypass refresh plan checks
+        steps = [
+            ("scan-projects", "Projeler yeniden taraniyor", ["--refresh-mode", "full"], 45),
+            ("map-software", "Program eslesmeleri guncelleniyor", [], 10),
+            ("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20),
+            ("build-system-tools-report", "Sistem araci raporu guncelleniyor", [], 8),
+        ]
+        self.set_text(self.log_text, "Projeleri Yenile islemi baslatiliyor...\n")
+        self.run_background_steps(steps)
+
     def run_selected_runtime_test(self) -> None:
         if not self.selected_runtime_family:
             messagebox.showinfo("Bilgi", "Once bir sistem araci ailesi sec.")
@@ -1109,30 +1138,39 @@ class DesktopAnalyzerApp:
                 step_label = f"{label} | Tahmini kalan: {format_eta(remaining)}" if remaining else label
                 self.root.after(0, lambda text=step_label: self.step_var.set(text))
                 self.root.after(0, lambda value=((index - 1) / total) * 100: self.progress_var.set(value))
-                command = [sys.executable, "-m", "src.main", command_name]
+                args = [command_name]
                 if DEFAULT_CONFIG_PATH.exists():
-                    command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+                    args.extend(["--config", str(DEFAULT_CONFIG_PATH)])
                 if extra_args:
-                    command.extend(extra_args)
-                try:
-                    completed = subprocess.run(
-                        command,
-                        cwd=BASE_DIR,
-                        capture_output=True,
-                        text=True,
-                        encoding="utf-8",
-                        errors="replace",
-                        check=False,
-                    )
-                except OSError as error:
-                    self.root.after(0, lambda: messagebox.showerror("Hata", str(error)))
-                    self.root.after(0, lambda: self.status_var.set("Komut baslatilamadi"))
-                    return
+                    args.extend(extra_args)
+                
+                import io
+                import contextlib
+                import sys
 
-                output = "\n".join(part.strip() for part in (completed.stdout, completed.stderr) if part.strip()).strip()
+                stdout_buf = io.StringIO()
+                stderr_buf = io.StringIO()
+                orig_argv = sys.argv
+                sys.argv = [sys.executable] + args
+
+                returncode = 0
+                try:
+                    with contextlib.redirect_stdout(stdout_buf), contextlib.redirect_stderr(stderr_buf):
+                        returncode = main_func()
+                except Exception as error:
+                    import traceback
+                    stderr_buf.write(f"\nBeklenmeyen hata: {error}\n{traceback.format_exc()}")
+                    returncode = 1
+                finally:
+                    sys.argv = orig_argv
+
+                stdout_output = stdout_buf.getvalue()
+                stderr_output = stderr_buf.getvalue()
+                output = "\n".join(part.strip() for part in (stdout_output, stderr_output) if part.strip()).strip()
+
                 logs.append(f"{label}\n{output or 'Tamamlandi'}")
                 self.root.after(0, lambda text="\n\n".join(logs)[-5000:]: self.set_text(self.log_text, text))
-                if completed.returncode != 0:
+                if returncode != 0:
                     self.root.after(0, lambda: messagebox.showerror("Islem Durdu", output or "Komut basarisiz oldu."))
                     self.root.after(0, lambda: self.status_var.set("Islem yarida kaldi"))
                     return

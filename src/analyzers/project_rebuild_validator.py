@@ -169,12 +169,18 @@ def find_files(project_path: Path, pattern: str, limit: int) -> list[str]:
     matches: list[str] = []
     try:
         iterator = project_path.rglob(pattern)
+        while True:
+            try:
+                path = next(iterator)
+            except StopIteration:
+                break
+            except OSError:
+                continue
+            if any(part.casefold() in {"node_modules", ".git", ".venv", "venv", "env", "__pycache__", "dist", "build"} for part in path.parts):
+                continue
+            matches.append(str(path.relative_to(project_path)))
+            if len(matches) >= limit:
+                break
     except OSError:
-        return matches
-    for path in iterator:
-        if any(part.casefold() in {"node_modules", ".git", ".venv", "venv", "env", "__pycache__", "dist", "build"} for part in path.parts):
-            continue
-        matches.append(str(path.relative_to(project_path)))
-        if len(matches) >= limit:
-            break
+        pass
     return matches

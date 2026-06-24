@@ -205,7 +205,7 @@ def find_project_directories(root: Path, exclude_paths: set[Path]) -> list[Path]
 
         for file_name in file_names:
             lower_name = file_name.casefold()
-            if file_name in SIGNATURES or lower_name in SIGNATURES:
+            if is_signature_file(file_name):
                 project_root = infer_project_root(current_path, root)
                 if project_root is not None:
                     projects.add(project_root)
@@ -487,7 +487,9 @@ def unique_sorted(items: Iterable[str]) -> list[str]:
 
 def is_signature_file(file_name: str) -> bool:
     lower_name = file_name.casefold()
-    return file_name in SIGNATURES or lower_name in SIGNATURES
+    if file_name in SIGNATURES or lower_name in SIGNATURES:
+        return True
+    return any(lower_name.endswith(ext.casefold()) for ext in SIGNATURES if ext.startswith("."))
 
 
 def normalize_path(path: Path) -> Path:
@@ -535,6 +537,8 @@ def has_real_project_pattern(path: Path) -> bool:
     has_file_marker = any(marker.casefold() in child_names for marker in PROJECT_FILE_MARKERS)
     has_signature = directory_has_signature(child_names)
 
+    has_marker = any(marker.casefold() in child_names for marker in PROJECT_ROOT_MARKERS)
+
     patterns = (
         has_readme and has_structure_dir,
         has_readme and has_signature,
@@ -546,6 +550,9 @@ def has_real_project_pattern(path: Path) -> bool:
         any(name.endswith(".sln") for name in child_names) and has_structure_dir,
         any(name.endswith(".csproj") for name in child_names) and has_structure_dir,
         has_signature and has_file_marker,
+        any(name.endswith(".sln") for name in child_names),
+        any(name.endswith(".csproj") for name in child_names),
+        has_marker and has_signature,
     )
     return any(patterns)
 
@@ -593,15 +600,20 @@ def count_files(project_path: Path) -> int:
     count = 0
     try:
         iterator = project_path.rglob("*")
+        while True:
+            try:
+                file_path = next(iterator)
+            except StopIteration:
+                break
+            except OSError:
+                continue
+            try:
+                if file_path.is_file():
+                    count += 1
+            except OSError:
+                continue
     except OSError:
         return 0
-
-    for file_path in iterator:
-        try:
-            if file_path.is_file():
-                count += 1
-        except OSError:
-            continue
     return count
 
 
@@ -613,14 +625,19 @@ def get_last_modified(project_path: Path) -> str:
 
     try:
         iterator = project_path.rglob("*")
+        while True:
+            try:
+                file_path = next(iterator)
+            except StopIteration:
+                break
+            except OSError:
+                continue
+            try:
+                latest_timestamp = max(latest_timestamp, file_path.stat().st_mtime)
+            except OSError:
+                continue
     except OSError:
-        return datetime.fromtimestamp(latest_timestamp, tz=timezone.utc).isoformat()
-
-    for file_path in iterator:
-        try:
-            latest_timestamp = max(latest_timestamp, file_path.stat().st_mtime)
-        except OSError:
-            continue
+        pass
     return datetime.fromtimestamp(latest_timestamp, tz=timezone.utc).isoformat()
 
 

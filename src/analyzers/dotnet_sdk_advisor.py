@@ -186,34 +186,39 @@ def scan_dotnet_projects(
     csproj_signals: list[dict[str, str]] = []
     sln_count = 0
 
+    import os
     for root in project_roots:
         normalized_root = normalize_path(root)
         if not normalized_root.exists():
             continue
 
-        try:
-            iterator = normalized_root.rglob("*")
-        except OSError:
-            continue
+        for dirpath, dirnames, filenames in os.walk(str(normalized_root), topdown=True):
+            # Prune dirnames in-place to avoid scanning excluded directories (e.g. AppData, node_modules)
+            valid_dirs = []
+            for d in dirnames:
+                dir_path = Path(dirpath) / d
+                normalized_dir = normalize_path(dir_path)
+                if not should_skip_path(normalized_dir, normalized_excludes):
+                    valid_dirs.append(d)
+            dirnames[:] = valid_dirs
 
-        for path in iterator:
-            normalized_path = normalize_path(path)
-            if should_skip_path(normalized_path, normalized_excludes):
-                continue
-            if not normalized_path.is_file():
-                continue
+            for f in filenames:
+                file_path = Path(dirpath) / f
+                normalized_path = normalize_path(file_path)
+                if should_skip_path(normalized_path, normalized_excludes):
+                    continue
 
-            lower_name = normalized_path.name.casefold()
-            if lower_name == "global.json":
-                signal = parse_global_json(normalized_path)
-                if signal:
-                    global_json_signals.append(signal)
-            elif lower_name.endswith(".csproj"):
-                signal = parse_csproj_signal(normalized_path)
-                if signal:
-                    csproj_signals.append(signal)
-            elif lower_name.endswith(".sln"):
-                sln_count += 1
+                lower_name = f.casefold()
+                if lower_name == "global.json":
+                    signal = parse_global_json(normalized_path)
+                    if signal:
+                        global_json_signals.append(signal)
+                elif lower_name.endswith(".csproj"):
+                    signal = parse_csproj_signal(normalized_path)
+                    if signal:
+                        csproj_signals.append(signal)
+                elif lower_name.endswith(".sln"):
+                    sln_count += 1
 
     required_feature_bands = sorted({signal["band"] for signal in csproj_signals if signal.get("band")}, key=str.casefold)
     return {

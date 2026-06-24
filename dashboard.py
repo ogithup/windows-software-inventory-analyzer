@@ -19,7 +19,11 @@ from src.presentation.view_models import build_program_view_rows, filter_program
 from src.windows_software_inventory_analyzer.config import load_config
 
 
-BASE_DIR = Path(__file__).resolve().parent
+import sys
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys.executable).resolve().parent
+else:
+    BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "data" / "output"
 EXPORTS_DIR = BASE_DIR / "exports"
 REPORT_HTML_PATH = BASE_DIR / "report.html"
@@ -1301,6 +1305,27 @@ def render_streamlit() -> None:
                 st.rerun()
             else:
                 st.error("Veri yenileme tamamlanamadi.")
+                if message:
+                    st.code(message[-2000:] if len(message) > 2000 else message, language="text")
+        
+        if st.button("Projeleri Yenile", use_container_width=True):
+            progress_bar = st.progress(0)
+            status_box = st.empty()
+            log_box = st.empty()
+            project_steps = [
+                ("scan-projects", "Projeler yeniden taraniyor", ["--refresh-mode", "full"], 45),
+                ("map-software", "Program eslesmeleri guncelleniyor", [], 10),
+                ("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20),
+                ("build-system-tools-report", "Sistem araci raporu guncelleniyor", [], 8),
+            ]
+            success, message = run_stepwise_commands(project_steps, progress_bar, status_box, log_box)
+            if success:
+                st.success("Projeler yenilendi. Ekran tekrar yukleniyor.")
+                if message:
+                    st.caption(message[-500:] if len(message) > 500 else message)
+                st.rerun()
+            else:
+                st.error("Proje yenileme tamamlanamadi.")
                 if message:
                     st.code(message[-2000:] if len(message) > 2000 else message, language="text")
     with info_col:
