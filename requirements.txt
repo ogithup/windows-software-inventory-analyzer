@@ -1,2 +1,6 @@
 streamlit==1.46.1
 pytest==8.3.5
+plyer==2.1.0
+winotify==1.1.0
+pystray==0.19.5
+pillow==10.4.0

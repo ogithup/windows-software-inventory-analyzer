@@ -14,11 +14,13 @@ from src.windows_software_inventory_analyzer.pipeline import (
     run_full_pipeline,
     run_incremental_refresh,
     run_map_software,
+    run_monitoring_alerts,
     run_plan_cleanup_simulation,
     run_recommend,
     run_scan_disk,
     run_scan_projects,
     run_score_risk,
+    run_generate_weekly_report,
     run_validate_projects,
     run_validate_dotnet_sdks,
 )
@@ -32,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--refresh-mode", choices=("quick", "full"), default="quick", help="Yenileme modu")
 
     subparsers = parser.add_subparsers(dest="command", required=False)
-    for command in ("collect-programs", "collect-usage", "scan-disk", "scan-projects", "map-software", "score-risk", "recommend", "analyze-dotnet-sdk", "validate-dotnet-sdks", "validate-projects", "build-removal-decisions", "build-system-tools-report", "plan-cleanup-simulation", "full-run", "refresh-all"):
+    for command in ("collect-programs", "collect-usage", "scan-disk", "scan-projects", "map-software", "score-risk", "recommend", "analyze-dotnet-sdk", "validate-dotnet-sdks", "validate-projects", "build-removal-decisions", "build-system-tools-report", "plan-cleanup-simulation", "monitor-alerts", "generate-weekly-report", "full-run", "refresh-all"):
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--config", type=Path, default=None, help=argparse.SUPPRESS)
         subparser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)
@@ -76,6 +78,10 @@ def main() -> int:
         run_build_system_tools_report(config, dry_run=args.dry_run)
     elif command == "plan-cleanup-simulation":
         run_plan_cleanup_simulation(config, dry_run=args.dry_run)
+    elif command == "monitor-alerts":
+        run_monitoring_alerts(config, dry_run=args.dry_run, force=True)
+    elif command == "generate-weekly-report":
+        run_generate_weekly_report(config, dry_run=args.dry_run)
     elif command == "refresh-all":
         run_incremental_refresh(config, dry_run=args.dry_run, mode=args.refresh_mode)
     else:

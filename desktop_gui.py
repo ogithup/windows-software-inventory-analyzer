@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ctypes
+import os
 import sys
 
 def hide_console():
@@ -21,10 +22,15 @@ from pathlib import Path
 from tkinter import messagebox, ttk
 
 from dashboard import (
+    APP_ROOT,
     BASE_DIR,
     DEFAULT_CONFIG_PATH,
+    ALERT_CATEGORY_OPTIONS,
+    MONITORING_SETTINGS_PATH,
+    NOTIFICATION_HISTORY_PATH,
     OUTPUT_DIR,
     build_disk_treemap_rows,
+    build_disabled_categories,
     build_drive_usage_cards,
     build_project_hierarchy,
     build_project_tools_index,
@@ -34,17 +40,27 @@ from dashboard import (
     build_version_family_summary,
     build_search_index,
     collect_project_tools,
+    enabled_categories_from_preferences,
+    load_notification_center_settings,
     normalize_windows_path,
+    resolve_runtime_config_path,
     runtime_family_key_from_label,
+    save_notification_center_settings,
     safe_float,
 )
 from src.analyzers.cleanup_planner import build_cleanup_simulation, write_cleanup_simulation
+from src.monitoring.notification_service import send_notification
+from src.monitoring.tray_service import DesktopTrayController, TrayCallbacks
+from src.monitoring.scheduler_service import get_next_scan_date
 from src.analyzers.refresh_planner import build_refresh_plan, estimate_plan_duration, format_eta
 from src.analyzers.manual_review import evaluate_manual_review, load_manual_review_overrides, save_manual_review_override
 from src.analyzers.runtime_advisor import build_runtime_inventory
 from src.presentation.view_models import build_program_view_rows
 from src.windows_software_inventory_analyzer.config import load_config
 from src.main import main as main_func
+
+if Path.cwd().resolve() != APP_ROOT.resolve():
+    os.chdir(APP_ROOT)
 
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
@@ -92,6 +108,8 @@ class DesktopAnalyzerApp:
         self.removal_decisions: list[dict[str, str]] = []
         self.system_tools_report: list[dict[str, str]] = []
         self.system_tool_impact_report: list[dict[str, str]] = []
+        self.alerts: list[dict[str, str]] = []
+        self.event_log_summary: list[dict[str, str]] = []
         self.program_view_rows: list[dict[str, str]] = []
         self.search_rows: list[dict[str, str]] = []
         self.project_tools_index: dict[str, list[dict[str, str]]] = {}
@@ -105,9 +123,27 @@ class DesktopAnalyzerApp:
         self.selected_program: dict[str, str] = {}
         self.selected_runtime_family: str = ""
         self.selected_disk_zone_path: str = ""
+        self.notification_preferences, self.monitoring_settings = load_notification_center_settings()
+        self.is_hidden_to_tray = False
+        self.tray_runtime_status = "Tray icon henuz denenmedi"
+        self.tray_controller = DesktopTrayController(
+            "Windows Software Inventory Analyzer",
+            TrayCallbacks(
+                on_show=lambda: self.root.after(0, self.show_window_from_tray),
+                on_exit=lambda: self.root.after(0, self.exit_from_tray),
+            ),
+        )
 
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close_request)
         self.build_layout()
         self.refresh_views()
+        self.sync_tray_icon()
+        self.send_desktop_notification(
+            title="Windows Software Inventory Analyzer",
+            message="Desktop GUI acildi. Uyari Merkezi ve bildirim ayarlari hazir.",
+            notification_id="welcome_desktop gui",
+            honor_open_pref=True,
+        )
 
     def build_layout(self) -> None:
         toolbar = ttk.Frame(self.root, padding=10)
@@ -144,6 +180,8 @@ class DesktopAnalyzerApp:
             "large": "En Cok Yer Kaplayanlar",
             "uncertain": "En Belirsiz Programlar",
             "cleanup": "Yuksek Temizlik Onceligi",
+            "alerts": "Uyari Merkezi",
+            "settings": "Bildirim Ayarlari",
         }
         for key, title in tab_names.items():
             frame = ttk.Frame(self.notebook, padding=10)
@@ -159,6 +197,8 @@ class DesktopAnalyzerApp:
         self.build_large_tab()
         self.build_uncertain_tab()
         self.build_cleanup_tab()
+        self.build_alerts_tab()
+        self.build_settings_tab()
 
     def build_overview_tab(self) -> None:
         self.drive_cards_frame = ttk.LabelFrame(self.tabs["overview"], text="Disk Doluluk Oranlari", padding=10)
@@ -306,6 +346,68 @@ class DesktopAnalyzerApp:
             selectmode="extended",
         )
 
+    def build_alerts_tab(self) -> None:
+        actions = ttk.Frame(self.tabs["alerts"])
+        actions.pack(fill=tk.X, pady=(0, 8))
+        ttk.Button(actions, text="Uyarilari Yenile", command=self.run_refresh_alerts).pack(side=tk.LEFT)
+        self.alert_tree = self.build_tree(
+            self.tabs["alerts"],
+            ("severity", "category", "title", "confidence_score"),
+            ("Seviye", "Kategori", "Baslik", "Guven"),
+            height=10,
+        )
+        self.alert_tree.bind("<<TreeviewSelect>>", self.on_alert_select)
+        self.alert_detail_text = tk.Text(self.tabs["alerts"], height=12, wrap="word")
+        self.alert_detail_text.pack(fill=tk.BOTH, expand=True)
+        self.make_text_readonly(self.alert_detail_text)
+
+    def build_settings_tab(self) -> None:
+        frame = self.tabs["settings"]
+        settings_form = ttk.LabelFrame(frame, text="Bildirim Merkezi Ayarlari", padding=10)
+        settings_form.pack(fill=tk.X, pady=(0, 10))
+
+        self.enable_notifications_var = tk.BooleanVar(value=bool(self.notification_preferences.get("enable_notifications", True)))
+        self.show_welcome_var = tk.BooleanVar(value=bool(self.notification_preferences.get("show_welcome_notification", True)))
+        self.notify_on_app_open_var = tk.BooleanVar(value=bool(self.notification_preferences.get("notify_on_app_open", True)))
+        self.notify_on_app_close_var = tk.BooleanVar(value=bool(self.notification_preferences.get("notify_on_app_close", True)))
+        self.enable_tray_icon_var = tk.BooleanVar(value=bool(self.notification_preferences.get("enable_tray_icon", True)))
+        self.only_critical_var = tk.BooleanVar(value=bool(self.notification_preferences.get("only_critical_alerts", False)))
+        self.scan_interval_var = tk.StringVar(value=str(self.monitoring_settings.get("scan_interval", "weekly")))
+        self.quiet_start_var = tk.StringVar(value=str(self.notification_preferences.get("quiet_hours_start", "23:00")))
+        self.quiet_end_var = tk.StringVar(value=str(self.notification_preferences.get("quiet_hours_end", "08:00")))
+
+        ttk.Checkbutton(settings_form, text="Windows bildirimlerini ac", variable=self.enable_notifications_var).grid(row=0, column=0, sticky="w")
+        ttk.Checkbutton(settings_form, text="Acilista hos geldiniz bildirimi goster", variable=self.show_welcome_var).grid(row=0, column=1, sticky="w", padx=10)
+        ttk.Checkbutton(settings_form, text="Sadece kritik uyarilar", variable=self.only_critical_var).grid(row=0, column=2, sticky="w")
+        ttk.Checkbutton(settings_form, text="Uygulama acilisinda bildirim goster", variable=self.notify_on_app_open_var).grid(row=1, column=0, sticky="w", pady=(8, 0))
+        ttk.Checkbutton(settings_form, text="Uygulama kapanisinda bildirim goster", variable=self.notify_on_app_close_var).grid(row=1, column=1, sticky="w", padx=10, pady=(8, 0))
+        ttk.Checkbutton(settings_form, text="Bildirim alanina tray icon ekle", variable=self.enable_tray_icon_var).grid(row=1, column=2, sticky="w", pady=(8, 0))
+
+        ttk.Label(settings_form, text="Tarama sikligi").grid(row=2, column=0, sticky="w", pady=(8, 0))
+        ttk.Combobox(settings_form, textvariable=self.scan_interval_var, values=("daily", "weekly", "monthly"), state="readonly", width=14).grid(row=2, column=1, sticky="w", pady=(8, 0))
+        ttk.Label(settings_form, text="Sessiz saat baslangici").grid(row=3, column=0, sticky="w", pady=(8, 0))
+        ttk.Entry(settings_form, textvariable=self.quiet_start_var, width=10).grid(row=3, column=1, sticky="w", pady=(8, 0))
+        ttk.Label(settings_form, text="Sessiz saat bitisi").grid(row=3, column=2, sticky="w", pady=(8, 0))
+        ttk.Entry(settings_form, textvariable=self.quiet_end_var, width=10).grid(row=3, column=3, sticky="w", pady=(8, 0))
+
+        categories_frame = ttk.LabelFrame(frame, text="Bildirim Alinacak Kategoriler", padding=10)
+        categories_frame.pack(fill=tk.X, pady=(0, 10))
+        self.category_check_vars: dict[str, tk.BooleanVar] = {}
+        enabled_categories = set(enabled_categories_from_preferences(self.notification_preferences))
+        for index, category in enumerate(ALERT_CATEGORY_OPTIONS):
+            var = tk.BooleanVar(value=category in enabled_categories)
+            self.category_check_vars[category] = var
+            ttk.Checkbutton(categories_frame, text=category, variable=var).grid(row=0, column=index, sticky="w", padx=(0, 12))
+
+        actions = ttk.Frame(frame)
+        actions.pack(fill=tk.X, pady=(0, 8))
+        ttk.Button(actions, text="Ayarlari Kaydet", command=self.save_notification_settings).pack(side=tk.LEFT)
+        ttk.Button(actions, text="Test Bildirimi Gonder", command=self.send_test_notification).pack(side=tk.LEFT, padx=(8, 0))
+
+        self.settings_text = tk.Text(frame, height=10, wrap="word")
+        self.settings_text.pack(fill=tk.BOTH, expand=True)
+        self.make_text_readonly(self.settings_text)
+
     def build_tree(self, parent: ttk.Frame, columns: tuple[str, ...], headings: tuple[str, ...], height: int = 12, selectmode: str = "browse") -> ttk.Treeview:
         frame = ttk.Frame(parent)
         frame.pack(fill=tk.BOTH, expand=True, pady=(0, 8))
@@ -340,6 +442,9 @@ class DesktopAnalyzerApp:
         self.removal_decisions = load_csv_rows(OUTPUT_DIR / "removal_decisions.csv")
         self.system_tools_report = load_csv_rows(OUTPUT_DIR / "system_tools_report.csv")
         self.system_tool_impact_report = load_csv_rows(OUTPUT_DIR / "system_tool_impact_report.csv")
+        self.alerts = load_csv_rows(OUTPUT_DIR / "alerts.csv")
+        self.event_log_summary = load_csv_rows(OUTPUT_DIR / "event_log_summary.csv")
+        self.notification_preferences, self.monitoring_settings = load_notification_center_settings()
         self.manual_review_overrides = load_manual_review_overrides(BASE_DIR / "manual_review_overrides.csv")
         self.search_rows = build_search_index(self.recommendations, self.mappings, self.projects)
         self.program_view_rows = build_program_view_rows(self.search_rows, self.removal_decisions, self.validation_status)
@@ -371,6 +476,8 @@ class DesktopAnalyzerApp:
         self.render_large_tab()
         self.render_uncertain_tab()
         self.render_cleanup_tab()
+        self.render_alerts_tab()
+        self.render_settings_tab()
         self.render_project_selector()
         self.status_var.set("Tum ekranlar yenilendi")
 
@@ -866,6 +973,71 @@ class DesktopAnalyzerApp:
                 ),
             )
 
+    def render_alerts_tab(self) -> None:
+        self.clear_tree(self.alert_tree)
+        for row in self.alerts[:200]:
+            self.alert_tree.insert(
+                "",
+                tk.END,
+                values=(
+                    row.get("severity", ""),
+                    row.get("category", ""),
+                    row.get("title", ""),
+                    row.get("confidence_score", ""),
+                ),
+            )
+        if self.alerts:
+            summary_lines = [
+                f"Toplam uyari: {len(self.alerts)}",
+                f"Kritik: {sum(1 for row in self.alerts if row.get('severity', '') == 'critical')}",
+                f"Yuksek: {sum(1 for row in self.alerts if row.get('severity', '') == 'high')}",
+                "",
+                "Event log ozetleri:",
+            ]
+            for row in self.event_log_summary[:6]:
+                summary_lines.append(
+                    f"- {row.get('category', '')}: {row.get('event_count', '')} | {row.get('sample_message', '')}"
+                )
+            self.set_text(self.alert_detail_text, "\n".join(summary_lines))
+        else:
+            self.set_text(self.alert_detail_text, "Heniz alert raporu bulunamadi. 'Uyarilari Yenile' butonu ile olustur.")
+
+    def render_settings_tab(self) -> None:
+        if hasattr(self, "enable_notifications_var"):
+            self.enable_notifications_var.set(bool(self.notification_preferences.get("enable_notifications", True)))
+            self.show_welcome_var.set(bool(self.notification_preferences.get("show_welcome_notification", True)))
+            self.notify_on_app_open_var.set(bool(self.notification_preferences.get("notify_on_app_open", True)))
+            self.notify_on_app_close_var.set(bool(self.notification_preferences.get("notify_on_app_close", True)))
+            self.enable_tray_icon_var.set(bool(self.notification_preferences.get("enable_tray_icon", True)))
+            self.only_critical_var.set(bool(self.notification_preferences.get("only_critical_alerts", False)))
+            self.scan_interval_var.set(str(self.monitoring_settings.get("scan_interval", "weekly")))
+            self.quiet_start_var.set(str(self.notification_preferences.get("quiet_hours_start", "23:00")))
+            self.quiet_end_var.set(str(self.notification_preferences.get("quiet_hours_end", "08:00")))
+            enabled_categories = set(enabled_categories_from_preferences(self.notification_preferences))
+            for category, var in self.category_check_vars.items():
+                var.set(category in enabled_categories)
+        next_scan = get_next_scan_date(
+            interval=str(self.monitoring_settings.get("scan_interval", "weekly")),
+            settings_path=MONITORING_SETTINGS_PATH,
+        )
+        lines = [
+            "Bildirim merkezi ayarlari bu ekrandan ve Streamlit tarafindan ortak yonetilir.",
+            "",
+            f"Windows bildirimleri: {'acik' if self.notification_preferences.get('enable_notifications', True) else 'kapali'}",
+            f"Hos geldiniz bildirimi: {'acik' if self.notification_preferences.get('show_welcome_notification', True) else 'kapali'}",
+            f"Uygulama acilis bildirimi: {'acik' if self.notification_preferences.get('notify_on_app_open', True) else 'kapali'}",
+            f"Uygulama kapanis bildirimi: {'acik' if self.notification_preferences.get('notify_on_app_close', True) else 'kapali'}",
+            f"Tray icon: {'acik' if self.notification_preferences.get('enable_tray_icon', True) else 'kapali'}",
+            f"Tray durum: {self.tray_runtime_status}",
+            f"Sadece kritik uyari: {'evet' if self.notification_preferences.get('only_critical_alerts', False) else 'hayir'}",
+            f"Tarama sikligi: {self.monitoring_settings.get('scan_interval', 'weekly')}",
+            f"Sessiz saatler: {self.notification_preferences.get('quiet_hours_start', '23:00')} - {self.notification_preferences.get('quiet_hours_end', '08:00')}",
+            f"Bir sonraki planli kontrol: {next_scan.isoformat(timespec='seconds')}",
+            "",
+            f"Aktif kategoriler: {', '.join(enabled_categories_from_preferences(self.notification_preferences))}",
+        ]
+        self.set_text(self.settings_text, "\n".join(lines))
+
     def clear_tree(self, tree: ttk.Treeview) -> None:
         for item in tree.get_children():
             tree.delete(item)
@@ -1037,7 +1209,8 @@ class DesktopAnalyzerApp:
         self.run_background_steps(steps, completion_callback=self.show_selected_program_test_result)
 
     def run_refresh_all(self) -> None:
-        config = load_config(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else None
+        config_path = resolve_runtime_config_path()
+        config = load_config(config_path) if config_path is not None else None
         if config is None:
             messagebox.showinfo("Bilgi", "Config bulunamadi.")
             return
@@ -1057,7 +1230,8 @@ class DesktopAnalyzerApp:
         self.run_background_steps(steps)
 
     def run_refresh_projects(self) -> None:
-        config = load_config(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else None
+        config_path = resolve_runtime_config_path()
+        config = load_config(config_path) if config_path is not None else None
         if config is None:
             messagebox.showinfo("Bilgi", "Config bulunamadi.")
             return
@@ -1066,7 +1240,10 @@ class DesktopAnalyzerApp:
         steps = [
             ("scan-projects", "Projeler yeniden taraniyor", ["--refresh-mode", "full"], 45),
             ("map-software", "Program eslesmeleri guncelleniyor", [], 10),
+            ("score-risk", "Risk puanlari tekrar hesaplaniyor", [], 8),
+            ("recommend", "Program onerileri tekrar uretiliyor", [], 12),
             ("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20),
+            ("build-removal-decisions", "Kaldirma karar detaylari uretiliyor", [], 10),
             ("build-system-tools-report", "Sistem araci raporu guncelleniyor", [], 8),
         ]
         self.set_text(self.log_text, "Projeleri Yenile islemi baslatiliyor...\n")
@@ -1089,6 +1266,101 @@ class DesktopAnalyzerApp:
         simulation = build_cleanup_simulation(selected_names, self.removal_decisions)
         write_cleanup_simulation(simulation, OUTPUT_DIR)
         messagebox.showinfo("Coklu Senaryo Sonucu", simulation.summary)
+
+    def run_refresh_alerts(self) -> None:
+        steps = [
+            ("monitor-alerts", "Event log ve akilli uyari kurallari calisiyor", [], 10),
+            ("generate-weekly-report", "Haftalik rapor guncelleniyor", [], 4),
+        ]
+        self.run_background_steps(steps)
+
+    def save_notification_settings(self) -> None:
+        selected_categories = [category for category, var in self.category_check_vars.items() if var.get()]
+        updated_preferences = dict(self.notification_preferences)
+        updated_preferences["enable_notifications"] = self.enable_notifications_var.get()
+        updated_preferences["show_welcome_notification"] = self.show_welcome_var.get()
+        updated_preferences["notify_on_app_open"] = self.notify_on_app_open_var.get()
+        updated_preferences["notify_on_app_close"] = self.notify_on_app_close_var.get()
+        updated_preferences["enable_tray_icon"] = self.enable_tray_icon_var.get()
+        updated_preferences["only_critical_alerts"] = self.only_critical_var.get()
+        updated_preferences["quiet_hours_start"] = self.quiet_start_var.get().strip() or "23:00"
+        updated_preferences["quiet_hours_end"] = self.quiet_end_var.get().strip() or "08:00"
+        updated_preferences["disabled_categories"] = build_disabled_categories(selected_categories)
+        save_notification_center_settings(updated_preferences, self.scan_interval_var.get())
+        self.notification_preferences, self.monitoring_settings = load_notification_center_settings()
+        self.sync_tray_icon()
+        self.render_settings_tab()
+        self.status_var.set("Bildirim ayarlari kaydedildi")
+        messagebox.showinfo("Ayarlar", "Bildirim merkezi ayarlari kaydedildi.")
+
+    def send_test_notification(self) -> None:
+        result = self.send_desktop_notification(
+            title="Windows Software Inventory Analyzer",
+            message="Hos geldiniz. Bildirim merkezi ayarlari su an etkin.",
+            notification_id="desktop_settings_test",
+            dedupe_hours=0,
+        )
+        self.status_var.set(f"Test bildirimi: {result}")
+        messagebox.showinfo("Test Bildirimi", f"Bildirim gonderim sonucu: {result}")
+
+    def sync_tray_icon(self) -> None:
+        if bool(self.notification_preferences.get("enable_tray_icon", True)):
+            started = self.tray_controller.start()
+            if not started:
+                self.tray_runtime_status = "Baslatilamadi: pystray/pillow yok veya tray desteklenmiyor"
+                self.status_var.set("Tray icon baslatilamadi; bildirim fallback kullaniliyor")
+            else:
+                self.tray_runtime_status = "Etkin. Windows gizli simgeler panelinde gorunebilir"
+        else:
+            self.tray_controller.stop()
+            self.tray_runtime_status = "Kullanici tarafindan kapatildi"
+
+    def show_window_from_tray(self) -> None:
+        self.is_hidden_to_tray = False
+        self.root.deiconify()
+        self.root.lift()
+        self.root.focus_force()
+        self.status_var.set("Pencere tray icon uzerinden acildi")
+
+    def exit_from_tray(self) -> None:
+        self.on_close_request(force_exit=True)
+
+    def on_close_request(self, force_exit: bool = False) -> None:
+        if bool(self.notification_preferences.get("notify_on_app_close", True)):
+            self.send_desktop_notification(
+                title="Windows Software Inventory Analyzer",
+                message="Desktop GUI kapaniyor. Bildirim ayarlari kaydedildi.",
+                notification_id="close_desktop gui",
+                dedupe_hours=0,
+            )
+        self.tray_controller.stop()
+        self.root.destroy()
+
+    def send_desktop_notification(
+        self,
+        *,
+        title: str,
+        message: str,
+        notification_id: str,
+        dedupe_hours: int = 1,
+        honor_open_pref: bool = False,
+    ) -> str:
+        if not bool(self.notification_preferences.get("enable_notifications", True)):
+            return "notifications_disabled"
+        if honor_open_pref and not bool(self.notification_preferences.get("notify_on_app_open", True)):
+            return "open_disabled"
+        if honor_open_pref and not bool(self.notification_preferences.get("show_welcome_notification", True)):
+            return "welcome_disabled"
+        if self.tray_controller.notify(title, message):
+            return "sent"
+        return send_notification(
+            title=title,
+            message=message,
+            severity="low",
+            history_path=NOTIFICATION_HISTORY_PATH,
+            notification_id=notification_id,
+            dedupe_hours=dedupe_hours,
+        )
 
     def show_selected_runtime_test_result(self) -> None:
         if not self.selected_runtime_family:
@@ -1139,8 +1411,9 @@ class DesktopAnalyzerApp:
                 self.root.after(0, lambda text=step_label: self.step_var.set(text))
                 self.root.after(0, lambda value=((index - 1) / total) * 100: self.progress_var.set(value))
                 args = [command_name]
-                if DEFAULT_CONFIG_PATH.exists():
-                    args.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+                config_path = resolve_runtime_config_path()
+                if config_path is not None:
+                    args.extend(["--config", str(config_path)])
                 if extra_args:
                     args.extend(extra_args)
                 
@@ -1197,6 +1470,31 @@ class DesktopAnalyzerApp:
             self.selected_program = updated
             self.render_program_detail(updated)
             self.render_removal_detail(updated)
+
+    def on_alert_select(self, _event: object) -> None:
+        selection = self.alert_tree.selection()
+        if not selection:
+            return
+        values = self.alert_tree.item(selection[0], "values")
+        if not values:
+            return
+        title = values[2]
+        selected = next((row for row in self.alerts if row.get("title", "") == title), {})
+        if not selected:
+            return
+        lines = [
+            f"Baslik: {selected.get('title', '')}",
+            f"Seviye: {selected.get('severity', '')}",
+            f"Kategori: {selected.get('category', '')}",
+            f"Guven: {selected.get('confidence_score', '')}",
+            "",
+            f"Aciklama: {selected.get('description', '')}",
+            "",
+            f"Onerilen islem: {selected.get('recommended_action', '')}",
+            "",
+            selected.get("explanation", "") or "Detayli aciklama yok.",
+        ]
+        self.set_text(self.alert_detail_text, "\n".join(lines))
 
 
 def main() -> int:

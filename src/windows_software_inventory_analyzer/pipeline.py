@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 import logging
 from pathlib import Path
+import sys
 
 from src.analyzers.mapper import (
     load_csv_rows as load_mapping_csv_rows,
@@ -49,6 +50,13 @@ from src.collectors.usage_signals import (
     collect_program_usage_signals,
     write_program_usage_report,
 )
+from src.monitoring.alert_rule_engine import generate_alerts, write_alert_reports
+from src.monitoring.llm_explanation_service import explain_alert
+from src.monitoring.notification_preferences import load_preferences, should_show_alert
+from src.monitoring.notification_service import send_alert_notification
+from src.monitoring.scheduler_service import load_scheduler_settings, should_run_scan, update_last_scan_time
+from src.monitoring.weekly_report_generator import export_report_to_markdown, generate_weekly_report
+from src.monitoring.windows_event_log_reader import read_windows_event_logs, summarize_events, write_event_log_reports
 
 from .config import load_config
 from .logging_config import configure_logging
@@ -56,6 +64,21 @@ from .models import AppConfig
 
 
 LOGGER = logging.getLogger("windows_software_inventory_analyzer.pipeline")
+
+
+def _load_optional_csv_rows(path: Path) -> list[dict[str, str]]:
+    return load_mapping_csv_rows(path) if path.exists() else []
+
+
+def _resolve_packaged_resource(filename: str) -> Path:
+    candidates: list[Path] = []
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        candidates.append(Path(sys._MEIPASS) / filename)
+    candidates.append(Path.cwd() / filename)
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return Path(filename)
 
 
 def prepare_config(config_path: Path | None = None, verbose: bool = False) -> AppConfig:
@@ -216,12 +239,7 @@ def run_map_software(config: AppConfig, dry_run: bool = False) -> dict[str, obje
         project_result = run_scan_projects(config, dry_run=False)
         project_stack_path = project_result["project_stack_path"]
         project_index_path = project_result["project_index_path"]
-    import sys
-    tech_rules_path = Path("technology_rules.yaml")
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        bundle_path = Path(sys._MEIPASS) / "technology_rules.yaml"
-        if bundle_path.exists():
-            tech_rules_path = bundle_path
+    tech_rules_path = _resolve_packaged_resource("technology_rules.yaml")
 
     mapping_entries = map_software_to_projects(
         installed_programs=load_mapping_csv_rows(installed_path),
@@ -254,12 +272,7 @@ def run_recommend(config: AppConfig, dry_run: bool = False) -> dict[str, object]
         project_stack_path = run_scan_projects(config, dry_run=False)["project_stack_path"]
     if not mapping_path.exists():
         mapping_path = run_map_software(config, dry_run=False)["mapping_path"]
-    import sys
-    cat_rules_path = Path("category_rules.yaml")
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        bundle_path = Path(sys._MEIPASS) / "category_rules.yaml"
-        if bundle_path.exists():
-            cat_rules_path = bundle_path
+    cat_rules_path = _resolve_packaged_resource("category_rules.yaml")
 
     recommendation_entries = build_recommendations(
         installed_programs=load_mapping_csv_rows(installed_path),
@@ -341,7 +354,7 @@ def run_score_risk(config: AppConfig, dry_run: bool = False) -> dict[str, object
         installed_programs=load_mapping_csv_rows(installed_path),
         disk_usage_rows=load_mapping_csv_rows(disk_usage_path),
         mapping_rows=load_mapping_csv_rows(mapping_path),
-        category_rules=load_category_rules(Path("category_rules.yaml")),
+        category_rules=load_category_rules(_resolve_packaged_resource("category_rules.yaml")),
         project_rows=load_mapping_csv_rows(project_stack_path),
         usage_rows=load_mapping_csv_rows(usage_path),
     )
@@ -562,6 +575,107 @@ def run_plan_cleanup_simulation(config: AppConfig, selected_names: list[str] | N
     return {"cleanup_simulation_entry": entry, "cleanup_simulation_path": report_path}
 
 
+def run_monitoring_alerts(
+    config: AppConfig,
+    dry_run: bool = False,
+    interval: str | None = None,
+    force: bool = False,
+) -> dict[str, object]:
+    output_dir = config.report.output_dir
+    settings_path = output_dir / "monitoring_settings.json"
+    history_path = output_dir / "notification_history.json"
+    preferences_path = output_dir / "notification_preferences.json"
+
+    effective_interval = interval or load_scheduler_settings(settings_path).get("scan_interval", "weekly")
+    if not force and not should_run_scan(interval=effective_interval, settings_path=settings_path):
+        return {
+            "monitoring_skipped": True,
+            "next_scan_at": None,
+        }
+
+    installed_rows = _load_optional_csv_rows(output_dir / "installed_programs.csv")
+    usage_rows = _load_optional_csv_rows(output_dir / "program_usage_signals.csv")
+    disk_rows = _load_optional_csv_rows(output_dir / "disk_usage.csv")
+    sdk_rows = _load_optional_csv_rows(output_dir / "dotnet_sdk_decision_report.csv")
+
+    if not installed_rows:
+        installed_rows = load_mapping_csv_rows(run_collect_programs(config, dry_run=False)["csv_path"])
+    if not usage_rows:
+        usage_rows = load_mapping_csv_rows(run_collect_usage_signals(config, dry_run=False)["usage_signal_report_path"])
+    if not disk_rows:
+        disk_rows = load_mapping_csv_rows(run_scan_disk(config, dry_run=False)["disk_usage_path"])
+
+    events, status_message = read_windows_event_logs(days=7)
+    summary_rows = summarize_events(events)
+    alerts = generate_alerts(
+        installed_apps=installed_rows,
+        disk_usage_data=disk_rows,
+        event_log_summary=summary_rows,
+        sdk_inventory=sdk_rows,
+        last_used_app_data=usage_rows,
+    )
+    for alert in alerts:
+        alert["explanation"] = explain_alert(alert)
+
+    preferences = load_preferences(preferences_path)
+    notification_results: list[dict[str, str]] = []
+    if not dry_run:
+        for alert in alerts:
+            if should_show_alert(alert, preferences):
+                result = send_alert_notification(alert, history_path=history_path)
+                notification_results.append({"alert_id": alert.get("id", ""), "delivery": result})
+
+    event_log_events_path = event_log_summary_path = alerts_csv_path = alerts_json_path = None
+    if not dry_run:
+        event_log_events_path, event_log_summary_path = write_event_log_reports(events, summary_rows, output_dir)
+        alerts_csv_path, alerts_json_path = write_alert_reports(alerts, output_dir)
+        update_last_scan_time(settings_path, interval=effective_interval)
+        write_refresh_state("monitor-alerts", config, output_dir)
+
+    return {
+        "event_log_events": events,
+        "event_log_summary": summary_rows,
+        "alerts": alerts,
+        "notification_results": notification_results,
+        "event_log_reader_status": status_message,
+        "event_log_events_path": event_log_events_path,
+        "event_log_summary_path": event_log_summary_path,
+        "alerts_csv_path": alerts_csv_path,
+        "alerts_json_path": alerts_json_path,
+    }
+
+
+def run_generate_weekly_report(config: AppConfig, dry_run: bool = False) -> dict[str, object]:
+    output_dir = config.report.output_dir
+    alerts_rows = _load_optional_csv_rows(output_dir / "alerts.csv")
+    disk_rows = _load_optional_csv_rows(output_dir / "disk_usage.csv")
+    app_rows = _load_optional_csv_rows(output_dir / "installed_programs.csv")
+    event_summary_rows = _load_optional_csv_rows(output_dir / "event_log_summary.csv")
+    user_actions_rows = _load_optional_csv_rows(output_dir / "alert_user_actions.csv")
+
+    if not alerts_rows or not event_summary_rows:
+        monitoring_result = run_monitoring_alerts(config, dry_run=dry_run, force=True)
+        alerts_rows = monitoring_result.get("alerts", [])
+        event_summary_rows = monitoring_result.get("event_log_summary", [])
+    if not disk_rows:
+        disk_rows = _load_optional_csv_rows(run_scan_disk(config, dry_run=False)["disk_usage_path"])
+    if not app_rows:
+        app_rows = _load_optional_csv_rows(run_collect_programs(config, dry_run=False)["csv_path"])
+
+    report = generate_weekly_report(
+        alerts=alerts_rows,
+        disk_usage_history=disk_rows,
+        app_inventory=app_rows,
+        event_log_summary=event_summary_rows,
+        user_actions_history=user_actions_rows,
+    )
+    markdown_path = None
+    if not dry_run:
+        markdown_path = export_report_to_markdown(report, output_dir / "weekly_report.md")
+        write_refresh_state("generate-weekly-report", config, output_dir)
+    return {"weekly_report": report, "weekly_report_markdown_path": markdown_path}
+
+
 def run_incremental_refresh(config: AppConfig, dry_run: bool = False, mode: str = "quick") -> dict[str, object]:
     plan = build_refresh_plan(config, config.report.output_dir, mode=mode)
     LOGGER.info("Refresh plan hazir. mode=%s eta=%s saniye", mode, estimate_plan_duration(plan))
@@ -600,6 +714,7 @@ def run_incremental_refresh(config: AppConfig, dry_run: bool = False, mode: str 
             executed_commands.add("validate-projects")
         if executed_commands.intersection({"build-removal-decisions", "validate-projects", "recommend"}) or not system_report_path.exists():
             results.update(run_build_system_tools_report(config, dry_run=False))
+        results.update(run_monitoring_alerts(config, dry_run=False))
     return results
 
 
@@ -616,13 +731,13 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
             installed_programs=[asdict(application) for application in collect_result["applications"]],
             project_entries=[asdict(entry) for entry in project_result["project_entries"]],
             file_index_entries=[asdict(entry) for entry in project_result["file_index_entries"]],
-            rules=load_technology_rules(Path("technology_rules.yaml")),
+            rules=load_technology_rules(_resolve_packaged_resource("technology_rules.yaml")),
         )
         recommendation_entries = build_recommendations(
             installed_programs=[asdict(application) for application in collect_result["applications"]],
             disk_usage_rows=[asdict(entry) for entry in disk_result["disk_entries"]],
             mapping_rows=[asdict(entry) for entry in mapping_entries],
-            category_rules=load_category_rules(Path("category_rules.yaml")),
+            category_rules=load_category_rules(_resolve_packaged_resource("category_rules.yaml")),
             project_rows=[asdict(entry) for entry in project_result["project_entries"]],
             usage_rows=[asdict(entry) for entry in usage_result["usage_signal_entries"]],
         )
@@ -641,6 +756,8 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
     removal_decision_result = run_build_removal_decisions(config, dry_run=False)
     validation_result = run_validate_projects(config, dry_run=False)
     system_tools_result = run_build_system_tools_report(config, dry_run=False)
+    monitoring_result = run_monitoring_alerts(config, dry_run=False, force=True)
+    weekly_report_result = run_generate_weekly_report(config, dry_run=False)
     return {
         **collect_result,
         **usage_result,
@@ -653,4 +770,6 @@ def run_full_pipeline(config: AppConfig, dry_run: bool = False) -> dict[str, obj
         **removal_decision_result,
         **validation_result,
         **system_tools_result,
+        **monitoring_result,
+        **weekly_report_result,
     }

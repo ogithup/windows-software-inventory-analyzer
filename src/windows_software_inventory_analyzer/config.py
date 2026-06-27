@@ -9,8 +9,13 @@ from .models import AppConfig, BehaviorConfig, LoggingConfig, ReportConfig, Scan
 DEFAULT_CONFIG_PATH = Path("config.example.yaml")
 
 
-def _expand_path(value: str) -> Path:
-    return Path(os.path.expandvars(value)).expanduser()
+def _expand_path(value: str, base_dir: Path | None = None) -> Path:
+    expanded = Path(os.path.expandvars(value)).expanduser()
+    if expanded.is_absolute():
+        return expanded
+    if base_dir is not None:
+        return (base_dir / expanded).resolve()
+    return expanded
 
 
 def _parse_scalar(value: str) -> str | bool:
@@ -75,6 +80,7 @@ def load_config(config_path: Path | None = None) -> AppConfig:
     path = config_path or DEFAULT_CONFIG_PATH
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
+    config_dir = path.resolve().parent
 
     raw_config = _parse_simple_yaml(path)
     scan = raw_config.get("scan", {})
@@ -85,19 +91,19 @@ def load_config(config_path: Path | None = None) -> AppConfig:
     return AppConfig(
         scan=ScanConfig(
             disks=list(scan.get("disks", [])),
-            project_roots=[_expand_path(item) for item in scan.get("project_roots", [])],
-            exclude_paths=[_expand_path(item) for item in scan.get("exclude_paths", [])],
-            disk_usage_roots=[_expand_path(item) for item in scan.get("disk_usage_roots", [])],
+            project_roots=[_expand_path(item, config_dir) for item in scan.get("project_roots", [])],
+            exclude_paths=[_expand_path(item, config_dir) for item in scan.get("exclude_paths", [])],
+            disk_usage_roots=[_expand_path(item, config_dir) for item in scan.get("disk_usage_roots", [])],
             max_depth=int(scan.get("max_depth", 3)),
         ),
         report=ReportConfig(
-            output_dir=_expand_path(report.get("output_dir", "./data/output")),
+            output_dir=_expand_path(report.get("output_dir", "./data/output"), config_dir),
             formats=list(report.get("formats", ["json"])),
         ),
         logging=LoggingConfig(
             level=str(logging.get("level", "INFO")).upper(),
             log_to_file=bool(logging.get("log_to_file", False)),
-            log_dir=_expand_path(logging.get("log_dir", "./data/output/logs")),
+            log_dir=_expand_path(logging.get("log_dir", "./data/output/logs"), config_dir),
         ),
         behavior=BehaviorConfig(
             read_only=bool(behavior.get("read_only", True)),

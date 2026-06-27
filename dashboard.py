@@ -13,6 +13,15 @@ from pathlib import Path
 
 from src.analyzers.manual_review import evaluate_manual_review, load_manual_review_overrides, save_manual_review_override
 from src.analyzers.cleanup_planner import build_cleanup_simulation, write_cleanup_simulation
+from src.monitoring.notification_preferences import load_preferences, save_preferences
+from src.monitoring.notification_service import send_notification
+from src.monitoring.scheduler_service import (
+    DEFAULT_INTERVAL,
+    VALID_INTERVALS,
+    get_next_scan_date,
+    load_scheduler_settings,
+    save_scheduler_settings,
+)
 from src.analyzers.refresh_planner import build_refresh_plan, estimate_plan_duration, format_eta
 from src.analyzers.runtime_advisor import build_runtime_inventory
 from src.presentation.view_models import build_program_view_rows, filter_program_view_rows
@@ -24,12 +33,63 @@ if getattr(sys, "frozen", False):
     BASE_DIR = Path(sys.executable).resolve().parent
 else:
     BASE_DIR = Path(__file__).resolve().parent
-OUTPUT_DIR = BASE_DIR / "data" / "output"
-EXPORTS_DIR = BASE_DIR / "exports"
-REPORT_HTML_PATH = BASE_DIR / "report.html"
+
+
+def _runtime_root_candidates() -> list[Path]:
+    candidates = [BASE_DIR]
+    if getattr(sys, "frozen", False):
+        candidates.append(BASE_DIR.parent)
+    return candidates
+
+
+def _runtime_artifact_score(root: Path) -> int:
+    output_dir = root / "data" / "output"
+    score = 0
+    important_files = [
+        root / "config.yaml",
+        root / "config.example.yaml",
+        output_dir / "installed_programs.csv",
+        output_dir / "program_usage_signals.csv",
+        output_dir / "disk_usage.csv",
+        output_dir / "project_tech_stack.csv",
+        output_dir / "software_project_mapping.csv",
+        output_dir / "program_risk_scores.csv",
+        output_dir / "recommendations.csv",
+        output_dir / "removal_decisions.csv",
+        output_dir / "system_tools_report.csv",
+        output_dir / "alerts.csv",
+    ]
+    for path in important_files:
+        if path.exists():
+            score += 1
+    return score
+
+
+def _resolve_app_root() -> Path:
+    candidates = _runtime_root_candidates()
+    ranked = sorted(
+        ((candidate, _runtime_artifact_score(candidate)) for candidate in candidates),
+        key=lambda item: item[1],
+        reverse=True,
+    )
+    best_candidate, best_score = ranked[0]
+    if best_score > 0:
+        return best_candidate
+    return BASE_DIR
+
+
+APP_ROOT = _resolve_app_root()
+OUTPUT_DIR = APP_ROOT / "data" / "output"
+EXPORTS_DIR = APP_ROOT / "exports"
+REPORT_HTML_PATH = APP_ROOT / "report.html"
 STREAMLIT_LAUNCH_FLAG = "WSIA_STREAMLIT_LAUNCHED"
-DEFAULT_CONFIG_PATH = BASE_DIR / "config.yaml"
-MANUAL_REVIEW_OVERRIDES_PATH = BASE_DIR / "manual_review_overrides.csv"
+DEFAULT_CONFIG_PATH = APP_ROOT / "config.yaml"
+FALLBACK_CONFIG_PATH = APP_ROOT / "config.example.yaml"
+MANUAL_REVIEW_OVERRIDES_PATH = APP_ROOT / "manual_review_overrides.csv"
+NOTIFICATION_PREFERENCES_PATH = OUTPUT_DIR / "notification_preferences.json"
+NOTIFICATION_HISTORY_PATH = OUTPUT_DIR / "notification_history.json"
+MONITORING_SETTINGS_PATH = OUTPUT_DIR / "monitoring_settings.json"
+ALERT_CATEGORY_OPTIONS = ["disk", "event_log", "sdk", "app_usage"]
 
 
 def load_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -37,6 +97,65 @@ def load_csv_rows(path: Path) -> list[dict[str, str]]:
         return []
     with path.open("r", encoding="utf-8-sig", newline="") as csv_file:
         return list(csv.DictReader(csv_file))
+
+
+def _config_path_candidates() -> list[Path]:
+    candidates = [
+        APP_ROOT / "config.yaml",
+        APP_ROOT / "config.example.yaml",
+        BASE_DIR / "config.yaml",
+        BASE_DIR / "config.example.yaml",
+        Path.cwd() / "config.yaml",
+        Path.cwd() / "config.example.yaml",
+    ]
+    if getattr(sys, "frozen", False):
+        candidates.extend(
+            [
+                BASE_DIR.parent / "config.yaml",
+                BASE_DIR.parent / "config.example.yaml",
+            ]
+        )
+    unique_candidates: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve(strict=False)
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        unique_candidates.append(candidate)
+    return unique_candidates
+
+
+def ensure_runtime_config_file() -> Path | None:
+    primary_config = APP_ROOT / "config.yaml"
+    if primary_config.exists():
+        return primary_config
+    example_candidates = [
+        APP_ROOT / "config.example.yaml",
+        BASE_DIR / "config.example.yaml",
+        Path.cwd() / "config.example.yaml",
+    ]
+    if getattr(sys, "frozen", False):
+        example_candidates.append(BASE_DIR.parent / "config.example.yaml")
+    for example_path in example_candidates:
+        if not example_path.exists():
+            continue
+        try:
+            primary_config.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+            return primary_config
+        except OSError:
+            return example_path
+    return None
+
+
+def resolve_runtime_config_path() -> Path | None:
+    ensured = ensure_runtime_config_file()
+    if ensured is not None and ensured.exists():
+        return ensured
+    for candidate in _config_path_candidates():
+        if candidate.exists():
+            return candidate
+    return None
 
 
 def safe_float(value: str) -> float:
@@ -183,7 +302,9 @@ def generate_report_html(
     mappings: list[dict[str, str]],
     disk_usage: list[dict[str, str]],
     projects: list[dict[str, str]],
+    alerts: list[dict[str, str]] | None = None,
 ) -> str:
+    alerts = alerts or []
     search_rows = build_search_index(recommendations, mappings, projects)
     top_large_programs = sorted(
         recommendations,
@@ -196,6 +317,7 @@ def generate_report_html(
     )[:15]
     large_folders = disk_usage[:15]
     search_preview = search_rows[:20]
+    alert_preview = alerts[:12]
 
     generated_at = datetime.now(timezone.utc).isoformat()
     summary_cards = {
@@ -203,6 +325,7 @@ def generate_report_html(
         "Eslestirilen Program": str(len(mappings)),
         "Buyuk Klasor": str(len(disk_usage)),
         "Taranan Proje": str(len(projects)),
+        "Aktif Uyari": str(len(alerts)),
     }
     cards_html = "".join(
         f"<div class='card'><span>{html.escape(key)}</span><strong>{html.escape(value)}</strong></div>"
@@ -305,6 +428,7 @@ def generate_report_html(
     <h1>Windows Software Inventory Analyzer</h1>
     <p class="lead">Kurulu yazilimlar, proje eslesmeleri, buyuk klasorler ve karar onerileri icin statik HTML ozeti.</p>
     <div class="cards">{cards_html}</div>
+    {format_table_html(alert_preview, ["severity", "category", "title", "recommended_action", "confidence_score"], "Akilli Uyari Merkezi")}
     {format_table_html(search_preview, ["software_name", "category", "decision", "matched_projects", "project_links", "project_context", "technologies"], "Program ve Proje Eslestirmeleri")}
     {format_table_html(top_large_programs, ["software_name", "category", "decision", "estimated_size", "matched_projects"], "En Cok Yer Kaplayabilecek Programlar")}
     {format_table_html(most_uncertain, ["software_name", "category", "decision", "confidence_score", "explanation"], "En Belirsiz Programlar")}
@@ -343,6 +467,63 @@ def export_csv_text(rows: list[dict[str, str]]) -> str:
     writer.writeheader()
     writer.writerows(rows)
     return buffer.getvalue()
+
+
+def load_notification_center_settings() -> tuple[dict[str, object], dict[str, str]]:
+    return load_preferences(NOTIFICATION_PREFERENCES_PATH), load_scheduler_settings(MONITORING_SETTINGS_PATH)
+
+
+def save_notification_center_settings(preferences: dict[str, object], scan_interval: str) -> None:
+    save_preferences(NOTIFICATION_PREFERENCES_PATH, preferences)
+    save_scheduler_settings(
+        MONITORING_SETTINGS_PATH,
+        {
+            "scan_interval": scan_interval if scan_interval in VALID_INTERVALS else DEFAULT_INTERVAL,
+            "last_scan_time": load_scheduler_settings(MONITORING_SETTINGS_PATH).get("last_scan_time", ""),
+        },
+    )
+
+
+def build_disabled_categories(selected_categories: list[str]) -> list[str]:
+    selected = {item for item in selected_categories if item}
+    return [category for category in ALERT_CATEGORY_OPTIONS if category not in selected]
+
+
+def enabled_categories_from_preferences(preferences: dict[str, object]) -> list[str]:
+    disabled = {str(item) for item in preferences.get("disabled_categories", [])}
+    return [category for category in ALERT_CATEGORY_OPTIONS if category not in disabled]
+
+
+def send_welcome_notification(surface: str, preferences: dict[str, object]) -> str:
+    if not bool(preferences.get("enable_notifications", True)):
+        return "notifications_disabled"
+    if not bool(preferences.get("show_welcome_notification", True)):
+        return "welcome_disabled"
+    if not bool(preferences.get("notify_on_app_open", True)):
+        return "welcome_disabled"
+    return send_notification(
+        title="Windows Software Inventory Analyzer",
+        message=f"{surface} acildi. Uyari Merkezi ve bildirim ayarlari hazir.",
+        severity="low",
+        history_path=NOTIFICATION_HISTORY_PATH,
+        notification_id=f"welcome_{surface.casefold()}",
+        dedupe_hours=1,
+    )
+
+
+def send_close_notification(surface: str, preferences: dict[str, object]) -> str:
+    if not bool(preferences.get("enable_notifications", True)):
+        return "notifications_disabled"
+    if not bool(preferences.get("notify_on_app_close", True)):
+        return "close_disabled"
+    return send_notification(
+        title="Windows Software Inventory Analyzer",
+        message=f"{surface} kapaniyor. Arka plan bildirimi ve ayarlar kaydedildi.",
+        severity="low",
+        history_path=NOTIFICATION_HISTORY_PATH,
+        notification_id=f"close_{surface.casefold()}",
+        dedupe_hours=0,
+    )
 
 
 def build_project_detail_options(projects: list[dict[str, str]]) -> list[str]:
@@ -1119,8 +1300,9 @@ def write_static_exports() -> tuple[Path, Path]:
     mappings = load_csv_rows(OUTPUT_DIR / "software_project_mapping.csv")
     disk_usage = load_csv_rows(OUTPUT_DIR / "disk_usage.csv")
     projects = load_csv_rows(OUTPUT_DIR / "project_tech_stack.csv")
+    alerts = load_csv_rows(OUTPUT_DIR / "alerts.csv")
 
-    html_text = generate_report_html(recommendations, mappings, disk_usage, projects)
+    html_text = generate_report_html(recommendations, mappings, disk_usage, projects, alerts=alerts)
     REPORT_HTML_PATH.write_text(html_text, encoding="utf-8")
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     export_html_path = EXPORTS_DIR / f"report-{timestamp}.html"
@@ -1136,15 +1318,16 @@ def refresh_analysis_data() -> tuple[bool, str]:
 
 def run_cli_command(command_name: str, extra_args: list[str] | None = None) -> tuple[bool, str]:
     command = [sys.executable, "-m", "src.main", command_name]
-    if DEFAULT_CONFIG_PATH.exists():
-        command.extend(["--config", str(DEFAULT_CONFIG_PATH)])
+    config_path = resolve_runtime_config_path()
+    if config_path is not None:
+        command.extend(["--config", str(config_path)])
     if extra_args:
         command.extend(extra_args)
 
     try:
         completed = subprocess.run(
             command,
-            cwd=BASE_DIR,
+            cwd=APP_ROOT,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -1196,10 +1379,10 @@ def run_stepwise_commands(steps: list[tuple], progress_bar, status_box, log_box)
 
 
 def build_refresh_steps(refresh_mode: str) -> tuple[list[tuple[str, str, list[str], int]], list[dict[str, str]], str]:
-    if DEFAULT_CONFIG_PATH.exists():
-        config = load_config(DEFAULT_CONFIG_PATH)
-    else:
+    config_path = resolve_runtime_config_path()
+    if config_path is None:
         return [], [], "Config bulunamadi"
+    config = load_config(config_path)
     plan = build_refresh_plan(config, OUTPUT_DIR, mode=refresh_mode)
     rows = []
     steps: list[tuple[str, str, list[str], int]] = []
@@ -1241,6 +1424,7 @@ def render_streamlit() -> None:
         page_icon="W",
         layout="wide",
     )
+    preferences, monitoring_settings = load_notification_center_settings()
 
     manual_review_overrides = load_manual_review_overrides(MANUAL_REVIEW_OVERRIDES_PATH)
     recommendations = apply_dashboard_manual_review_overrides(
@@ -1262,6 +1446,8 @@ def render_streamlit() -> None:
     removal_decisions = load_csv_rows(OUTPUT_DIR / "removal_decisions.csv")
     system_tools_report = load_csv_rows(OUTPUT_DIR / "system_tools_report.csv")
     system_tool_impact_report = load_csv_rows(OUTPUT_DIR / "system_tool_impact_report.csv")
+    alerts = load_csv_rows(OUTPUT_DIR / "alerts.csv")
+    event_log_summary = load_csv_rows(OUTPUT_DIR / "event_log_summary.csv")
     search_rows = build_search_index(recommendations, mappings, projects)
     program_view_rows = build_program_view_rows(search_rows, removal_decisions, validation_status)
     project_tools_index = build_project_tools_index(search_rows)
@@ -1273,13 +1459,86 @@ def render_streamlit() -> None:
     disk_scenario_index = build_disk_scenario_index(disk_cleanup_scenarios)
 
     REPORT_HTML_PATH.write_text(
-        generate_report_html(recommendations, mappings, disk_usage, projects),
+        generate_report_html(recommendations, mappings, disk_usage, projects, alerts=alerts),
         encoding="utf-8",
     )
     EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
     st.title("Windows Software Inventory Analyzer")
     st.caption("Program silme yapmaz. Sadece analiz, kategori ve raporlama sunar.")
+    if "streamlit_welcome_notification_sent" not in st.session_state:
+        st.session_state["streamlit_welcome_notification_sent"] = False
+    if not st.session_state["streamlit_welcome_notification_sent"]:
+        send_welcome_notification("Streamlit Dashboard", preferences)
+        st.session_state["streamlit_welcome_notification_sent"] = True
+
+    if alerts:
+        st.subheader("Uyari Merkezi")
+        metric_cols = st.columns(4)
+        metric_cols[0].metric("Toplam Uyari", len(alerts))
+        metric_cols[1].metric("Kritik", sum(1 for alert in alerts if alert.get("severity", "") == "critical"))
+        metric_cols[2].metric("Yuksek", sum(1 for alert in alerts if alert.get("severity", "") == "high"))
+        metric_cols[3].metric("Event Log Kaydi", sum(int(row.get("event_count", "0") or "0") for row in event_log_summary))
+        st.dataframe(alerts, use_container_width=True, hide_index=True)
+        if event_log_summary:
+            with st.expander("Event Log Ozetleri", expanded=False):
+                st.dataframe(event_log_summary, use_container_width=True, hide_index=True)
+    else:
+        st.subheader("Uyari Merkezi")
+        st.info("Heniz alert raporu yok. Asagidaki ayarlari kaydedip 'Verileri Yenile' veya 'monitor-alerts' ile uretebilirsiniz.")
+
+    with st.expander("Bildirim Ayarlari", expanded=False):
+        settings_left, settings_right = st.columns(2)
+        with settings_left:
+            enable_notifications = st.toggle("Windows bildirimlerini ac", value=bool(preferences.get("enable_notifications", True)))
+            show_welcome_notification = st.toggle("Acilista hos geldiniz bildirimi goster", value=bool(preferences.get("show_welcome_notification", True)))
+            notify_on_app_open = st.toggle("Desktop GUI acilisinda bildirim goster", value=bool(preferences.get("notify_on_app_open", True)))
+            notify_on_app_close = st.toggle("Desktop GUI kapanisinda bildirim goster", value=bool(preferences.get("notify_on_app_close", True)))
+            enable_tray_icon = st.toggle("Desktop GUI icin tray icon ac", value=bool(preferences.get("enable_tray_icon", True)))
+            only_critical_alerts = st.toggle("Sadece kritik uyarilari goster", value=bool(preferences.get("only_critical_alerts", False)))
+            selected_scan_interval = st.selectbox(
+                "Periyodik tarama sikligi",
+                options=["daily", "weekly", "monthly"],
+                index=["daily", "weekly", "monthly"].index(str(monitoring_settings.get("scan_interval", "weekly"))),
+                format_func=lambda item: {"daily": "Gunluk", "weekly": "Haftalik", "monthly": "Aylik"}.get(item, item),
+            )
+        with settings_right:
+            quiet_hours_start = st.text_input("Sessiz saat baslangici", value=str(preferences.get("quiet_hours_start", "23:00")))
+            quiet_hours_end = st.text_input("Sessiz saat bitisi", value=str(preferences.get("quiet_hours_end", "08:00")))
+            enabled_categories = st.multiselect(
+                "Bildirim alinacak kategoriler",
+                options=ALERT_CATEGORY_OPTIONS,
+                default=enabled_categories_from_preferences(preferences),
+            )
+            next_scan = get_next_scan_date(interval=selected_scan_interval, settings_path=MONITORING_SETTINGS_PATH)
+            st.caption(f"Bir sonraki planli kontrol: {next_scan.isoformat(timespec='seconds')}")
+        action_left, action_right = st.columns(2)
+        with action_left:
+            if st.button("Ayarlari Kaydet", use_container_width=True, key="save_notification_settings"):
+                updated_preferences = dict(preferences)
+                updated_preferences["enable_notifications"] = enable_notifications
+                updated_preferences["show_welcome_notification"] = show_welcome_notification
+                updated_preferences["notify_on_app_open"] = notify_on_app_open
+                updated_preferences["notify_on_app_close"] = notify_on_app_close
+                updated_preferences["enable_tray_icon"] = enable_tray_icon
+                updated_preferences["only_critical_alerts"] = only_critical_alerts
+                updated_preferences["quiet_hours_start"] = quiet_hours_start
+                updated_preferences["quiet_hours_end"] = quiet_hours_end
+                updated_preferences["disabled_categories"] = build_disabled_categories(enabled_categories)
+                save_notification_center_settings(updated_preferences, selected_scan_interval)
+                st.success("Bildirim ayarlari kaydedildi.")
+                st.rerun()
+        with action_right:
+            if st.button("Test Bildirimi Gonder", use_container_width=True, key="send_test_notification"):
+                result = send_notification(
+                    title="Windows Software Inventory Analyzer",
+                    message="Hos geldiniz. Uyari Merkezi ayarlari su an etkin.",
+                    severity="low",
+                    history_path=NOTIFICATION_HISTORY_PATH,
+                    notification_id="streamlit_settings_test",
+                    dedupe_hours=0,
+                )
+                st.info(f"Test bildirimi sonucu: {result}")
 
     refresh_col, info_col = st.columns([1.2, 2.3])
     with refresh_col:
@@ -1315,7 +1574,10 @@ def render_streamlit() -> None:
             project_steps = [
                 ("scan-projects", "Projeler yeniden taraniyor", ["--refresh-mode", "full"], 45),
                 ("map-software", "Program eslesmeleri guncelleniyor", [], 10),
+                ("score-risk", "Risk puanlari tekrar hesaplaniyor", [], 8),
+                ("recommend", "Program onerileri tekrar uretiliyor", [], 12),
                 ("validate-projects", "Proje dogrulama seviyesi guncelleniyor", [], 20),
+                ("build-removal-decisions", "Kaldirma karar detaylari uretiliyor", [], 10),
                 ("build-system-tools-report", "Sistem araci raporu guncelleniyor", [], 8),
             ]
             success, message = run_stepwise_commands(project_steps, progress_bar, status_box, log_box)
@@ -1329,7 +1591,8 @@ def render_streamlit() -> None:
                 if message:
                     st.code(message[-2000:] if len(message) > 2000 else message, language="text")
     with info_col:
-        config_hint = str(DEFAULT_CONFIG_PATH) if DEFAULT_CONFIG_PATH.exists() else "Varsayilan config bulunamadi"
+        resolved_config_path = resolve_runtime_config_path()
+        config_hint = str(resolved_config_path) if resolved_config_path is not None else "Varsayilan config bulunamadi"
         st.caption(f"Yenileme plani degismeyen adimlari atlar. Config: {config_hint}")
 
     categories = sorted({row.get("category", "") for row in program_view_rows if row.get("category", "")}, key=str.casefold)
